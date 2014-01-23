@@ -1,10 +1,10 @@
-package main.java;
+package com.conveyal.gtfs;
 
 import java.util.Date;
 
-import org.onebusaway.gtfs.impl.GtfsDaoImpl;
 import org.onebusaway.gtfs.model.ServiceCalendar;
 import org.onebusaway.gtfs.model.ServiceCalendarDate;
+import org.onebusaway.gtfs.services.GtfsDao;
 
 public class GtfsStatistics {
 	
@@ -17,9 +17,9 @@ public class GtfsStatistics {
 //		Calendar Date ranges
 //		Calendar Service exceptions
 	
-	private GtfsDaoImpl gtfsDao = null;
+	private GtfsDao gtfsDao = null;
 	
-	public GtfsStatistics(GtfsDaoImpl dao) {
+	public GtfsStatistics(GtfsDao dao) {
 		gtfsDao = dao;		
 	}
 

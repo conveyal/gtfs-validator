@@ -1,14 +1,14 @@
-package main.java;
+package com.conveyal.gtfs;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import main.java.validation.DuplicateStops;
 
 import org.onebusaway.gtfs.impl.GtfsDaoImpl;
-import org.onebusaway.gtfs.model.ServiceCalendarDate;
 import org.onebusaway.gtfs.model.Stop;
+
+import com.conveyal.validation.DuplicateStops;
 
 public class GtfsValidation {
 	

@@ -1,16 +1,17 @@
-package test.java;
+package com.conveyal.gtfs;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.Date;
 
 import junit.framework.Assert;
-import main.java.GtfsStatistics;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.onebusaway.gtfs.impl.GtfsDaoImpl;
 import org.onebusaway.gtfs.serialization.GtfsReader;
+
+import com.conveyal.gtfs.GtfsStatistics;
  
 public class GtfsStatisticsTest {
  
