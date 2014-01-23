@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>com.conveyal</groupId>
+    <artifactId>gtfs-validator</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+    <packaging>pom</packaging>
+
+    <repositories>
+      <repository>
+	<id>releases.onebusaway.org</id>
+	<url>http://nexus.onebusaway.org/content/repositories/releases/</url>
+	<releases><enabled>true</enabled></releases>
+	<snapshots><enabled>false</enabled></snapshots>
+      </repository>
+        <repository>
+            <id>releases.svn2.camsys.com</id>
+            <url>http://svn2.camsys.com/archiva/repository/releases/</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+        <repository>
+            <id>snapshots.svn2.camsys.com</id>
+            <url>http://svn2.camsys.com/archiva/repository/snapshots/</url>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
+    </repositories>
+
+    <scm>
+        <connection>scm:git:git@github.com:conveyal/gtfs-validator.git</connection>
+        <developerConnection>scm:git:git@github.com:conveyal/gtfs-validator.git</developerConnection>
+        <url>scm:git:git@github.com:conveyal/gtfs-validator</url>
+    </scm>
+
+  <issueManagement>
+    <system>GitHub</system>
+    <url>https://github.com/conveyal/gtfs-validator/issues</url>
+  </issueManagement>
+
+  <distributionManagement>
+    <repository>
+      <id>releases.svn2.camsys.com</id>
+      <url>http://svn2.camsys.com/archiva/repository/releases/</url>
+    </repository>
+    <snapshotRepository>
+      <id>snapshots.svn2.camsys.com</id>
+      <url>http://svn2.camsys.com/archiva/repository/snapshots/</url>
+    </snapshotRepository>
+  </distributionManagement>
+
+    <modules>
+        <module>gtfs-validation-lib</module>
+  </modules>
+
+</project>
