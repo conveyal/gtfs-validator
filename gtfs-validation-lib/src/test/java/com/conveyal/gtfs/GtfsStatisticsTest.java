@@ -76,8 +76,8 @@ public class GtfsStatisticsTest {
 	
 	@Test
 	public void stopTimeCount() {
-		System.out.println("Stop time count: " + gtfsStats.getStopTimeCount());
-		Assert.assertEquals(gtfsStats.getStopTimeCount(), new Integer(7015));
+		System.out.println("Stop time count: " + gtfsStats.getStopTimesCount());
+		Assert.assertEquals(gtfsStats.getStopTimesCount(), new Integer(7015));
 	}
 	
 	@Test
