@@ -1,9 +1,7 @@
 package com.conveyal.gtfs;
 
-import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
-import java.util.List;
 
 import org.onebusaway.gtfs.model.Agency;
 import org.onebusaway.gtfs.model.AgencyAndId;
@@ -185,6 +183,18 @@ public class GtfsStatistics {
 		}
 		
 		return endDate;
+	}
+
+	public GtfsStatistic getStatistic(Agency agency) {
+		GtfsStatistic gs = new GtfsStatistic();
+		gs.setAgency(agency);
+		gs.setRouteCount(getRouteCount(agency.getId()));
+		gs.setTripCount(getTripCount(agency.getId()));
+		gs.setStopCount(getStopCount(agency.getId()));
+		gs.setStopTimeCount(getStopTimesCount(agency.getId()));
+		gs.setCalendarStartDate(getCalendarServiceRangeStart(agency.getId()));
+		gs.setCalendarEndDate(getCalendarServiceRangeEnd(agency.getId()));
+		return gs;
 	}
 }
 
