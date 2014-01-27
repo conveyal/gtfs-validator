@@ -13,7 +13,7 @@ import org.onebusaway.gtfs.model.StopTime;
 import org.onebusaway.gtfs.model.Trip;
 import org.onebusaway.gtfs.services.GtfsDao;
 
-public class GtfsStatistics {
+public class GtfsStatistics implements BaseStatistics {
 	
 //	Provides statistics for: 
 //		Agencies
@@ -185,8 +185,8 @@ public class GtfsStatistics {
 		return endDate;
 	}
 
-	public GtfsStatistic getStatistic(Agency agency) {
-		GtfsStatistic gs = new GtfsStatistic();
+	public Statistic getStatistic(Agency agency) {
+		Statistic gs = new Statistic();
 		gs.setAgency(agency);
 		gs.setRouteCount(getRouteCount(agency.getId()));
 		gs.setTripCount(getTripCount(agency.getId()));

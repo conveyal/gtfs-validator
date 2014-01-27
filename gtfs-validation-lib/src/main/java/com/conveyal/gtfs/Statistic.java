@@ -4,7 +4,7 @@ import java.util.Date;
 
 import org.onebusaway.gtfs.model.Agency;
 
-public class GtfsStatistic {
+public class Statistic {
 	private Agency agency;
 	private Integer routeCount;
 	private Integer tripCount;
