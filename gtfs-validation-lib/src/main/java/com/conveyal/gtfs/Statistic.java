@@ -4,8 +4,12 @@ import java.util.Date;
 
 import org.onebusaway.gtfs.model.Agency;
 
+/**
+ * Model object representing statistics about GTFS. 
+ *
+ */
 public class Statistic {
-	private Agency agency;
+	private String agencyId;
 	private Integer routeCount;
 	private Integer tripCount;
 	private Integer stopCount;
@@ -13,11 +17,11 @@ public class Statistic {
 	private Date calendarStartDate;
 	private Date calendarEndDate;
 	
-	public Agency getAgency() {
-		return agency;
+	public String getAgencyId() {
+		return agencyId;
 	}
-	public void setAgency(Agency agency) {
-		this.agency = agency;
+	public void setAgencyId(String agencyId) {
+		this.agencyId = agencyId;
 	}
 	public Integer getRouteCount() {
 		return routeCount;

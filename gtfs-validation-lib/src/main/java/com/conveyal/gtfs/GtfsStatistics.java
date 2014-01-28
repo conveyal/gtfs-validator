@@ -13,16 +13,11 @@ import org.onebusaway.gtfs.model.StopTime;
 import org.onebusaway.gtfs.model.Trip;
 import org.onebusaway.gtfs.services.GtfsDao;
 
+/**
+ * Retrieves a base set of statistics from the GTFS.
+ *
+ */
 public class GtfsStatistics implements BaseStatistics {
-	
-//	Provides statistics for: 
-//		Agencies
-//		Routes
-//		Trips
-// 	    Stops
-//		Stop Times
-//		Calendar Date ranges
-//		Calendar Service exceptions
 	
 	private GtfsDao gtfsDao = null;
 	
@@ -185,15 +180,15 @@ public class GtfsStatistics implements BaseStatistics {
 		return endDate;
 	}
 
-	public Statistic getStatistic(Agency agency) {
+	public Statistic getStatistic(String agencyId) {
 		Statistic gs = new Statistic();
-		gs.setAgency(agency);
-		gs.setRouteCount(getRouteCount(agency.getId()));
-		gs.setTripCount(getTripCount(agency.getId()));
-		gs.setStopCount(getStopCount(agency.getId()));
-		gs.setStopTimeCount(getStopTimesCount(agency.getId()));
-		gs.setCalendarStartDate(getCalendarServiceRangeStart(agency.getId()));
-		gs.setCalendarEndDate(getCalendarServiceRangeEnd(agency.getId()));
+		gs.setAgencyId(agencyId);
+		gs.setRouteCount(getRouteCount(agencyId));
+		gs.setTripCount(getTripCount(agencyId));
+		gs.setStopCount(getStopCount(agencyId));
+		gs.setStopTimeCount(getStopTimesCount(agencyId));
+		gs.setCalendarStartDate(getCalendarServiceRangeStart(agencyId));
+		gs.setCalendarEndDate(getCalendarServiceRangeEnd(agencyId));
 		return gs;
 	}
 }
