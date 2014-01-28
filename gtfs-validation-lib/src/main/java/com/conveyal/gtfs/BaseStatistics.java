@@ -27,6 +27,10 @@ public interface BaseStatistics {
 	Integer getStopCount();
 
 	Integer getStopTimesCount();
+	
+	Date getCalendarDateStart();
+	
+	Date getCalendarDateEnd();
 
 	Date getCalendarServiceRangeStart();
 
@@ -40,6 +44,10 @@ public interface BaseStatistics {
 
 	Integer getStopTimesCount(String agencyId);
 
+	Date getCalendarDateStart(String agencyId);
+		
+	Date getCalendarDateEnd(String agencyId);
+	
 	Date getCalendarServiceRangeStart(String agencyId);
 
 	Date getCalendarServiceRangeEnd(String agencyId);

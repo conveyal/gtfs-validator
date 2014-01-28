@@ -14,6 +14,8 @@ public class Statistic {
 	private Integer tripCount;
 	private Integer stopCount;
 	private Integer stopTimeCount;
+	private Date calendarServiceStart;
+	private Date calendarServiceEnd;
 	private Date calendarStartDate;
 	private Date calendarEndDate;
 	
@@ -58,6 +60,18 @@ public class Statistic {
 	}
 	public void setCalendarEndDate(Date calendarEndDate) {
 		this.calendarEndDate = calendarEndDate;
+	}
+	public Date getCalendarServiceStart() {
+		return calendarServiceStart;
+	}
+	public void setCalendarServiceStart(Date calendarServiceStart) {
+		this.calendarServiceStart = calendarServiceStart;
+	}
+	public Date getCalendarServiceEnd() {
+		return calendarServiceEnd;
+	}
+	public void setCalendarServiceEnd(Date calendarServiceEnd) {
+		this.calendarServiceEnd = calendarServiceEnd;
 	}
 	
 	

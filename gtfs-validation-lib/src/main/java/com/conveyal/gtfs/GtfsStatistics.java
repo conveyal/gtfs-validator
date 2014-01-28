@@ -156,6 +156,34 @@ public class GtfsStatistics implements BaseStatistics {
 		
 		Date startDate = null;
 		
+		for(ServiceCalendar serviceCalendar : gtfsDao.getAllCalendars()) {
+			if (agencyId.equals(serviceCalendar.getServiceId().getAgencyId())) {
+				if(startDate == null || serviceCalendar.getStartDate().getAsDate().before(startDate))
+					startDate = serviceCalendar.getStartDate().getAsDate();
+			}
+		}
+		
+		return startDate;
+
+	}
+
+	
+	public Date getCalendarServiceRangeEnd(String agencyId) {
+		Date endDate = null;
+		for(ServiceCalendar serviceCalendar : gtfsDao.getAllCalendars()) {
+			if (agencyId.equals(serviceCalendar.getServiceId().getAgencyId())) {
+				if(endDate == null || serviceCalendar.getEndDate().getAsDate().after(endDate))
+					endDate = serviceCalendar.getEndDate().getAsDate();
+			}
+		}
+		
+		return endDate;
+	}
+
+	public Date getCalendarDateStart(String agencyId) {
+		
+		Date startDate = null;
+		
 		for(ServiceCalendarDate serviceCalendarDate : gtfsDao.getAllCalendarDates()) {
 			if (agencyId.equals(serviceCalendarDate.getServiceId().getAgencyId())) {
 				if(startDate == null || serviceCalendarDate.getDate().getAsDate().before(startDate))
@@ -168,7 +196,7 @@ public class GtfsStatistics implements BaseStatistics {
 	}
 
 	
-	public Date getCalendarServiceRangeEnd(String agencyId) {
+	public Date getCalendarDateEnd(String agencyId) {
 		Date endDate = null;
 		for(ServiceCalendarDate serviceCalendarDate : gtfsDao.getAllCalendarDates()) {
 			if (agencyId.equals(serviceCalendarDate.getServiceId().getAgencyId())) {
@@ -179,7 +207,8 @@ public class GtfsStatistics implements BaseStatistics {
 		
 		return endDate;
 	}
-
+	
+	
 	public Statistic getStatistic(String agencyId) {
 		Statistic gs = new Statistic();
 		gs.setAgencyId(agencyId);
@@ -187,8 +216,10 @@ public class GtfsStatistics implements BaseStatistics {
 		gs.setTripCount(getTripCount(agencyId));
 		gs.setStopCount(getStopCount(agencyId));
 		gs.setStopTimeCount(getStopTimesCount(agencyId));
-		gs.setCalendarStartDate(getCalendarServiceRangeStart(agencyId));
-		gs.setCalendarEndDate(getCalendarServiceRangeEnd(agencyId));
+		gs.setCalendarStartDate(getCalendarDateStart(agencyId));
+		gs.setCalendarEndDate(getCalendarDateEnd(agencyId));
+		gs.setCalendarServiceStart(getCalendarServiceRangeStart(agencyId));
+		gs.setCalendarServiceEnd(getCalendarServiceRangeEnd(agencyId));
 		return gs;
 	}
 }
