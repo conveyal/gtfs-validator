@@ -11,12 +11,12 @@ import org.junit.Test;
 import org.onebusaway.gtfs.impl.GtfsDaoImpl;
 import org.onebusaway.gtfs.serialization.GtfsReader;
 
-import com.conveyal.gtfs.GtfsStatistics;
+import com.conveyal.gtfs.service.impl.GtfsStatisticsService;
  
-public class GtfsStatisticsTest {
+public class GtfsStatisticsServiceTest {
  
 	static GtfsDaoImpl store = null;
-	static GtfsStatistics gtfsStats = null;
+	static GtfsStatisticsService gtfsStats = null;
 	
 	@BeforeClass 
     public static void setUpClass() {      
@@ -47,7 +47,7 @@ public class GtfsStatisticsTest {
 			e.printStackTrace();
 		}
     	
-    	gtfsStats = new GtfsStatistics(store);
+    	gtfsStats = new GtfsStatisticsService(store);
     }
 	
 	@Test

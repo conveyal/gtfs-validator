@@ -1,4 +1,4 @@
-package com.conveyal.validation;
+package com.conveyal.gtfs.model;
 
 import org.onebusaway.gtfs.model.Stop;
 

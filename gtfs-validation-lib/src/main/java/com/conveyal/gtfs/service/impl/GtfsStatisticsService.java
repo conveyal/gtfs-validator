@@ -1,4 +1,4 @@
-package com.conveyal.gtfs;
+package com.conveyal.gtfs.service.impl;
 
 import java.util.Collection;
 import java.util.Date;
@@ -13,15 +13,18 @@ import org.onebusaway.gtfs.model.StopTime;
 import org.onebusaway.gtfs.model.Trip;
 import org.onebusaway.gtfs.services.GtfsDao;
 
+import com.conveyal.gtfs.model.Statistic;
+import com.conveyal.gtfs.service.StatisticsService;
+
 /**
  * Retrieves a base set of statistics from the GTFS.
  *
  */
-public class GtfsStatistics implements BaseStatistics {
+public class GtfsStatisticsService implements StatisticsService {
 	
 	private GtfsDao gtfsDao = null;
 	
-	public GtfsStatistics(GtfsDao dao) {
+	public GtfsStatisticsService(GtfsDao dao) {
 		gtfsDao = dao;		
 	}
 

@@ -1,4 +1,4 @@
-package com.conveyal.gtfs;
+package com.conveyal.gtfs.model;
 
 import java.util.Date;
 

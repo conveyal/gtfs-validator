@@ -1,20 +1,20 @@
-package com.conveyal.gtfs;
+package com.conveyal.gtfs.service;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
 
-import org.onebusaway.gtfs.impl.GtfsDaoImpl;
 import org.onebusaway.gtfs.model.Stop;
+import org.onebusaway.gtfs.services.GtfsDao;
 
-import com.conveyal.validation.DuplicateStops;
+import com.conveyal.gtfs.model.DuplicateStops;
 
-public class GtfsValidation {
+public class GtfsValidationService {
 	
-	private GtfsDaoImpl gtfsDao = null;
+	private GtfsDao gtfsDao = null;
 	
-	public GtfsValidation(GtfsDaoImpl dao) {
+	public GtfsValidationService(GtfsDao dao) {
 		gtfsDao = dao;		
 	}
 

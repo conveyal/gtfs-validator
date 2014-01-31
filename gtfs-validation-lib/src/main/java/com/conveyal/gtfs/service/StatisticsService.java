@@ -1,6 +1,8 @@
-package com.conveyal.gtfs;
+package com.conveyal.gtfs.service;
 
 import java.util.Date;
+
+import com.conveyal.gtfs.model.Statistic;
 
 /**
  *	Provides statistics for:
@@ -16,7 +18,7 @@ import java.util.Date;
  * @author dev
  *
  */
-public interface BaseStatistics {
+public interface StatisticsService {
 
 	Integer getAgencyCount();
 
