@@ -28,8 +28,21 @@
 	<groupId>org.slf4j</groupId>
 	<artifactId>slf4j-simple</artifactId>
 	<version>1.5.6</version>
-   </dependency> 
-  </dependencies>
- 
-  
+   </dependency>
+
+	<dependency>
+	   	<groupId>org.geotools</groupId>
+	   	<artifactId>gt-api</artifactId>
+	   	<version>10.4</version>
+    </dependency>
+    
+    <dependency>
+	   	<groupId>org.geotools</groupId>
+	   	<artifactId>gt-epsg-hsql</artifactId>
+	   	<version>10.4</version>
+    </dependency>
+    
+
+
+   </dependencies>
 </project>
