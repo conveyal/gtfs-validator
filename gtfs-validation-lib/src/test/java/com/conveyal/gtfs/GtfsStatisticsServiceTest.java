@@ -25,7 +25,7 @@ public class GtfsStatisticsServiceTest {
         store = new GtfsDaoImpl();
         GtfsReader reader = new GtfsReader();
         
-        File gtfsFile = new File("src/test/resources/gtfs.zip");
+        File gtfsFile = new File("src/test/resources/st_gtfs_good.zip");
         
         try {
 			reader.setInputLocation(gtfsFile);

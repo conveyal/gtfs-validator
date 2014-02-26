@@ -109,6 +109,9 @@ public class GtfsValidationService {
 			
 			String tripId = stopTime.getTrip().getId().getId();
 			
+			if(tripId.equals("1510"))
+				System.out.println("testing...");
+			
 			if(!tripStopTimes.containsKey(tripId))
 				tripStopTimes.put(tripId, new ArrayList<StopTime>());
 			
@@ -230,7 +233,7 @@ public class GtfsValidationService {
 		for(Trip trip : gtfsDao.getAllTrips()) {
 			
 			String tripId = trip.getId().getId();
-			
+
 			ArrayList<StopTime> stopTimes = tripStopTimes.get(tripId);
 			
 			if(stopTimes == null || stopTimes.isEmpty()) {

@@ -123,6 +123,90 @@ public class GtfsValidationServiceTest {
 		
 	}
 	
+	@Test
+	public void completeBadGtfsTest() {
+		
+		GtfsDaoImpl gtfsStore = new GtfsDaoImpl();
+      
+        GtfsReader gtfsReader = new GtfsReader();
+        
+        File gtfsFile = new File("src/test/resources/st_gtfs_bad.zip");
+        
+        try {
+			
+        	gtfsReader.setInputLocation(gtfsFile);
+        		
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+        
+    	gtfsReader.setEntityStore(gtfsStore);
+    	 
+    	
+    	try {
+    		gtfsReader.run();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+    	
+    	try {
+    		GtfsValidationService gtfsValidation = new GtfsValidationService(gtfsStore);
+    		
+    		ValidationResult results = gtfsValidation.validateRoutes();
+    		results.add(gtfsValidation.validateTrips());
+    		
+    		Assert.assertEquals(results.invalidValues.size(), 1);
+    		
+    		System.out.println(results.invalidValues.size());
+    		
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+	}
+	
+	@Test
+	public void completeGoodGtfsTest() {
+		
+		GtfsDaoImpl gtfsStore = new GtfsDaoImpl();
+      
+        GtfsReader gtfsReader = new GtfsReader();
+        
+        File gtfsFile = new File("src/test/resources/st_gtfs_good.zip");
+        
+        try {
+			
+        	gtfsReader.setInputLocation(gtfsFile);
+        		
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+        
+    	gtfsReader.setEntityStore(gtfsStore);
+    	 
+    	
+    	try {
+    		gtfsReader.run();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+    	
+    	try {
+    		GtfsValidationService gtfsValidation = new GtfsValidationService(gtfsStore);
+    		
+    		ValidationResult results = gtfsValidation.validateRoutes();
+    		results.add(gtfsValidation.validateTrips());
+    		
+    		Assert.assertEquals(results.invalidValues.size(), 0);
+    		
+    		System.out.println(results.invalidValues.size());
+    		
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+	}
+	
 	
 	
 }
