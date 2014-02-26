@@ -1,0 +1,102 @@
+stop_id,stop_name,stop_desc,stop_lat,stop_lon,zone_id,stop_url,location_type
+S_EV,Everett Station,Everett Station - 3201 Smith Ave,47.97494745,-122.1972574,S_EV,,0
+S_MU,Mukilteo Station,Mukilteo Station - SR525 and 1st Street,47.94837012,-122.3010522,S_MU,,0
+S_ED,Edmonds Station,Edmonds Station - 170 Railroad Avenue,47.81115221,-122.3843726,S_ED,,0
+S_KS,King Street Station,King Street Station - 301 South Jackson Street,47.59770236,-122.3294563,S_KS,,0
+S_TK_NB,Tukwila Station (Northbound),Tukwila Station - S Longacres Way & Longacres Dr SW,47.460301,-122.240364,S_TK,,0
+S_TK_SB,Tukwila Station (Southbound),Tukwila Station - S Longacres Way & Longacres Dr SW,47.460432,-122.240507,S_TK,,0
+S_KE_NB,Kent Station (Northbound),Kent Station - 301 Railroad Avenue North,47.384022,-122.232903,S_KE,,0
+S_KE_SB,Kent Station (Southbound),Kent Station - 301 Railroad Avenue North,47.384257,-122.233151,S_KE,,0
+S_AU_NB,Auburn Station (Northbound),Auburn Station - 23 A Street SW,47.306299,-122.232137,S_AU,,0
+S_AU_SB,Auburn Station (Southbound),Auburn Station - 23 A Street SW,47.306299,-122.232375,S_AU,,0
+S_SU_NB,Sumner Station (Northbound),Sumner Station - 810 Maple Street,47.201418,-122.244497,S_SU,,0
+S_SU_SB,Sumner Station (Southbound),Sumner Station - 810 Maple Street,47.201218,-122.245037,S_SU,,0
+S_PU_NB,Puyallup Station (Northbound),Puyallup Station - 131 West Main Street,47.192634,-122.295644,S_PU,,0
+S_PU_SB,Puyallup Station (Southbound),Puyallup Station - 131 West Main Street,47.192736,-122.295349,S_PU,,0
+S_TD,Tacoma Dome Station,Tacoma Dome Station - 424 25th Street,47.23957114,-122.42874,S_TD,,0
+S_ST,South Tacoma Station,South Tacoma Station - S 58th St & Hood St,47.203491,-122.485552,S_ST,,0
+S_LW,Lakewood Station,Lakewood Station - Pacific Hwy SW & 114th St SW,47.153189,-122.499103,S_LW,,0
+TL_THD,Theater District Station,Theater District / South 9th Street,47.25619816280,-122.43996289600,TLZ,http://www.soundtransit.org/x1350.xml,0
+TL_CS,Commerce Street Station,Commerce Street / South 11th Street,47.254,-122.439,TLZ,,0
+TL_CC,Convention Center Station,Convention Center / South 15th Street,47.24949560660,-122.43855189700,TLZ,http://www.soundtransit.org/x1279.xml,0
+TL_US,Union Station,Union Station / South 19th Street,47.24486527080,-122.43662268600,TLZ,http://www.soundtransit.org/x1355.xml,0
+TL_TD,Tacoma Dome Station,Tacoma Dome,47.23986838450,-122.42811811200,TLZ,http://www.soundtransit.org/x1349.xml,0
+TL_25,South 25th Street Station,South 25th Street,47.23908108070,-122.43420171200,TLZ,http://www.soundtransit.org/x1336.xml,0
+C_1303,Alderwood Mall Blvd and 184th St SW (SB),,47.831183,-122.268700,A,,0
+C_1305,18600 Block of Alderwood Mall Pkwy (SB),,47.828567,-122.268650,A,,0
+C_1367,Evergreen Way at 79th Pl SE (SB),,47.925583,-122.224867,A,,0
+C_1399,Kayser Way & Woodinville Dr (at Bothell P&R),,47.759183,-122.199250,C,,0
+C_1798,Hewitt Ave at Virginia Ave (WB),,47.979250,-122.197500,A,,0
+C_1908,Stewart St at 7th Ave (WB),,47.614417,-122.336117,B,,0
+C_1909,Stewart St at 9th Ave (WB),,47.615767,-122.334367,B,,0
+C_1911,Stewart St at Yale Ave (WB),,47.618167,-122.331267,B,,0
+C_2035,Lynnwood TC (Bay D1),,47.815850,-122.297083,A,,0
+C_2113,Lynnwood TC (Bay D1),,47.815850,-122.297067,A,,0
+C_2114,Lynnwood TC (Bay D2),,47.815850,-122.296683,A,,0
+C_2131,Ash Way P&R (Bay 1),,47.852767,-122.258417,A,,0
+C_2134,Canyon Park P&R (Bay 2) (NB),,47.793850,-122.211400,A,,0
+C_2150,I-405 at NE 160th St (Brickyard) (NB),,47.743767,-122.186083,C,,0
+C_2151,I-405 at NE 160th St (Brickyard) (SB),,47.741767,-122.187917,C,,0
+C_2158,I-5 at NE 145th St Fwy Station (NB),,47.732733,-122.323750,B,,0
+C_2163,Ash Way P&R (Bay 3),,47.852917,-122.258217,A,,0
+C_2165,I-5 at NE 145th St Fwy Station (SB),,47.732533,-122.325083,B,,0
+C_2166,I-5 at NE 45th St Fwy Station (SB),,47.660550,-122.322983,B,,0
+C_2229,UW-Bothell/CCC Campus Main Entrance,,47.761600,-122.193067,C,,0
+C_2290,5th Ave at Jefferson St (SB),,47.603117,-122.328800,B,,0
+C_2325,Beardslee Blvd at NE 195th St (SB),,47.767967,-122.191217,C,,0
+C_2345,Everett Station (Bay C1),,47.974817,-122.197733,A,,0
+C_2346,Everett Station (Bay C2),,47.974617,-122.197650,A,,0
+C_2350,Northbound I-405 onramp at NE 195th St (NB),,47.769150,-122.188600,C,,0
+C_2355,Wetmore Ave at Wall St (SB),,47.977200,-122.207317,A,,0
+C_2356,Pacific Ave at Rockefeller Ave (WB),,47.976683,-122.205550,A,,0
+C_2359,Pacific Ave at Rockefeller Ave (EB),,47.976500,-122.204833,A,,0
+C_2364,Broadway at 38th St SE (NB),,47.967130,-122.200867,A,,0
+C_2365,Broadway at 33rd St SE (NB),,47.973633,-122.201167,A,,0
+C_2366,Broadway at 38th St SE (SB),,47.967133,-122.201256,A,,0
+C_2367,Broadway at 34th St SE (SB),,47.972940,-122.201501,A,,0
+C_2422,Lynnwood TC (Bay D3),,47.815850,-122.296350,A,,0
+C_2431,Alderwood Mall Blvd and 184th St SW (NB),,47.831733,-122.268433,A,,0
+C_2440,Hewitt Ave at Lombard Ave (WB),,47.979333,-122.202750,A,,0
+C_2466,Wetmore Ave at Wall St (NB),,47.977733,-122.207050,A,,0
+C_2502,Eastmont P&R (Bay 3) (WB),,47.915300,-122.205267,A,,0
+C_2638,4th Ave at Cherry St (NB),,47.604283,-122.331117,B,,0
+C_2698,5th Ave at Pine St (SB),,47.611700,-122.336650,B,,0
+C_2700,5th Ave at Seneca St (SB),,47.608233,-122.333483,B,,0
+C_2702,5th Ave at Marion St (SB),,47.605933,-122.331383,B,,0
+C_2706,5th Ave S at Jackson St (SB),,47.599000,-122.327817,B,,0
+C_2724,I-405 on ramp at NE 195th St (SB),,47.767850,-122.190233,C,,0
+C_2736,Canyon Park Freeway Stop,,47.793783,-122.214267,A,,0
+C_2850,I-405 at NE 128th St/Totem Lake (NB),,47.715150,-122.185400,C,,0
+C_2851,I-405 at NE 128th St/Totem Lake (SB),,47.715700,-122.186133,C,,0
+C_2856,NE 10th St at 102nd Ave NE (EB),,47.619200,-122.204600,C,,0
+C_2857,NE 8th St at 106th Ave NE (WB),,47.617500,-122.199500,C,,0
+C_2858,NE 8th St at 102nd Ave NE (WB),,47.617750,-122.204514,C,,0
+C_2860,Bellevue TC (Bay 8),,47.615483,-122.194467,C,,0
+C_2861,Everett Station,,47.974267,-122.197483,A,,0
+C_2867,South Everett Freeway Station (Bay 2),,47.898083,-122.214733,A,,0
+C_2868,South Everett Freeway Station (Bay 3),,47.897833,-122.214883,A,,0
+C_2869,South Everett Freeway Station (Bay 6),,47.898350,-122.214617,A,,0
+C_2914,NE 10th St at 108th Ave NE,,47.6193,-122.1969,C,,0
+C_2976,4th Ave at Pike St,,47.611,-122.337,B,,0
+C_355,Bellevue TC (Bay 4),,47.615567,-122.195050,C,,0
+C_374,Beardslee Blvd & Sunrise Dr (EB),,47.760605,-122.200219,C,,0
+C_426,Hewitt Ave at Lombard Ave (EB),,47.979133,-122.202967,A,,0
+C_427,Hewitt Ave at Virginia Ave (EB),,47.979050,-122.196933,A,,0
+C_430,Howell St at 9th Ave (EB),,47.614633,-122.333300,B,,0
+C_431,Howell St at Yale Ave (EB),,47.617567,-122.329500,B,,0
+C_473,Olive Way at 6th Ave (EB),,47.612733,-122.337001,B,,0
+C_476,Olive Way at Terry Ave (EB),,47.614850,-122.331933,B,,0
+C_635,4th Ave S at Washington St (NB),,47.601433,-122.328833,B,,0
+C_640,4th Ave S at Jackson St (NB),,47.598833,-122.328833,B,,0
+C_641,4th Ave at Seneca St (NB),,47.607383,-122.333950,B,,0
+C_759,I-5 (7th Ave NE) at NE 45th St Fwy Station (N,,47.661633,-122.320750,B,,0
+C_814,18600 Block of Alderwood Mall Pkwy (NB),,47.828967,-122.268350,A,,0
+C_877,Evergreen Way at 79th Pl SE (NB),,47.926083,-122.223900,A,,0
+C_2768,Everett Station (Bay A4),,47.97433333,-122.1971667,A,,0
+C_2765,Mountlake Terrace Freeway Station (Bay 6),,47.78723333,-122.3163333,A,,0
+C_2766,Mountlake Terrace Freeway Station (Bay 7),,47.7875,-122.3163333,A,,0
+C_2144,Eastmont P&R (Bay 1) (WB),,47.915281,-122.20472,A,,0
+C_2981,Ash Way Park and Ride,,47.852755,-122.258383,A,,0
+C_2986,Hweitt Ave at Fulton,,47.979115,-122.195464,A,,0
+C_2347,Everett Station (Bay C3),,47.974429,-122.19756,A,,0
+

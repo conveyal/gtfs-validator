@@ -2,127 +2,95 @@ package com.conveyal.gtfs;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
-import java.util.Set;
 
 import junit.framework.Assert;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.onebusaway.csv_entities.exceptions.CsvEntityIOException;
-import org.onebusaway.csv_entities.exceptions.MissingRequiredFieldException;
 import org.onebusaway.gtfs.impl.GtfsDaoImpl;
-import org.onebusaway.gtfs.model.Trip;
 import org.onebusaway.gtfs.serialization.GtfsReader;
 
-import com.conveyal.gtfs.model.DuplicateStops;
-import com.conveyal.gtfs.model.ValidationResult;
-import com.conveyal.gtfs.service.GtfsValidationService;
-import com.conveyal.gtfs.service.InputOutOfRange;
 import com.conveyal.gtfs.service.impl.GtfsStatisticsService;
  
 public class GtfsStatisticsServiceTest {
  
-	static GtfsDaoImpl gtfsStore1 = null;
-	static GtfsDaoImpl gtfsStore2 = null;
-	
-	static GtfsValidationService gtfsValidation1 = null;
-	static GtfsValidationService gtfsValidation2 = null;
-	
-	static MissingRequiredFieldException mrf = null;
+	static GtfsDaoImpl store = null;
+	static GtfsStatisticsService gtfsStats = null;
 	
 	@BeforeClass 
     public static void setUpClass() {      
         System.out.println("GtfsStatisticsTest setup");
         
-        gtfsStore1 = new GtfsDaoImpl();
-        gtfsStore2 = new GtfsDaoImpl();
+        store = new GtfsDaoImpl();
+        GtfsReader reader = new GtfsReader();
         
-        GtfsReader gtfsReader1 = new GtfsReader();
-        GtfsReader gtfsReader2 = new GtfsReader();
-        
-        File gtfsFile1 = new File("src/test/resources/test_gtfs1.zip");
-        File gtfsFile2 = new File("src/test/resources/test_gtfs2.zip");
-
+        File gtfsFile = new File("src/test/resources/gtfs.zip");
         
         try {
-			
-        	gtfsReader1.setInputLocation(gtfsFile1);
-        	gtfsReader2.setInputLocation(gtfsFile2);
-			
+			reader.setInputLocation(gtfsFile);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
         
-    	gtfsReader1.setEntityStore(gtfsStore1);
-    	gtfsReader2.setEntityStore(gtfsStore2);
-    	
+        try {
+			reader.setInputLocation(gtfsFile);
+		} catch (IOException e1) {
+			e1.printStackTrace();
+		}
+        
+    	reader.setEntityStore(store);
+
     	try {
-    		gtfsReader1.run();
-    		gtfsReader2.run();
-		} catch (Exception e) {
+			reader.run();
+		} catch (IOException e) {
 			e.printStackTrace();
 		}
     	
-    	try {
-    		gtfsValidation1 = new GtfsValidationService(gtfsStore1);
-    		gtfsValidation2 = new GtfsValidationService(gtfsStore2);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	
-	}
+    	gtfsStats = new GtfsStatisticsService(store);
+    }
 	
 	@Test
-	public void validateRoutes() {
-		ValidationResult result = gtfsValidation2.validateRoutes();
-
-		Assert.assertEquals(result.invalidValues.size(), 6);
-		
-	}
-	
-	@Test
-	public void validateTrips() {
-		ValidationResult result = gtfsValidation2.validateTrips();
-
-		Assert.assertEquals(result.invalidValues.size(), 10);
-		
-	}
-	
-	@Test
-	public void duplicateStops() {
-		ValidationResult result = new ValidationResult();
-		
-		result = gtfsValidation1.duplicateStops();
-		Assert.assertEquals(result.invalidValues.size(), 0);
-		
-
-		// try duplicate stop test to confirm that stops within the buffer limit are found
-		result = gtfsValidation1.duplicateStops(25.0);
-		Assert.assertEquals(result.invalidValues.size(), 1);
-		
-		// try same test to confirm that buffers below the limit don't detect duplicates
-		result = gtfsValidation1.duplicateStops(5.0);
-		Assert.assertEquals(result.invalidValues.size(), 0);
+	public void agencyCount() {
+		System.out.println("Agency count: " + gtfsStats.getAgencyCount());
+		Assert.assertEquals(gtfsStats.getAgencyCount(), new Integer(1));
 	}
  
-	
 	@Test
-	public void reversedTripShapes() {
-		
-		ValidationResult result = gtfsValidation1.listReversedTripShapes();
-		
-		Assert.assertEquals(result.invalidValues.size(), 1);
-		
-		// try again with an unsually high distanceMultiplier value 
-		result = gtfsValidation1.listReversedTripShapes(100.0);
-		
-		Assert.assertEquals(result.invalidValues.size(), 0);
-		
+	public void routeCount() {
+		System.out.println("Route count: " + gtfsStats.getRouteCount());
+		Assert.assertEquals(gtfsStats.getRouteCount(), new Integer(16));
 	}
 	
+	@Test
+	public void tripCount() {
+		System.out.println("Trip count: " + gtfsStats.getTripCount());
+		Assert.assertEquals(gtfsStats.getTripCount(), new Integer(557));
+	}
+ 
+	@Test
+	public void stopCount() {
+		System.out.println("Stop count: " + gtfsStats.getStopCount());
+		Assert.assertEquals(gtfsStats.getStopCount(), new Integer(100));
+	}
 	
+	@Test
+	public void stopTimeCount() {
+		System.out.println("Stop time count: " + gtfsStats.getStopTimesCount());
+		Assert.assertEquals(gtfsStats.getStopTimesCount(), new Integer(7015));
+	}
+	
+	@Test
+	public void calendarDateRangeStart() {
+		System.out.println("Calendar date start: " + gtfsStats.getCalendarDateStart().getTime());
+		Assert.assertEquals(gtfsStats.getCalendarDateStart(), new Date(1385614800000l));
+	}
+	
+	@Test
+	public void calendarDateRangeEnd() {
+		System.out.println("Calendar date end: " + gtfsStats.getCalendarDateEnd().getTime());
+		Assert.assertEquals(gtfsStats.getCalendarDateEnd(), new Date(1388552400000l));
+	}
 	
 }
+
