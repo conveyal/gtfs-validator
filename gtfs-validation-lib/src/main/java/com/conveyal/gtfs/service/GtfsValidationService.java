@@ -48,8 +48,6 @@ public class GtfsValidationService {
 		
 		ValidationResult result = new ValidationResult();
 		
-		HashMap<String, Boolean> shortLongNameMap = new HashMap<String, Boolean>();
-		
 		for(Route route : gtfsDao.getAllRoutes()) {
 			
 			String routeId = route.getId().getId();
