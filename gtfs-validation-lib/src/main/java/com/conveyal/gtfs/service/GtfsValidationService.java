@@ -503,11 +503,24 @@ public class GtfsValidationService {
 	 		
     	for(Trip trip : trips) {
     		
+    	  String tripId = trip.getId().getId();
+    	  if (trip.getShapeId() == null) {
+    	    result.add(new InvalidValue("trip", "shape_id", tripId, "MissingShape", "Trip " + tripId + " is missing a shape", null));
+    	    continue;
+    	  }
     		String shapeId = trip.getShapeId().getId();
-    		String tripId = trip.getId().getId();
     		
-    		Coordinate firstStopCoord = new Coordinate(firstStop.get(tripId).getStop().getLat(), firstStop.get(tripId).getStop().getLon());
-    		Coordinate lastStopCoord = new Coordinate(lastStop.get(tripId).getStop().getLat(), firstStop.get(tripId).getStop().getLon());
+    		
+    		Coordinate firstStopCoord = null;
+    		Coordinate lastStopCoord = null;
+    		try {
+    		  firstStopCoord = new Coordinate(firstStop.get(tripId).getStop().getLat(), firstStop.get(tripId).getStop().getLon());
+    		  lastStopCoord = new Coordinate(lastStop.get(tripId).getStop().getLat(), firstStop.get(tripId).getStop().getLon());
+    		} catch (Exception any) {
+    		  // TODO narrow down what could be wrong here
+    		  result.add(new InvalidValue("trip", "shape_id", tripId, "MissingCoorinates", "Trip " + tripId + " is missing coordinates", null));
+    		  continue;
+    		}
     		
     		Geometry firstStopGeom = geometryFactory.createPoint(GeoUtils.convertLonLatToEuclidean(firstStopCoord));
     		Geometry lastStopGeom = geometryFactory.createPoint(GeoUtils.convertLonLatToEuclidean(lastStopCoord));
