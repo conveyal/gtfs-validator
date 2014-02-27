@@ -92,9 +92,7 @@ import com.vividsolutions.jts.geom.LineString;
 		         new Coordinate(pc.getX(), pc.getY());
 	    return convertToLonLat(pc.getTransform(), point);
 	  }
-   
-
-
+  
 
    /**
     * From
