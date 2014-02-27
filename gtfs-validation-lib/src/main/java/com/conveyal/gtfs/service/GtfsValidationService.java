@@ -109,9 +109,6 @@ public class GtfsValidationService {
 			
 			String tripId = stopTime.getTrip().getId().getId();
 			
-			if(tripId.equals("1510"))
-				System.out.println("testing...");
-			
 			if(!tripStopTimes.containsKey(tripId))
 				tripStopTimes.put(tripId, new ArrayList<StopTime>());
 			
@@ -310,21 +307,25 @@ public class GtfsValidationService {
 		
 		for(String blockId : blockIntervals.keySet()) {
 			
-			ArrayList<BlockInterval> invervals = blockIntervals.get(blockId);
+			ArrayList<BlockInterval> invtervals = blockIntervals.get(blockId);
 			
-			Collections.sort(invervals);
+			Collections.sort(invtervals);
 			
 			int iOffset = 0;
-			for(BlockInterval i1 : invervals) { 
-				for(BlockInterval i2 : invervals.subList(iOffset, invervals.size() - 1)) {
-					if(!i1.trip.getId().getId().equals(i2.trip.getId().getId())) {
-						// if trips don't overlap, skip
-						if(i1.lastStop.getDepartureTime() <= i2.firstStop.getArrivalTime())
+			for(BlockInterval i1 : invtervals) { 
+				for(BlockInterval i2 : invtervals.subList(iOffset, invtervals.size() - 1)) {
+					
+					String tripId1 = i1.trip.getId().getId();
+					String tripId2 = i2.trip.getId().getId();
+					
+					if(!tripId1.equals(tripId2)) {
+						// if trips don't overlap, skip 
+						if(i1.lastStop.getDepartureTime() <= i2.firstStop.getArrivalTime() || i2.lastStop.getDepartureTime() <= i1.firstStop.getArrivalTime())
 							continue;
 						
 						// if trips have same service id they overlap
 						if(i1.trip.getServiceId().getId().equals(i2.trip.getServiceId().getId()))
-							result.add(new InvalidValue("trip", "block_id", blockId, "OverlappingTripsInBlock", "Trip Ids " + i1.trip.getId().getId() + " & " + i2.trip.getId().getId() + " overlap and share block Id " + blockId , null));
+							result.add(new InvalidValue("trip", "block_id", blockId, "OverlappingTripsInBlock", "Trip Ids " + tripId1 + " & " + tripId2 + " overlap and share block Id " + blockId , null));
 						
 						else {
 							
@@ -333,7 +334,7 @@ public class GtfsValidationService {
 							for(Date d1 : serviceCalendarDates.get(i1.trip.getServiceId().getId())) {
 								
 								if(serviceCalendarDates.get(i2.trip.getServiceId().getId()).contains(d1)) {
-									result.add(new InvalidValue("trip", "block_id", blockId, "OverlappingTripsInBlock", "Trip Ids " + i1.trip.getId().getId() + " & " + i2.trip.getId().getId() + " overlap and share block Id " + blockId , null));
+									result.add(new InvalidValue("trip", "block_id", blockId, "OverlappingTripsInBlock", "Trip Ids " + tripId1 + " & " + tripId2 + " overlap and share block Id " + blockId , null));
 									break;
 								}
 							}
