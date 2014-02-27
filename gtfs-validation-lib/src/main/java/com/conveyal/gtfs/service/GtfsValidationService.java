@@ -50,7 +50,7 @@ public class GtfsValidationService {
 		
 		for(Route route : gtfsDao.getAllRoutes()) {
 			
-			String routeId = route.getId().getId();
+			String routeId = route.getId().toString();
 			
 			String shortName = "";
 			String longName = "";
@@ -109,14 +109,14 @@ public class GtfsValidationService {
 		
 		for(StopTime stopTime : gtfsDao.getAllStopTimes()) {
 			
-			String tripId = stopTime.getTrip().getId().getId();
+			String tripId = stopTime.getTrip().getId().toString();
 			
 			if(!tripStopTimes.containsKey(tripId))
 				tripStopTimes.put(tripId, new ArrayList<StopTime>());
 			
 			tripStopTimes.get(tripId).add(stopTime);
 			
-			usedStopIds.add(stopTime.getStop().getId().getId());
+			usedStopIds.add(stopTime.getStop().getId().toString());
 			
 		}
 		
@@ -148,9 +148,9 @@ public class GtfsValidationService {
 			
 			for(ShapePoint shapePoint : shapePoints) {
 				
-				Coordinate stopCoord = new Coordinate(shapePoint.getLon(), shapePoint.getLat());
+				Coordinate stopCoord = new Coordinate(shapePoint.getLat(), shapePoint.getLon());
 				
-				ProjectedCoordinate projectedStopCoord = GeoUtils.convertLonLatToEuclidean(stopCoord);
+				ProjectedCoordinate projectedStopCoord = GeoUtils.convertLatLonToEuclidean(stopCoord);
 				
 				shapeCoords.add(projectedStopCoord);
 			}
@@ -230,7 +230,7 @@ public class GtfsValidationService {
 		
 		for(Stop stop : gtfsDao.getAllStops()) {
 			
-			String stopId = stop.getId().getId();
+			String stopId = stop.getId().toString();
 			
 			if(!usedStopIds.contains(stopId)) {
 				result.add(new InvalidValue("stop", "stop_id", stopId, "UnusedStop", "Stop Id " + stopId + " is not used in any trips." , null));
@@ -245,7 +245,7 @@ public class GtfsValidationService {
 		
 		for(Trip trip : gtfsDao.getAllTrips()) {
 			
-			String tripId = trip.getId().getId();
+			String tripId = trip.getId().toString();
 
 			ArrayList<StopTime> stopTimes = tripStopTimes.get(tripId);
 			
@@ -303,7 +303,7 @@ public class GtfsValidationService {
 			String stopIds = "";
 			
 			for(StopTime stopTime : stopTimes) {
-				stopIds += stopTime.getStop().getId().getId() + ",";
+				stopIds += stopTime.getStop().getId().toString() + ",";
 			}
 			
 			String tripKey = trip.getServiceId().getId() + "_" + stopTimes.get(0).getArrivalTime() + "_" + stopIds;
@@ -331,8 +331,8 @@ public class GtfsValidationService {
 			for(BlockInterval i1 : invtervals) { 
 				for(BlockInterval i2 : invtervals.subList(iOffset, invtervals.size() - 1)) {
 					
-					String tripId1 = i1.trip.getId().getId();
-					String tripId2 = i2.trip.getId().getId();
+					String tripId1 = i1.trip.getId().toString();
+					String tripId2 = i2.trip.getId().toString();
 					
 					if(!tripId1.equals(tripId2)) {
 						// if trips don't overlap, skip 
@@ -396,15 +396,15 @@ public class GtfsValidationService {
 		
 		for(Stop stop : stops) {
 			
-			Coordinate stopCoord = new Coordinate(stop.getLon(), stop.getLat());
+			Coordinate stopCoord = new Coordinate(stop.getLat(), stop.getLon());
 			
-			ProjectedCoordinate projectedStopCoord = GeoUtils.convertLonLatToEuclidean(stopCoord);
+			ProjectedCoordinate projectedStopCoord = GeoUtils.convertLatLonToEuclidean(stopCoord);
 			
 			Geometry geom = geometryFactory.createPoint(projectedStopCoord);
 			
 			stopIndex.insert(geom.getEnvelopeInternal(), stop);
 			
-			stopProjectedGeomMap.put(stop.getId().getId(), geom);
+			stopProjectedGeomMap.put(stop.getId().toString(), geom);
 			
 		}
 		
@@ -436,8 +436,8 @@ public class GtfsValidationService {
 							if(stopPairAlreadyFound)
 								continue;
 						
-							Geometry stop1Geom = stopProjectedGeomMap.get(stop1.getId().getId());
-							Geometry stop2Geom = stopProjectedGeomMap.get(stop2.getId().getId());
+							Geometry stop1Geom = stopProjectedGeomMap.get(stop1.getId().toString());
+							Geometry stop2Geom = stopProjectedGeomMap.get(stop2.getId().toString());
 							
 							double distance = stop1Geom.distance(stop2Geom);
 							
@@ -481,7 +481,7 @@ public class GtfsValidationService {
 		// map first and last stops for each trip id
 		
 		for(StopTime stopTime : stopTimes) {
-			String tripId = stopTime.getTrip().getId().getId();
+			String tripId = stopTime.getTrip().getId().toString();
 		
 			if(firstStop.containsKey(tripId)) {
 				if(firstStop.get(tripId).getStopSequence() > stopTime.getStopSequence())
@@ -527,7 +527,7 @@ public class GtfsValidationService {
 	 		
     	for(Trip trip : trips) {
     		
-    	  String tripId = trip.getId().getId();
+    	  String tripId = trip.getId().toString();
     	  if (trip.getShapeId() == null) {
     	    result.add(new InvalidValue("trip", "shape_id", tripId, "MissingShape", "Trip " + tripId + " is missing a shape", null));
     	    continue;
@@ -546,14 +546,14 @@ public class GtfsValidationService {
     		  continue;
     		}
     		
-    		Geometry firstStopGeom = geometryFactory.createPoint(GeoUtils.convertLonLatToEuclidean(firstStopCoord));
-    		Geometry lastStopGeom = geometryFactory.createPoint(GeoUtils.convertLonLatToEuclidean(lastStopCoord));
+    		Geometry firstStopGeom = geometryFactory.createPoint(GeoUtils.convertLatLonToEuclidean(firstStopCoord));
+    		Geometry lastStopGeom = geometryFactory.createPoint(GeoUtils.convertLatLonToEuclidean(lastStopCoord));
     		
     		Coordinate firstShapeCoord = new Coordinate(firstShapePoint.get(shapeId).getLat(), firstShapePoint.get(shapeId).getLon());
     		Coordinate lastShapeCoord = new Coordinate(lastShapePoint.get(shapeId).getLat(), firstShapePoint.get(shapeId).getLon());
     		
-    		Geometry firstShapeGeom = geometryFactory.createPoint(GeoUtils.convertLonLatToEuclidean(firstShapeCoord));
-    		Geometry lastShapeGeom = geometryFactory.createPoint(GeoUtils.convertLonLatToEuclidean(lastShapeCoord));
+    		Geometry firstShapeGeom = geometryFactory.createPoint(GeoUtils.convertLatLonToEuclidean(firstShapeCoord));
+    		Geometry lastShapeGeom = geometryFactory.createPoint(GeoUtils.convertLatLonToEuclidean(lastShapeCoord));
     		
 			Double distance1a = firstStopGeom.distance(firstShapeGeom);
 			Double distance1b = firstStopGeom.distance(lastShapeGeom);
