@@ -105,6 +105,8 @@ public class GtfsValidationService {
 		
 		HashMap<String, ArrayList<StopTime>> tripStopTimes = new HashMap<String, ArrayList<StopTime>>();
 		
+		HashSet<String> usedStopIds = new HashSet<String>();
+		
 		for(StopTime stopTime : gtfsDao.getAllStopTimes()) {
 			
 			String tripId = stopTime.getTrip().getId().getId();
@@ -113,6 +115,8 @@ public class GtfsValidationService {
 				tripStopTimes.put(tripId, new ArrayList<StopTime>());
 			
 			tripStopTimes.get(tripId).add(stopTime);
+			
+			usedStopIds.add(stopTime.getStop().getId().getId());
 			
 		}
 		
@@ -221,6 +225,18 @@ public class GtfsValidationService {
 			}
 			
 		}
+		
+		// check for unused stops 
+		
+		for(Stop stop : gtfsDao.getAllStops()) {
+			
+			String stopId = stop.getId().getId();
+			
+			if(!usedStopIds.contains(stopId)) {
+				result.add(new InvalidValue("stop", "stop_id", stopId, "UnusedStop", "Stop Id " + stopId + " is not used in any trips." , null));
+			}
+		}
+		
 		
 		HashMap<String, ArrayList<BlockInterval>> blockIntervals = new HashMap<String, ArrayList<BlockInterval>>();
 		

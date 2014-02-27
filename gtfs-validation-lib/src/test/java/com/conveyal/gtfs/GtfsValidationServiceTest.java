@@ -87,7 +87,7 @@ public class GtfsValidationServiceTest {
 	public void validateTrips() {
 		ValidationResult result = gtfsValidation2.validateTrips();
 
-		Assert.assertEquals(result.invalidValues.size(), 10);
+		Assert.assertEquals(result.invalidValues.size(), 11);
 		
 	}
 	
@@ -130,7 +130,7 @@ public class GtfsValidationServiceTest {
       
         GtfsReader gtfsReader = new GtfsReader();
         
-        File gtfsFile = new File("src/test/resources/st_gtfs_bad.zip");
+        File gtfsFile = new File("src/test/resources/st_gtfs_bad.zip"); 
         
         try {
 			
@@ -155,7 +155,7 @@ public class GtfsValidationServiceTest {
     		ValidationResult results = gtfsValidation.validateRoutes();
     		results.add(gtfsValidation.validateTrips());
     		
-    		Assert.assertEquals(results.invalidValues.size(), 1);
+    		Assert.assertEquals(results.invalidValues.size(), 5);
     		
     		System.out.println(results.invalidValues.size());
     		
