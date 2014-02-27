@@ -251,9 +251,13 @@ public class GtfsValidationService {
 				
 				if(previousStopTime != null) {					
 					
-					if(stopTime.getArrivalTime() < previousStopTime.getDepartureTime()) 
+					if(stopTime.getArrivalTime() < previousStopTime.getDepartureTime()) {
 						result.add(new InvalidValue("stop_time", "trip_id", tripId, "StopTimesOutOfSequence", "Trip Id " + tripId + " stop sequence " + stopTime.getStopSequence() + " arrives before departing " + previousStopTime.getStopSequence(), null));
-					
+						
+						// only capturing first out of sequence stop for now -- could consider collapsing duplicates based on tripId
+						break;					
+					}
+						
 				}
 				
 				previousStopTime = stopTime;
