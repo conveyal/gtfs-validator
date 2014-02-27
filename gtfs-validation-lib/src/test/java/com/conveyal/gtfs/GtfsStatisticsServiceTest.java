@@ -65,31 +65,31 @@ public class GtfsStatisticsServiceTest {
 	@Test
 	public void tripCount() {
 		System.out.println("Trip count: " + gtfsStats.getTripCount());
-		Assert.assertEquals(gtfsStats.getTripCount(), new Integer(557));
+		Assert.assertEquals(gtfsStats.getTripCount(), new Integer(559));
 	}
  
 	@Test
 	public void stopCount() {
 		System.out.println("Stop count: " + gtfsStats.getStopCount());
-		Assert.assertEquals(gtfsStats.getStopCount(), new Integer(100));
+		Assert.assertEquals(gtfsStats.getStopCount(), new Integer(93));
 	}
 	
 	@Test
 	public void stopTimeCount() {
 		System.out.println("Stop time count: " + gtfsStats.getStopTimesCount());
-		Assert.assertEquals(gtfsStats.getStopTimesCount(), new Integer(7015));
+		Assert.assertEquals(gtfsStats.getStopTimesCount(), new Integer(7345));
 	}
 	
 	@Test
 	public void calendarDateRangeStart() {
 		System.out.println("Calendar date start: " + gtfsStats.getCalendarDateStart().getTime());
-		Assert.assertEquals(gtfsStats.getCalendarDateStart(), new Date(1385614800000l));
+		Assert.assertEquals(gtfsStats.getCalendarDateStart(), new Date(1401076800000l));
 	}
 	
 	@Test
 	public void calendarDateRangeEnd() {
 		System.out.println("Calendar date end: " + gtfsStats.getCalendarDateEnd().getTime());
-		Assert.assertEquals(gtfsStats.getCalendarDateEnd(), new Date(1388552400000l));
+		Assert.assertEquals(gtfsStats.getCalendarDateEnd(), new Date(1401076800000l));
 	}
 	
 }
