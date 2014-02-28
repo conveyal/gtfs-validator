@@ -288,6 +288,7 @@ public class GtfsValidationService {
 				
 				BlockInterval blockInterval = new BlockInterval();
 				blockInterval.trip = trip;
+				blockInterval.startTime = stopTimes.get(0).getDepartureTime();
 				blockInterval.firstStop = stopTimes.get(0);
 				blockInterval.lastStop = stopTimes.get(stopTimes.size() -1);
 				
@@ -306,7 +307,7 @@ public class GtfsValidationService {
 				stopIds += stopTime.getStop().getId().toString() + ",";
 			}
 			
-			String tripKey = trip.getServiceId().getId() + "_" + stopTimes.get(0).getArrivalTime() + "_" + stopIds;
+			String tripKey = trip.getServiceId().getId() + "_"+ blockId + "_" + stopTimes.get(0).getDepartureTime() +"_" + stopTimes.get(stopTimes.size() -1).getArrivalTime() + "_" + stopIds;
 			
 			if(duplicateTripHash.containsKey(tripKey)) {
 				String duplicateTripId = duplicateTripHash.get(tripKey);
@@ -321,18 +322,21 @@ public class GtfsValidationService {
 		
 		// check for overlapping trips within block
 		
+		
 		for(String blockId : blockIntervals.keySet()) {
 			
 			ArrayList<BlockInterval> invtervals = blockIntervals.get(blockId);
 			
-			Collections.sort(invtervals);
+			Collections.sort(invtervals, new BlockIntervalComparator());
 			
 			int iOffset = 0;
 			for(BlockInterval i1 : invtervals) { 
 				for(BlockInterval i2 : invtervals.subList(iOffset, invtervals.size() - 1)) {
 					
+					
 					String tripId1 = i1.trip.getId().toString();
 					String tripId2 = i2.trip.getId().toString();
+					
 					
 					if(!tripId1.equals(tripId2)) {
 						// if trips don't overlap, skip 
@@ -464,7 +468,7 @@ public class GtfsValidationService {
 	}
 	
 	public ValidationResult listReversedTripShapes() {
-		return listReversedTripShapes(5.0);
+		return listReversedTripShapes(1.0);
 	}
 	
 	public ValidationResult listReversedTripShapes(Double distanceMultiplier) {
@@ -475,27 +479,28 @@ public class GtfsValidationService {
 		
 		Collection<StopTime> stopTimes = gtfsDao.getAllStopTimes();
 		
-		HashMap<String, StopTime> firstStop = new HashMap<String, StopTime>();
-		HashMap<String, StopTime> lastStop = new HashMap<String, StopTime>();
+		
+		HashMap<String, StopTime> firstStopMap = new HashMap<String, StopTime>();
+		HashMap<String, StopTime> lastStopMap = new HashMap<String, StopTime>();
 		
 		// map first and last stops for each trip id
 		
 		for(StopTime stopTime : stopTimes) {
 			String tripId = stopTime.getTrip().getId().toString();
 		
-			if(firstStop.containsKey(tripId)) {
-				if(firstStop.get(tripId).getStopSequence() > stopTime.getStopSequence())
-					firstStop.put(tripId, stopTime);
+			if(firstStopMap.containsKey(tripId)) {
+				if(firstStopMap.get(tripId).getStopSequence() > stopTime.getStopSequence())
+					firstStopMap.put(tripId, stopTime);
 			}
 			else 
-				firstStop.put(tripId, stopTime);
+				firstStopMap.put(tripId, stopTime);
 		
-			if(lastStop.containsKey(tripId)) {
-				if(lastStop.get(tripId).getStopSequence() < stopTime.getStopSequence())
-					lastStop.put(tripId, stopTime);
+			if(lastStopMap.containsKey(tripId)) {
+				if(lastStopMap.get(tripId).getStopSequence() < stopTime.getStopSequence())
+					lastStopMap.put(tripId, stopTime);
 			}
 			else 
-				lastStop.put(tripId, stopTime);
+				lastStopMap.put(tripId, stopTime);
 		}
 		
 		Collection<ShapePoint> shapePoints = gtfsDao.getAllShapePoints();
@@ -534,12 +539,14 @@ public class GtfsValidationService {
     	  }
     		String shapeId = trip.getShapeId().getId();
     		
+    		StopTime firstStop = firstStopMap.get(tripId);
+    		StopTime lastStop = lastStopMap.get(tripId);
     		
     		Coordinate firstStopCoord = null;
     		Coordinate lastStopCoord = null;
     		try {
-    		  firstStopCoord = new Coordinate(firstStop.get(tripId).getStop().getLat(), firstStop.get(tripId).getStop().getLon());
-    		  lastStopCoord = new Coordinate(lastStop.get(tripId).getStop().getLat(), firstStop.get(tripId).getStop().getLon());
+    		  firstStopCoord = new Coordinate(firstStop.getStop().getLat(), firstStop.getStop().getLon());
+    		  lastStopCoord = new Coordinate(lastStop.getStop().getLat(), lastStop.getStop().getLon());
     		} catch (Exception any) {
     		  // TODO narrow down what could be wrong here
     		  result.add(new InvalidValue("trip", "shape_id", tripId, "MissingCoorinates", "Trip " + tripId + " is missing coordinates", null));
@@ -549,20 +556,23 @@ public class GtfsValidationService {
     		Geometry firstStopGeom = geometryFactory.createPoint(GeoUtils.convertLatLonToEuclidean(firstStopCoord));
     		Geometry lastStopGeom = geometryFactory.createPoint(GeoUtils.convertLatLonToEuclidean(lastStopCoord));
     		
+    		ShapePoint p1 = firstShapePoint.get(shapeId);
+    		ShapePoint p2 = lastShapePoint.get(shapeId);
+    		
     		Coordinate firstShapeCoord = new Coordinate(firstShapePoint.get(shapeId).getLat(), firstShapePoint.get(shapeId).getLon());
-    		Coordinate lastShapeCoord = new Coordinate(lastShapePoint.get(shapeId).getLat(), firstShapePoint.get(shapeId).getLon());
+    		Coordinate lastShapeCoord = new Coordinate(lastShapePoint.get(shapeId).getLat(), lastShapePoint.get(shapeId).getLon());
     		
     		Geometry firstShapeGeom = geometryFactory.createPoint(GeoUtils.convertLatLonToEuclidean(firstShapeCoord));
     		Geometry lastShapeGeom = geometryFactory.createPoint(GeoUtils.convertLatLonToEuclidean(lastShapeCoord));
     		
-			Double distance1a = firstStopGeom.distance(firstShapeGeom);
-			Double distance1b = firstStopGeom.distance(lastShapeGeom);
+			Double distanceFirstStopToStart = firstStopGeom.distance(firstShapeGeom);
+			Double distanceFirstStopToEnd = firstStopGeom.distance(lastShapeGeom);
 			
-			Double distance2a = lastStopGeom.distance(lastShapeGeom);
-			Double distance2b = lastStopGeom.distance(firstShapeGeom);
+			Double distanceLastStopToEnd = lastStopGeom.distance(lastShapeGeom);
+			Double distanceLastStopToStart = lastStopGeom.distance(firstShapeGeom);
 			
 			// check if first stop is x times closer to end of shape than the beginning or last stop is x times closer to start than the end
-			if(distance2a > (distance2b * distanceMultiplier) || distance1a > (distance1b * distanceMultiplier))
+			if(distanceFirstStopToStart > (distanceFirstStopToEnd * distanceMultiplier) && distanceLastStopToEnd > (distanceLastStopToStart * distanceMultiplier))
 				result.add(new InvalidValue("trip", "shape_id", tripId, "ReversedTripShape", "Trip " + tripId + " references reversed shape " + shapeId, null));
 			 	
     	}
@@ -573,12 +583,20 @@ public class GtfsValidationService {
 	
 	private class BlockInterval implements Comparable<BlockInterval> {
 		Trip trip;
+		Integer startTime;
 		StopTime firstStop;
 		StopTime lastStop;
 		
 		public int compareTo(BlockInterval o) {
 			return new Integer(this.firstStop.getArrivalTime()).compareTo(new Integer(o.firstStop.getArrivalTime()));
 		}
+	}
+	
+	private class BlockIntervalComparator implements Comparator<BlockInterval> {
+	    
+	    public int compare(BlockInterval a, BlockInterval b) {
+	        return new Integer(a.startTime).compareTo(new Integer(b.startTime));
+	    }
 	}
 	
 	private class StopTimeComparator implements Comparator<StopTime> {
