@@ -150,9 +150,13 @@ public class GtfsValidationService {
 				
 				Coordinate stopCoord = new Coordinate(shapePoint.getLat(), shapePoint.getLon());
 				
+				try {
 				ProjectedCoordinate projectedStopCoord = GeoUtils.convertLatLonToEuclidean(stopCoord);
 				
 				shapeCoords.add(projectedStopCoord);
+				} catch (Exception e) {
+				  result.add(new InvalidValue("stop", "shapeId", shapeId , "Illegal stopCoord for shape", "", null));
+				}
 			}
 			
 			Geometry geom = geometryFactory.createLineString(shapeCoords.toArray(new Coordinate[shapePoints.size()]));
@@ -398,7 +402,14 @@ public class GtfsValidationService {
 			
 			Coordinate stopCoord = new Coordinate(stop.getLat(), stop.getLon());
 			
-			ProjectedCoordinate projectedStopCoord = GeoUtils.convertLatLonToEuclidean(stopCoord);
+			ProjectedCoordinate projectedStopCoord = null;
+			
+			try {
+			  projectedStopCoord = GeoUtils.convertLatLonToEuclidean(stopCoord);
+			} catch (Exception any) {
+			  result.add(new InvalidValue("stop", "stop_lat,stop_lon", stop.toString(), "Invalid Stop Coords", stopCoord.toString(), null));
+			  continue;
+			}
 			
 			Geometry geom = geometryFactory.createPoint(projectedStopCoord);
 			
@@ -537,34 +548,43 @@ public class GtfsValidationService {
     		
     		Coordinate firstStopCoord = null;
     		Coordinate lastStopCoord = null;
+    		Geometry firstShapeGeom = null;
+        Geometry lastShapeGeom = null;
+        Geometry firstStopGeom = null;
+        Geometry lastStopGeom = null;
+        Coordinate firstShapeCoord = null;
+        Coordinate lastShapeCoord = null;
     		try {
     		  firstStopCoord = new Coordinate(firstStop.get(tripId).getStop().getLat(), firstStop.get(tripId).getStop().getLon());
     		  lastStopCoord = new Coordinate(lastStop.get(tripId).getStop().getLat(), firstStop.get(tripId).getStop().getLon());
+    		  
+    		  firstStopGeom = geometryFactory.createPoint(GeoUtils.convertLatLonToEuclidean(firstStopCoord));
+          lastStopGeom = geometryFactory.createPoint(GeoUtils.convertLatLonToEuclidean(lastStopCoord));
+    		  
+          firstShapeCoord = new Coordinate(firstShapePoint.get(shapeId).getLat(), firstShapePoint.get(shapeId).getLon());
+          lastShapeCoord = new Coordinate(lastShapePoint.get(shapeId).getLat(), firstShapePoint.get(shapeId).getLon());
+    		  
+          firstShapeGeom = geometryFactory.createPoint(GeoUtils.convertLatLonToEuclidean(firstShapeCoord));
+          lastShapeGeom = geometryFactory.createPoint(GeoUtils.convertLatLonToEuclidean(lastShapeCoord));
     		} catch (Exception any) {
     		  // TODO narrow down what could be wrong here
-    		  result.add(new InvalidValue("trip", "shape_id", tripId, "MissingCoorinates", "Trip " + tripId + " is missing coordinates", null));
+          result.add(new InvalidValue("trip", "shape_id", tripId, "Illegal Coordinate", "Trip " + tripId + " has illegal coordinates " + shapeId, null));
     		  continue;
     		}
-    		
-    		Geometry firstStopGeom = geometryFactory.createPoint(GeoUtils.convertLatLonToEuclidean(firstStopCoord));
-    		Geometry lastStopGeom = geometryFactory.createPoint(GeoUtils.convertLatLonToEuclidean(lastStopCoord));
-    		
-    		Coordinate firstShapeCoord = new Coordinate(firstShapePoint.get(shapeId).getLat(), firstShapePoint.get(shapeId).getLon());
-    		Coordinate lastShapeCoord = new Coordinate(lastShapePoint.get(shapeId).getLat(), firstShapePoint.get(shapeId).getLon());
-    		
-    		Geometry firstShapeGeom = geometryFactory.createPoint(GeoUtils.convertLatLonToEuclidean(firstShapeCoord));
-    		Geometry lastShapeGeom = geometryFactory.createPoint(GeoUtils.convertLatLonToEuclidean(lastShapeCoord));
-    		
-			Double distance1a = firstStopGeom.distance(firstShapeGeom);
-			Double distance1b = firstStopGeom.distance(lastShapeGeom);
+
+   		
+    		firstShapeCoord = new Coordinate(firstShapePoint.get(shapeId).getLat(), firstShapePoint.get(shapeId).getLon());
+    		lastShapeCoord = new Coordinate(lastShapePoint.get(shapeId).getLat(), firstShapePoint.get(shapeId).getLon());
+   		
+    		Double distance1a = firstStopGeom.distance(firstShapeGeom);
+    		Double distance1b = firstStopGeom.distance(lastShapeGeom);
 			
-			Double distance2a = lastStopGeom.distance(lastShapeGeom);
-			Double distance2b = lastStopGeom.distance(firstShapeGeom);
-			
+    		Double distance2a = lastStopGeom.distance(lastShapeGeom);
+    		Double distance2b = lastStopGeom.distance(firstShapeGeom);
 			// check if first stop is x times closer to end of shape than the beginning or last stop is x times closer to start than the end
-			if(distance2a > (distance2b * distanceMultiplier) || distance1a > (distance1b * distanceMultiplier))
+			if(distance2a > (distance2b * distanceMultiplier) || distance1a > (distance1b * distanceMultiplier)) {
 				result.add(new InvalidValue("trip", "shape_id", tripId, "ReversedTripShape", "Trip " + tripId + " references reversed shape " + shapeId, null));
-			 	
+			}
     	}
     	
     	return result;
