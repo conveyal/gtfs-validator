@@ -87,7 +87,7 @@ public class GtfsValidationServiceTest {
 	public void validateTrips() {
 		ValidationResult result = gtfsValidation2.validateTrips();
 
-		Assert.assertEquals(result.invalidValues.size(), 11);
+		Assert.assertEquals(result.invalidValues.size(), 9);
 		
 	}
 	
@@ -117,7 +117,7 @@ public class GtfsValidationServiceTest {
 		Assert.assertEquals(result.invalidValues.size(), 1);
 		
 		// try again with an unusually high distanceMultiplier value 
-		result = gtfsValidation1.listReversedTripShapes(10000.0);
+		result = gtfsValidation1.listReversedTripShapes(50000.0);
 		
 		Assert.assertEquals(result.invalidValues.size(), 0);
 		
