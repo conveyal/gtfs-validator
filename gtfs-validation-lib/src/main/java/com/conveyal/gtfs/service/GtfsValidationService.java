@@ -410,7 +410,7 @@ public class GtfsValidationService {
 			
 			try {
 			  projectedStopCoord = GeoUtils.convertLatLonToEuclidean(stopCoord);
-			  } catch (IllegalStateException ise) {
+			  } catch (IllegalArgumentException iae) {
 			    result.add(new InvalidValue("stop", "duplicateStops", stop.toString(), "MissingCoorinates", "stop " + stop + " is missing coordinates", null));
 			  }
 			
