@@ -116,7 +116,9 @@ public class GtfsValidationService {
 			
 			tripStopTimes.get(tripId).add(stopTime);
 			
-			usedStopIds.add(stopTime.getStop().getId().toString());
+			if (stopTime.getStop() != null && stopTime.getStop().getId() != null) {
+			  usedStopIds.add(stopTime.getStop().getId().toString());
+			}
 			
 		}
 		
@@ -308,7 +310,9 @@ public class GtfsValidationService {
 			String stopIds = "";
 			
 			for(StopTime stopTime : stopTimes) {
-				stopIds += stopTime.getStop().getId().toString() + ",";
+			  if (stopTime.getStop() != null && stopTime.getStop().getId() != null) {
+			    stopIds += stopTime.getStop().getId().toString() + ",";
+			  }
 			}
 			
 			String tripKey = trip.getServiceId().getId() + "_"+ blockId + "_" + stopTimes.get(0).getDepartureTime() +"_" + stopTimes.get(stopTimes.size() -1).getArrivalTime() + "_" + stopIds;
