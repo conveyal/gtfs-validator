@@ -1,8 +1,10 @@
 package com.conveyal.gtfs.model;
 
 import java.util.Date;
+import java.util.HashMap;
 
 import org.onebusaway.gtfs.model.Agency;
+import org.onebusaway.gtfs.model.AgencyAndId;
 
 /**
  * Model object representing statistics about GTFS. 
@@ -18,6 +20,7 @@ public class Statistic {
 	private Date calendarServiceEnd;
 	private Date calendarStartDate;
 	private Date calendarEndDate;
+	private HashMap<AgencyAndId, Integer> tripCountForServiceIDs;
 	
 	public String getAgencyId() {
 		return agencyId;
@@ -72,6 +75,12 @@ public class Statistic {
 	}
 	public void setCalendarServiceEnd(Date calendarServiceEnd) {
 		this.calendarServiceEnd = calendarServiceEnd;
+	}
+	public HashMap<AgencyAndId, Integer> getTripCountForServiceIDs() {
+		return tripCountForServiceIDs;
+	}
+	public void setTripCountForServiceIDs(HashMap<AgencyAndId, Integer> tripCountForServiceIDs) {
+		this.tripCountForServiceIDs = tripCountForServiceIDs;
 	}
 	
 	

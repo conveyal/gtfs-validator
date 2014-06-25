@@ -9,6 +9,7 @@ import junit.framework.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.onebusaway.gtfs.impl.GtfsDaoImpl;
+import org.onebusaway.gtfs.model.AgencyAndId;
 import org.onebusaway.gtfs.serialization.GtfsReader;
 
 import com.conveyal.gtfs.service.impl.GtfsStatisticsService;
@@ -90,6 +91,13 @@ public class GtfsStatisticsServiceTest {
 	public void calendarDateRangeEnd() {
 		System.out.println("Calendar date end: " + gtfsStats.getCalendarDateEnd().getTime());
 		Assert.assertEquals(gtfsStats.getCalendarDateEnd(), new Date(1401076800000l));
+	}
+	
+	@Test
+	public void tripCountForServiceId(){
+		System.out.println("Trips per Service ID: " + gtfsStats.getTripCountForServiceIDs().toString());
+		int sundayTrips = gtfsStats.getTripCountForServiceIDs().get(AgencyAndId.convertFromString("SoundTransit_SU"));
+		Assert.assertEquals(sundayTrips,75);
 	}
 	
 }
