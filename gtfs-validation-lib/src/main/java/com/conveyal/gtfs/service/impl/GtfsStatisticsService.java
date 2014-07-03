@@ -224,19 +224,7 @@ public class GtfsStatisticsService implements StatisticsService {
 		return endDate;
 	}
 
-	public HashMap<AgencyAndId, Integer> getTripCountForServiceIDs() {
-		HashMap<AgencyAndId, Integer> tripsPerCalHash = new HashMap<AgencyAndId, Integer>();
-		for (ServiceCalendar serviceCalendar : gtfsDao.getAllCalendars()) {
-			int tripCount =0;
-			for (Trip t: gtfsDao.getAllTrips()){
-				AgencyAndId tid = t.getId();
-				if (t.getServiceId().equals(serviceCalendar.getServiceId())){
-					tripCount++;
-				}
-				tripsPerCalHash.put(serviceCalendar.getServiceId(), tripCount);
-			}}
-		return tripsPerCalHash;
-	}
+
 
 
 
@@ -255,7 +243,7 @@ public class GtfsStatisticsService implements StatisticsService {
 		gs.setCalendarEndDate(getCalendarDateEnd(agencyId));
 		gs.setCalendarServiceStart(getCalendarServiceRangeStart(agencyId));
 		gs.setCalendarServiceEnd(getCalendarServiceRangeEnd(agencyId));
-		gs.setTripCountForServiceIDs(getTripCountForServiceIDs());
+		
 
 		return gs;
 	}
@@ -288,9 +276,7 @@ public class GtfsStatisticsService implements StatisticsService {
 		return buff.toString();
 	}
 
-	public static String formatTripCountForServiceIDs(Statistic s){
-		return Arrays.toString(s.getTripCountForServiceIDs().entrySet().toArray());
-	}
+
 
 
 }

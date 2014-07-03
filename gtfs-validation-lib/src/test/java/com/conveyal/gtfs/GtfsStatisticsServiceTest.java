@@ -93,12 +93,6 @@ public class GtfsStatisticsServiceTest {
 		Assert.assertEquals(gtfsStats.getCalendarDateEnd(), new Date(1401076800000l));
 	}
 	
-	@Test
-	public void tripCountForServiceId(){
-		System.out.println("Trips per Service ID: " + gtfsStats.getTripCountForServiceIDs().toString());
-		int sundayTrips = gtfsStats.getTripCountForServiceIDs().get(AgencyAndId.convertFromString("SoundTransit_SU"));
-		Assert.assertEquals(sundayTrips,75);
-	}
-	
+
 }
 
