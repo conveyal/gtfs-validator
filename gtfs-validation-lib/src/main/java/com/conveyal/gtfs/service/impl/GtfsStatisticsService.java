@@ -79,10 +79,9 @@ public class GtfsStatisticsService implements StatisticsService {
 		Date endDate = null;
 
 		for (ServiceCalendar serviceCalendar : gtfsDao.getAllCalendars()) {
-
 			if (endDate == null
-					|| serviceCalendar.getStartDate().getAsDate().after(endDate))
-				endDate = serviceCalendar.getStartDate().getAsDate();
+					|| serviceCalendar.getEndDate().getAsDate().after(endDate))
+				endDate = serviceCalendar.getEndDate().getAsDate();
 		}
 
 		return endDate;
