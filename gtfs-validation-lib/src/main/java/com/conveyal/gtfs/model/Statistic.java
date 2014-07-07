@@ -20,8 +20,7 @@ public class Statistic {
 	private Date calendarServiceEnd;
 	private Date calendarStartDate;
 	private Date calendarEndDate;
-	private HashMap<AgencyAndId, Integer> tripCountForServiceIDs;
-	
+		
 	public String getAgencyId() {
 		return agencyId;
 	}
@@ -75,12 +74,6 @@ public class Statistic {
 	}
 	public void setCalendarServiceEnd(Date calendarServiceEnd) {
 		this.calendarServiceEnd = calendarServiceEnd;
-	}
-	public HashMap<AgencyAndId, Integer> getTripCountForServiceIDs() {
-		return tripCountForServiceIDs;
-	}
-	public void setTripCountForServiceIDs(HashMap<AgencyAndId, Integer> tripCountForServiceIDs) {
-		this.tripCountForServiceIDs = tripCountForServiceIDs;
 	}
 	
 	

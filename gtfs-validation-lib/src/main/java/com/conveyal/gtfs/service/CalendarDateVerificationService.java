@@ -1,42 +1,45 @@
 package com.conveyal.gtfs.service;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Collection;
-import java.util.Set;
-
 import org.onebusaway.gtfs.impl.calendar.CalendarServiceDataFactoryImpl;
 import org.onebusaway.gtfs.model.AgencyAndId;
 import org.onebusaway.gtfs.model.ServiceCalendar;
 import org.onebusaway.gtfs.model.Trip;
 import org.onebusaway.gtfs.model.calendar.ServiceDate;
-import org.onebusaway.gtfs.services.GtfsDao;
 import org.onebusaway.gtfs.services.GtfsMutableRelationalDao;
 import org.onebusaway.gtfs.services.calendar.CalendarService;
 
-import com.conveyal.gtfs.model.Statistic;
 import com.conveyal.gtfs.service.impl.GtfsStatisticsService;
 
 
-public class TripCountForDateService {
+public class CalendarDateVerificationService {
 
 	private static GtfsMutableRelationalDao gtfsMDao = null;
-	private GtfsStatisticsService stats = null;
-	private CalendarService calendarService = null;
+	private static GtfsStatisticsService stats = null;
+	private static CalendarService calendarService = null;
+	private static Calendar start = null;
+	private static Calendar end = null;
+	private static Date from = null;
+	private static Date to = null;
 
-
-	public TripCountForDateService(GtfsMutableRelationalDao gmd){
+	public CalendarDateVerificationService(GtfsMutableRelationalDao gmd){
 		gtfsMDao = gmd;
 		stats = new GtfsStatisticsService(gmd);
 		CalendarServiceDataFactoryImpl factory = new CalendarServiceDataFactoryImpl();
 		factory.setGtfsDao(gmd);
 		calendarService = CalendarServiceDataFactoryImpl.createService(gmd);
 		
+		start = Calendar.getInstance();
+		end = Calendar.getInstance();
+		from = stats.getCalendarServiceRangeStart();
+		to = stats.getCalendarServiceRangeEnd();
 
 	}
-	public HashMap<AgencyAndId, Integer> getTripCountForServiceIDs() {
+	public HashMap<AgencyAndId, Integer> getTripCountsForAllServiceIDs() {
 		HashMap<AgencyAndId, Integer> tripsPerCalHash = new HashMap<AgencyAndId, Integer>();
 		for (ServiceCalendar serviceCalendar : gtfsMDao.getAllCalendars()) {
 			int tripCount =0;
@@ -51,15 +54,10 @@ public class TripCountForDateService {
 
 	public HashMap<Date, Integer> getTripCountForDates() {
 
-		HashMap<AgencyAndId, Integer> tripsPerServHash = getTripCountForServiceIDs();
+		HashMap<AgencyAndId, Integer> tripsPerServHash = getTripCountsForAllServiceIDs();
 		HashMap<Date, Integer> tripsPerDateHash = new HashMap<Date, Integer>();
 
-		Date from = stats.getCalendarServiceRangeStart();
-		Date to = stats.getCalendarServiceRangeEnd();
-
-		Calendar start = Calendar.getInstance();
 		start.setTime(from);
-		Calendar end = Calendar.getInstance();
 		end.setTime(to);
 
 		while( !start.after(end)){
@@ -73,19 +71,36 @@ public class TripCountForDateService {
 				if (tripsPerServHash.containsKey(sid)){
 					tripCount = tripCount + tripsPerServHash.get(sid);
 					tripsPerServHash.put(sid, tripCount);
-					System.out.println(targetDay + " " + tripCount);
 				}
-				
 			}
 			tripsPerDateHash.put(targetDay.getAsDate(), tripCount);
 			start.add(Calendar.DATE, 1);
 		}
-
 		return tripsPerDateHash;
-
 	}
-	public static String formatTripCountForServiceIDs(TripCountForDateService t){
-		return Arrays.toString(t.getTripCountForServiceIDs().entrySet().toArray());
+	
+	public HashMap<Date, ArrayList<AgencyAndId>> getServiceIdsForDate(){
+		HashMap<Date, ArrayList<AgencyAndId>> serviceIdsForDates = new HashMap<Date, ArrayList<AgencyAndId>>();
+		
+		start.setTime(from);
+		end.setTime(to);
+		
+		while( !start.after(end)){
+			ArrayList<AgencyAndId> serviceIdsForTargetDay = new ArrayList<AgencyAndId>();
+			ServiceDate targetDay = new ServiceDate(start);
+
+			for (AgencyAndId sid : calendarService.getServiceIdsOnDate(targetDay)){
+				serviceIdsForTargetDay.add(sid);
+				}
+			serviceIdsForDates.put(targetDay.getAsDate(), serviceIdsForTargetDay);
+			start.add(Calendar.DATE, 1);
+		}
+
+		return serviceIdsForDates;
+		
+	}
+	public static String formatTripCountForServiceIDs(CalendarDateVerificationService t){
+		return Arrays.toString(t.getTripCountsForAllServiceIDs().entrySet().toArray());
 	}
 	
 }

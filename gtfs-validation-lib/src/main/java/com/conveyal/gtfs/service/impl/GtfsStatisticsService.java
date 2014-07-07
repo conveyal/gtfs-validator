@@ -224,13 +224,6 @@ public class GtfsStatisticsService implements StatisticsService {
 	}
 
 
-
-
-
-
-
-
-
 	public Statistic getStatistic(String agencyId) {
 		Statistic gs = new Statistic();
 		gs.setAgencyId(agencyId);
@@ -274,8 +267,5 @@ public class GtfsStatisticsService implements StatisticsService {
 		buff.append(s.getCalendarEndDate());
 		return buff.toString();
 	}
-
-
-
 
 }
