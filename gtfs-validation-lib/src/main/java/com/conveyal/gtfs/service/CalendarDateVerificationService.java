@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+
 import org.onebusaway.gtfs.impl.calendar.CalendarServiceDataFactoryImpl;
 import org.onebusaway.gtfs.model.AgencyAndId;
 import org.onebusaway.gtfs.model.ServiceCalendar;
@@ -70,9 +71,9 @@ public class CalendarDateVerificationService {
 				}
 				if (tripsPerServHash.containsKey(sid)){
 					tripCount = tripCount + tripsPerServHash.get(sid);
-					tripsPerServHash.put(sid, tripCount);
 				}
 			}
+				
 			tripsPerDateHash.put(targetDay.getAsDate(), tripCount);
 			start.add(Calendar.DATE, 1);
 		}

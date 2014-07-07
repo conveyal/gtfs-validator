@@ -67,6 +67,7 @@ public class TripCountForDateServiceTest {
 		int sundayTrips = cdvs.getTripCountsForAllServiceIDs().get(AgencyAndId.convertFromString("SoundTransit_SU"));
 		Assert.assertEquals(sundayTrips,75);
 	}
+	
 	@Test
 	public void tripCountForDateWithMultipleServiceIDs(){
 		System.out.println("Trips per Service Date on date with Multiple Calendar Date Entries");
@@ -74,6 +75,7 @@ public class TripCountForDateServiceTest {
 		int firstSunday = cdvs.getTripCountForDates().get(d);
 		Assert.assertEquals(firstSunday, 421);
 		}
+	
 	@Test
 	public void tripCountForDateWithOneServiceID(){
 		System.out.println("Trips per Service Date on date with One Calendar Entry");
@@ -81,12 +83,12 @@ public class TripCountForDateServiceTest {
 		int regularSunday = cdvs.getTripCountForDates().get(d);
 		Assert.assertEquals(regularSunday, 75);
 		}
+
 	@Test
 	public void serviceIdsForDateWithMultipleServiceIDs(){
 		System.out.println("Testing for multiple calendar dates entries");
 		Date d = new Date(1392526800000L);
 		ArrayList<AgencyAndId> idsOnFirstSunday = cdvs.getServiceIdsForDate().get(d);
-		
 		Assert.assertTrue(idsOnFirstSunday.size() > 1);
 	}
 }
