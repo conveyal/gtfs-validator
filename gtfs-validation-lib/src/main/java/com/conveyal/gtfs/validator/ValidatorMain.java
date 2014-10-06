@@ -109,7 +109,7 @@ public class ValidatorMain {
 								(calDateEnd.after(calSvcEnd) ? calDateEnd : calSvcEnd) + "\n");
 								
 		System.out.println("## Validation Results");
-		System.out.println("Routes:" + getValidationSummary(routes));
+		System.out.println("Routes: " + getValidationSummary(routes));
 		System.out.println("Trips: " + getValidationSummary(trips));
 		System.out.println("Stops: " + getValidationSummary(stops));
 		System.out.println("Shapes: " + getValidationSummary(shapes));
