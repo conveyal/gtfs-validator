@@ -5,6 +5,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.logging.Handler;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.onebusaway.gtfs.impl.GtfsRelationalDaoImpl;
 import org.onebusaway.gtfs.model.Agency;
@@ -21,11 +24,17 @@ import com.conveyal.gtfs.service.impl.GtfsStatisticsService;
  * @author mattwigway
  */
 public class ValidatorMain {
-
 	public static void main(String[] args) {
 		if (args.length != 1) {
 			System.err.println("Usage: gtfs-validator /path/to/gtfs.zip");
 			return;
+		}
+		
+		// disable logging; we don't need log messages from the validator printed to the console
+		// Messages from inside OBA will still be printed, which is fine
+		// loosely based upon http://stackoverflow.com/questions/470430
+		for (Handler handler : Logger.getLogger("").getHandlers()) {
+			handler.setLevel(Level.OFF);
 		}
 		
 		File inputGtfs = new File(args[0]);
