@@ -49,18 +49,35 @@ public class ValidatorMain {
 		System.err.println("Validating trips");
 		ValidationResult trips = validationService.validateTrips();
 		
+		System.err.println("Checking for duplicate stops");
+		ValidationResult stops = validationService.duplicateStops();
+		
+		System.err.println("Checking for reversed trip shapes");
+		ValidationResult shapes = validationService.listReversedTripShapes();
+		
 		System.err.println("Validation complete");
 		
-		System.out.println("Routes:" + getValidationSummary(routes));
-		System.out.println("Routes: " + getValidationSummary(trips));
+		// Make the report
 		
-		System.out.println("\n# Routes");
+		System.out.println("## Validation Results");
+		System.out.println("Routes:" + getValidationSummary(routes));
+		System.out.println("Trips: " + getValidationSummary(trips));
+		System.out.println("Stops: " + getValidationSummary(stops));
+		System.out.println("Shapes: " + getValidationSummary(shapes));
+		
+		System.out.println("\n### Routes");
 		System.out.println(getValidationReport(routes));
 		// no need for another line feed here to separate them, as one is added by getValidationReport and another by
 		// System.out.println
 		
-		System.out.println("\n# Trips");
+		System.out.println("\n### Trips");
 		System.out.println(getValidationReport(trips));
+		
+		System.out.println("\n### Stops");
+		System.out.println(getValidationReport(stops));
+		
+		System.out.println("\n### Shapes");
+		System.out.println(getValidationReport(shapes));
 	}
 	
 	/**
@@ -74,6 +91,9 @@ public class ValidatorMain {
 	 * Return a human-readable, markdown-formatted multiline exhaustive report on a ValidationResult.
 	 */
 	public static String getValidationReport(ValidationResult result) {
+		if (result.invalidValues.size() == 0)
+			return "Hooray! No errors here (at least, none that we could find).\n";
+		
 		StringBuilder sb = new StringBuilder(1024);
 		
 		// loop over each invalid value, and take advantage of InvalidValue.toString to create a line about the error
