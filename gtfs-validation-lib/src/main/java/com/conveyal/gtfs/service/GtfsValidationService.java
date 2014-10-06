@@ -93,7 +93,7 @@ public class GtfsValidationService {
 	}
 	
 	/**
-	 * Checks for invalid route values. Returns a ValidationResult object listing invalid/missing data.
+	 * Checks for invalid trip values. Returns a ValidationResult object listing invalid/missing data.
 	 * 
 	 */
 	public ValidationResult validateTrips() {
