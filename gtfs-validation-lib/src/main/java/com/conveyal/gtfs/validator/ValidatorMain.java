@@ -2,13 +2,19 @@ package com.conveyal.gtfs.validator;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 import org.onebusaway.gtfs.impl.GtfsRelationalDaoImpl;
+import org.onebusaway.gtfs.model.Agency;
 import org.onebusaway.gtfs.serialization.GtfsReader;
 
 import com.conveyal.gtfs.model.InvalidValue;
 import com.conveyal.gtfs.model.ValidationResult;
 import com.conveyal.gtfs.service.GtfsValidationService;
+import com.conveyal.gtfs.service.StatisticsService;
+import com.conveyal.gtfs.service.impl.GtfsStatisticsService;
 
 /**
  * Provides a main class for running the GTFS validator.
@@ -40,7 +46,7 @@ public class ValidatorMain {
 		}
 
 		System.err.println("Read GTFS");
-		
+				
 		GtfsValidationService validationService = new GtfsValidationService(dao);
 		
 		System.err.println("Validating routes");
@@ -56,9 +62,52 @@ public class ValidatorMain {
 		ValidationResult shapes = validationService.listReversedTripShapes();
 		
 		System.err.println("Validation complete");
+		System.err.println("Calculating statistics");
 		
 		// Make the report
+		StringBuilder sb = new StringBuilder(256);
+		sb.append("# Validation report for ");
+
+		List<Agency> agencies = new ArrayList<Agency>(dao.getAllAgencies());
+		int size = agencies.size();
 		
+		for (int i = 0; i < size; i++) {
+			sb.append(agencies.get(i).getName());
+			if (size - i == 1) {
+				// append nothing, we're at the end
+			}
+			else if (size - i == 2)
+				// the penultimate agency, use and
+				// we can debate the relative merits of the Oxford comma at a later date, however not using has the
+				// advantage that the two-agency case (e.g. BART and AirBART, comma would be gramatically incorrect)
+				// is also handled.
+				sb.append(" and ");
+			else
+				sb.append(", ");
+		}
+		
+		System.out.println(sb.toString());
+		
+		// generate and display feed statistics
+		System.out.println("## Feed statistics");
+		StatisticsService stats = new GtfsStatisticsService(dao);
+		
+		System.out.println("- " + stats.getAgencyCount() + " agencies");
+		System.out.println("- " + stats.getRouteCount() + " routes");
+		System.out.println("- " + stats.getTripCount() + " trips");
+		System.out.println("- " + stats.getStopCount() + " stops");
+		System.out.println("- " + stats.getStopTimesCount() + " stop times");
+		
+		Date calDateStart = stats.getCalendarDateStart();
+		Date calSvcStart = stats.getCalendarServiceRangeStart();
+		Date calDateEnd = stats.getCalendarDateEnd();
+		Date calSvcEnd = stats.getCalendarServiceRangeEnd();
+		
+		System.out.println("Feed has service from " +
+								(calDateStart.before(calSvcStart) ? calDateStart : calSvcStart) +
+								" to " +
+								(calDateEnd.after(calSvcEnd) ? calDateEnd : calSvcEnd) + "\n");
+								
 		System.out.println("## Validation Results");
 		System.out.println("Routes:" + getValidationSummary(routes));
 		System.out.println("Trips: " + getValidationSummary(trips));
