@@ -110,8 +110,25 @@ public class FeedProcessor {
 		Date calDateEnd = stats.getCalendarDateEnd();
 		Date calSvcEnd = stats.getCalendarServiceRangeEnd();
 		
-		output.startDate = calDateStart.before(calSvcStart) ? calDateStart : calSvcStart;
-		output.endDate = calDateEnd.after(calSvcEnd) ? calDateEnd : calSvcEnd;
+		if (calDateStart == null && calSvcStart == null)
+			// no service . . . this is bad
+			output.startDate = null;
+		else if (calDateStart == null)
+			output.startDate = calSvcStart;
+		else if (calSvcStart == null)
+			output.startDate = calDateStart;
+		else
+			output.startDate = calDateStart.before(calSvcStart) ? calDateStart : calSvcStart;
+		
+		if (calDateEnd == null && calSvcEnd == null)
+			// no service . . . this is bad
+			output.endDate = null;
+		else if (calDateEnd == null)
+			output.endDate = calSvcEnd;
+		else if (calSvcEnd == null)
+			output.endDate = calDateEnd;
+		else
+			output.endDate = calDateEnd.before(calSvcEnd) ? calDateEnd : calSvcEnd;
 	}
 	
 	public FeedValidationResults getOutput () {
