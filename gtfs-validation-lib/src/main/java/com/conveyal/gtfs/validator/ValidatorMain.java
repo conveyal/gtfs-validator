@@ -112,16 +112,18 @@ public class ValidatorMain {
 		Date calDateEnd = stats.getCalendarDateEnd();
 		Date calSvcEnd = stats.getCalendarServiceRangeEnd();
 		
-		System.out.println("Feed has service from " +
+		// need an extra newline at the start so it doesn't get appended to the last list item if we let
+		// a markdown processor loose on the output.
+		System.out.println("\nFeed has service from " +
 								(calDateStart.before(calSvcStart) ? calDateStart : calSvcStart) +
 								" to " +
 								(calDateEnd.after(calSvcEnd) ? calDateEnd : calSvcEnd) + "\n");
 								
 		System.out.println("## Validation Results");
-		System.out.println("Routes: " + getValidationSummary(routes));
-		System.out.println("Trips: " + getValidationSummary(trips));
-		System.out.println("Stops: " + getValidationSummary(stops));
-		System.out.println("Shapes: " + getValidationSummary(shapes));
+		System.out.println("- Routes: " + getValidationSummary(routes));
+		System.out.println("- Trips: " + getValidationSummary(trips));
+		System.out.println("- Stops: " + getValidationSummary(stops));
+		System.out.println("- Shapes: " + getValidationSummary(shapes));
 		
 		System.out.println("\n### Routes");
 		System.out.println(getValidationReport(routes));
