@@ -1,5 +1,6 @@
 package com.conveyal.gtfs.validator.json;
 
+import java.util.Collection;
 import java.util.Date;
 
 import com.conveyal.gtfs.model.ValidationResult;
@@ -22,20 +23,30 @@ public class FeedValidationResults {
 	 */
 	public String loadFailureReason;
 	
+	/**
+	 * The name of the feed on the file system
+	 */
+	public String feedFileName;
+	
+	/**
+	 * All of the agencies in the feed
+	 */
+	public Collection<String> agencies;
+	
 	public ValidationResult routes;
 	public ValidationResult stops;
 	public ValidationResult trips;
 	public ValidationResult shapes;
 
 	// statistics
-	int agencyCount;
-	int routeCount;
-	int tripCount;
-	int stopTimesCount;
+	public int agencyCount;
+	public int routeCount;
+	public int tripCount;
+	public int stopTimesCount;
 	
 	/** The first date the feed has service, either in calendar.txt or calendar_dates.txt */
-	Date startDate;
+	public Date startDate;
 	
 	/** The last date the feed has service, either in calendar.txt or calendar_dates.txt */
-	Date endDate;
+	public Date endDate;
 }

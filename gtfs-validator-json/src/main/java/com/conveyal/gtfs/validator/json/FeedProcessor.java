@@ -2,13 +2,16 @@ package com.conveyal.gtfs.validator.json;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Collection;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.logging.Logger;
 import java.util.zip.ZipException;
 
 import org.onebusaway.csv_entities.exceptions.CsvEntityIOException;
 import org.onebusaway.csv_entities.exceptions.MissingRequiredFieldException;
 import org.onebusaway.gtfs.impl.GtfsDaoImpl;
+import org.onebusaway.gtfs.model.Agency;
 import org.onebusaway.gtfs.serialization.GtfsReader;
 import org.onebusaway.gtfs.services.GtfsDao;
 
@@ -57,6 +60,8 @@ public class FeedProcessor {
 		// check if the file is accessible
 		if (!feed.exists() || !feed.canRead())
 			throw new IOException("File does not exist or not readable");
+		
+		output.feedFileName = feed.getName();
 		
 		// note: we have two references because a GtfsDao is not mutable and we can't load to it,
 		// but a GtfsDaoImpl is.
@@ -141,6 +146,12 @@ public class FeedProcessor {
 			output.endDate = calDateEnd;
 		else
 			output.endDate = calDateEnd.before(calSvcEnd) ? calDateEnd : calSvcEnd;
+		
+		Collection<Agency> agencies = dao.getAllAgencies();
+		output.agencies = new HashSet<String>(agencies.size());
+		for (Agency agency : agencies) {
+			output.agencies.add(agency.getName());
+		}
 	}
 	
 	public FeedValidationResults getOutput () {
