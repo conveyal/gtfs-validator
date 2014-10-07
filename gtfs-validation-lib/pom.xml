@@ -41,8 +41,37 @@
 	   	<artifactId>gt-epsg-hsql</artifactId>
 	   	<version>11-beta</version>
     </dependency>
-    
-
-
    </dependencies>
+
+   <build>
+   <plugins>   	    	 
+     <plugin>
+   	   <groupId>org.apache.maven.plugins</groupId>
+   	   <artifactId>maven-shade-plugin</artifactId>
+   	   <version>2.2</version>
+   	   
+   	   <executions>
+   	     <execution>
+   	       <phase>package</phase>
+   	       <goals><goal>shade</goal></goals>
+   	       <configuration>
+   	         <finalName>gtfs-validator</finalName>
+   	         <transformers>
+   	         <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+   	         	<manifestEntries>
+   	         		<Main-Class>com.conveyal.gtfs.validator.ValidatorMain</Main-Class>
+   	         	</manifestEntries>
+   	         </transformer>
+   	         
+   	         <!-- files overwrite each other and geotools does not function without this.
+   	         http://docs.geotools.org/latest/userguide/faq.html#how-do-i-create-an-executable-jar-for-my-geotools-app -->
+   	         <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer" />
+   	         </transformers>
+   	       </configuration>
+   	     </execution>
+   	   </executions>
+   	 </plugin>
+   </plugins>
+   </build>
+
 </project>
