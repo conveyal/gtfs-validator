@@ -17,6 +17,11 @@ public class FeedValidationResults {
 	 */
 	public LoadStatus loadStatus;
 	
+	/**
+	 * Additional description of why the feed failed to load.
+	 */
+	public String loadFailureReason;
+	
 	public ValidationResult routes;
 	public ValidationResult stops;
 	public ValidationResult trips;

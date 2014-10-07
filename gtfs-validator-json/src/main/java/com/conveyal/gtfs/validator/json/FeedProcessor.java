@@ -6,6 +6,8 @@ import java.util.Date;
 import java.util.logging.Logger;
 import java.util.zip.ZipException;
 
+import org.onebusaway.csv_entities.exceptions.CsvEntityIOException;
+import org.onebusaway.csv_entities.exceptions.MissingRequiredFieldException;
 import org.onebusaway.gtfs.impl.GtfsDaoImpl;
 import org.onebusaway.gtfs.serialization.GtfsReader;
 import org.onebusaway.gtfs.services.GtfsDao;
@@ -70,6 +72,16 @@ public class FeedProcessor {
 		}
 		catch (ZipException e) {
 			output.loadStatus = LoadStatus.INVALID_ZIP_FILE;
+		}
+		catch (CsvEntityIOException e) {
+			Throwable cause = e.getCause();
+			if (cause instanceof MissingRequiredFieldException) {
+				output.loadStatus = LoadStatus.MISSING_REQUIRED_FIELD;
+				output.loadFailureReason = cause.getMessage();
+			}
+			else {
+				output.loadStatus = LoadStatus.OTHER_FAILURE;
+			}
 		}
 		catch (IOException e) {
 			output.loadStatus = LoadStatus.OTHER_FAILURE;
