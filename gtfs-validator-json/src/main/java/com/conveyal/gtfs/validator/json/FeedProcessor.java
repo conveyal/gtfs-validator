@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Date;
 import java.util.logging.Logger;
+import java.util.zip.ZipException;
 
 import org.onebusaway.gtfs.impl.GtfsDaoImpl;
 import org.onebusaway.gtfs.serialization.GtfsReader;
@@ -38,8 +39,10 @@ public class FeedProcessor {
 	 */
 	public void run () throws IOException {
 		load();
-		validate();
-		calculateStats();
+		if (output.loadStatus.equals(LoadStatus.SUCCESS)) {
+			validate();
+			calculateStats();
+		}
 	}
 	
 	/**
@@ -48,12 +51,29 @@ public class FeedProcessor {
 	 */
 	public void load () throws IOException {
 		_log.fine("Loading GTFS");
+		
+		// check if the file is accessible
+		if (!feed.exists() || !feed.canRead())
+			throw new IOException("File does not exist or not readable");
+		
+		// note: we have two references because a GtfsDao is not mutable and we can't load to it,
+		// but a GtfsDaoImpl is.
 		GtfsDaoImpl dao = new GtfsDaoImpl();
+		this.dao = dao;
 		GtfsReader reader = new GtfsReader();
 		reader.setEntityStore(dao);
-		reader.setInputLocation(feed);
-		reader.run();
-		this.dao = dao;
+		// Exceptions here mean a problem with the file 
+		try {
+			reader.setInputLocation(feed);
+			reader.run();
+			output.loadStatus = LoadStatus.SUCCESS;
+		}
+		catch (ZipException e) {
+			output.loadStatus = LoadStatus.INVALID_ZIP_FILE;
+		}
+		catch (IOException e) {
+			output.loadStatus = LoadStatus.OTHER_FAILURE;
+		}
 	}
 	
 	/**

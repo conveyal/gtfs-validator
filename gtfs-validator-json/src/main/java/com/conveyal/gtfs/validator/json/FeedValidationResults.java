@@ -8,10 +8,15 @@ import com.conveyal.gtfs.model.ValidationResult;
  * A class to hold all of the results of a validation on a single feed.
  * Not to be confused with {@link com.conveyal.gtfs.model.ValidationResult}, which holds all instances of
  * a particular type of error.
- * @author matthewc
+ * @author mattwigway
  *
  */
 public class FeedValidationResults {
+	/** Were we able to load the GTFS at all (note that this should only indicate corrupted files,
+	 * not missing ones; that should raise an exception instead.)
+	 */
+	public LoadStatus loadStatus;
+	
 	public ValidationResult routes;
 	public ValidationResult stops;
 	public ValidationResult trips;

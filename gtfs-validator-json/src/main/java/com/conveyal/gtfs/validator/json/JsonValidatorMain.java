@@ -25,6 +25,7 @@ public class JsonValidatorMain {
 		try {
 			processor.run();
 		} catch (IOException e) {
+			e.printStackTrace();
 			System.err.println("Unable to access input GTFS " + input.getPath() + ". Does the file exist and do I have permission to read it?");
 			return;
 		}
