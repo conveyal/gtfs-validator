@@ -218,16 +218,22 @@ public class GtfsValidationService {
 		for(ServiceCalendarDate calendarDate : gtfsDao.getAllCalendarDates()) {
 			
 			String serviceId = calendarDate.getServiceId().getId();
-			
+			int exceptionType = calendarDate.getExceptionType();
+
 			if(serviceCalendarDates.containsKey(serviceId)) {
-				
-				
-				int exceptionType = calendarDate.getExceptionType();
-				
+								
 				if(exceptionType == 1)
 					serviceCalendarDates.get(serviceId).add(calendarDate.getDate().getAsDate());
 				else if (exceptionType == 2 && serviceCalendarDates.get(serviceId).contains(calendarDate.getDate().getAsDate()))
 					serviceCalendarDates.get(serviceId).remove(calendarDate.getDate().getAsDate());
+			}
+			// handle service ids that don't appear in calendar.txt
+			// for instance, feeds that have no calendar.txt (e.g. TriMet, NJ Transit)
+			// and rely exclusively on calendar_dates.txt
+			else if (exceptionType == 1) {
+				HashSet<Date> calendarDates = new HashSet<Date>();
+				calendarDates.add(calendarDate.getDate().getAsDate());
+				serviceCalendarDates.put(serviceId, calendarDates);
 			}
 			
 		}
