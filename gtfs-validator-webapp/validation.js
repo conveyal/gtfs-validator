@@ -28,7 +28,7 @@ $(document).ready(function () {
 	}
     });
 
-    // model with basic feed information
+    // model with basic feed information as well as invalid value information specific to a feed
     var FeedModel = Backbone.Model.extend();
 
     // template for basic information
@@ -36,8 +36,22 @@ $(document).ready(function () {
 
     // view for a header with basic information about a feed
     var FeedView = Backbone.View.extend({
+	tagName: 'div',
+	className: 'tab-pane',
+	id: function () { return 'feed-' + this.model.attributes.index },
 	render: function () {
 	    this.$el.html(feedTemplate(this.model.attributes));
+
+	    // append the invalid value information
+	    var content = this.$('.error-panel');
+
+	    // create the panels and populate them
+	    // the index is so that link hrefs remain unique
+	    new InvalidValueListView({collection: this.model.attributes.routes, model: new TypeModel({sing: 'Route', pl: 'Routes', index: this.model.attributes.index})}).render().$el.appendTo(content);
+	    new InvalidValueListView({collection: this.model.attributes.trips, model: new TypeModel({sing: 'Trip', pl: 'Trips', index: this.model.attributes.index})}).render().$el.appendTo(content);
+	    new InvalidValueListView({collection: this.model.attributes.stops, model: new TypeModel({sing: 'Stop', pl: 'Stops', index: this.model.attributes.index})}).render().$el.appendTo(content);
+	    new InvalidValueListView({collection: this.model.attributes.shapes, model: new TypeModel({sing: 'Shape', pl: 'Shapes', index: this.model.attributes.index})}).render().$el.appendTo(content);
+	    
 	    return this;
 	}
     });
@@ -50,7 +64,7 @@ $(document).ready(function () {
 	className: 'panel panel-default',
 
 	render: function () {
-	    this.$el.html(invalidValuesListTemplate({type: this.model.attributes.pl, errorCount: this.collection.length}));
+	    this.$el.html(invalidValuesListTemplate({type: this.model.attributes.pl, errorCount: this.collection.length, index: this.model.attributes.index}));
 
 	    var tbody = this.$('tbody');
 
@@ -69,6 +83,37 @@ $(document).ready(function () {
 	}
     });
 
+    // represents an entire validation run
+    var ValidationRunModel = Backbone.Model.extend();
+
+    var validationRunTemplate = _.template(require('./validationrun.html'));
+    var feedTabTemplate = _.template('<li><a href="#feed-<%= index %>" role="tab" data-toggle="tab"><%= agencies[0].slice(0, 15) + ' + 
+				     '(agencies[0].length > 15 ? "&hellip;" : "") + (agencies.length > 1 ? " et al." : "") %></a></li>');
+    var feedListEntryTemplate = _.template('<li><a href="#feed-<%= index %>" class="tab-jump" data-toggle="tab"><%= agencies.join(", ") %></a></li>');
+
+    // displays an entire validation run
+    var ValidationRunView = Backbone.View.extend({
+	el: '#content',
+	render: function () {
+	    this.$el.html(validationRunTemplate(this.model.attributes));
+
+	    // now attach the feed information
+	    var content = this.$('.the-tabs');
+	    var feedNav = this.$('.feed-nav');
+	    var feedList = this.$('.feed-list');
+	    this.collection.each(function (feed) {
+		new FeedView({model: feed}).render().$el.appendTo(content);
+		feedNav.append(feedTabTemplate(feed.attributes));
+		feedList.append(feedListEntryTemplate(feed.attributes))
+	    });
+
+	    return this;
+	}
+    });
+
+    // A collection of feed validation results
+    var FeedColl = Backbone.Collection.extend();
+
     // load the json and, when both it and the DOM are loaded, render it
     var routes, stops, trips, shapes;
 
@@ -77,30 +122,50 @@ $(document).ready(function () {
 	url: '/out.json',
 	dataType: 'json',
 	success: function (data) {
-	    var feed = new FeedModel({
-		agencies: data.agencies,
-		agencyCount: data.agencyCount,
-		tripCount: data.tripCount,
-		routeCount: data.routeCount,
-		startDate: new Date(data.startDate),
-		endDate: new Date(data.endDate),
-		stopCount: data.stopCount,
-		stopTimesCount: data.stopTimesCount
+	    var run = new ValidationRunModel({
+		name: data.name,
+		date: new Date(data.date),
+		feedCount: data.feedCount,
+		loadCount: data.loadCount
 	    });
 
-	    new FeedView({model: feed, el: '#header'}).render();
+	    var feeds = new FeedColl();
 
-	    // TODO: check for total load failure by OBA, i.e. missing required fields and so on
-	    routes = new InvalidValueColl(data.routes.invalidValues);
-	    stops = new InvalidValueColl(data.stops.invalidValues);
-	    trips = new InvalidValueColl(data.trips.invalidValues);
-	    shapes = new InvalidValueColl(data.shapes.invalidValues);
+	    var nfeeds = data.results.length;
+	    for (var i = 0; i < nfeeds; i++) {
+		var feedData = data.results[i];
+		var feed = new FeedModel({
+		    agencies: feedData.agencies,
+		    agencyCount: feedData.agencyCount,
+		    tripCount: feedData.tripCount,
+		    routeCount: feedData.routeCount,
+		    startDate: new Date(feedData.startDate),
+		    endDate: new Date(feedData.endDate),
+		    stopCount: feedData.stopCount,
+		    stopTimesCount: feedData.stopTimesCount,
+		    
+		    // just need a guaranteed-unique value attached to each feed for tabnav
+		    index: i,
+		
+		    // TODO: check for total load failure by OBA, i.e. missing required fields and so on
+		    routes: new InvalidValueColl(feedData.routes.invalidValues),
+		    stops: new InvalidValueColl(feedData.stops.invalidValues),
+		    trips: new InvalidValueColl(feedData.trips.invalidValues),
+		    shapes: new InvalidValueColl(feedData.shapes.invalidValues)
+		});
 
-	    // create the panels and populate them
-	    new InvalidValueListView({collection: routes, model: new TypeModel({sing: 'Route', pl: 'Routes'})}).render().$el.appendTo($('#content'));
-	    new InvalidValueListView({collection: trips, model: new TypeModel({sing: 'Trip', pl: 'Trips'})}).render().$el.appendTo($('#content'));
-	    new InvalidValueListView({collection: stops, model: new TypeModel({sing: 'Stop', pl: 'Stops'})}).render().$el.appendTo($('#content'));
-	    new InvalidValueListView({collection: shapes, model: new TypeModel({sing: 'Shape', pl: 'Shapes'})}).render().$el.appendTo($('#content'));
+		feeds.add(feed);		
+	    }
+
+	    new ValidationRunView({model: run, collection: feeds}).render().$el.appendTo($('#content'));
+
+	    // when we click on a link to a tab, go to that tab
+	    // see http://stackoverflow.com/questions/15360112
+	    $('.tab-jump').click(function (e) {
+		var t = $('.feed-nav a[href="' + $(this).attr('href') + '"]');
+		t.tab('show');
+		e.preventDefault();
+	    });
 	},
 	error: function () { console.log('oops'); },
     });

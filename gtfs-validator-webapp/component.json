@@ -8,5 +8,5 @@
     },
     "main":"validation.js",
     "scripts": ["validation.js"],
-    "templates": ["list.html", "feed.html"]
+    "templates": ["list.html", "feed.html", "validationrun.html"]
 }

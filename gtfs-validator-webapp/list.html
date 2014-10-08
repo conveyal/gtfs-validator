@@ -1,9 +1,9 @@
 <div class="panel panel-default">
   <h4 class="panel-title">
-    <a data-toggle="collapse" href="#<%= type %>"><%= type %> (<span class="nerrors"><%= errorCount %> errors)</a>
+    <a data-toggle="collapse" href="#<%= type + '-' + index %>"><%= type %> (<span class="nerrors"><%= errorCount %> errors)</a>
   </h4>
 </div>
-<div class="panel-collapse collapse" id="<%= type %>">
+<div class="panel-collapse collapse" id="<%= type + '-' + index %>">
   <table class="table-striped table-condensed">
     <thead>
       <td>Problem Type</td><td>Affected Entity</td><td>Affected Field</td><td>Description</td>
