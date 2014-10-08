@@ -1,25 +1,21 @@
 package com.conveyal.gtfs.validator.json.serialization;
 
 import java.io.File;
-import java.io.IOException;
 
-import com.conveyal.gtfs.validator.json.FeedValidationResults;
-import com.fasterxml.jackson.core.JsonGenerationException;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
+import com.conveyal.gtfs.validator.json.FeedValidationResultSet;
 
 /**
- * Basic code for a serializer for feed validation results
+ * Basic code for a serializer for a feed validation result set
  * @author mattwigway
  */
 public abstract class Serializer {
-	protected FeedValidationResults results;
+	protected FeedValidationResultSet results;
 
 	/**
 	 * Create a serializer for these validation results
 	 * @param results
 	 */
-	public Serializer (FeedValidationResults results) {
+	public Serializer (FeedValidationResultSet results) {
 		this.results = results;
 	}
 	

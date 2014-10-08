@@ -26,7 +26,7 @@ import com.conveyal.gtfs.service.impl.GtfsStatisticsService;
 public class FeedProcessor {
 	private File feed;
 	private GtfsDao dao;
-	private FeedValidationResults output;
+	private FeedValidationResult output;
 	private static Logger _log = Logger.getLogger(FeedProcessor.class.getName());
 	
 	/**
@@ -35,7 +35,7 @@ public class FeedProcessor {
 	 */
 	public FeedProcessor (File feed) {
 		this.feed = feed;
-		this.output = new FeedValidationResults();
+		this.output = new FeedValidationResult();
 	}
 	
 	/**
@@ -154,7 +154,7 @@ public class FeedProcessor {
 		}
 	}
 	
-	public FeedValidationResults getOutput () {
+	public FeedValidationResult getOutput () {
 		return output;
 	}
 }

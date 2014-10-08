@@ -20,19 +20,33 @@ public class JsonValidatorMain {
 
         // We use a file system backend because we're not doing anything fancy, just reading local GTFS
         FileSystemFeedBackend backend = new FileSystemFeedBackend();
-        File input = backend.getFeed(args[0]);
-        FeedProcessor processor = new FeedProcessor(input);
-        try {
-            processor.run();
-        } catch (IOException e) {
-            e.printStackTrace();
-            System.err.println("Unable to access input GTFS " + input.getPath() + ". Does the file exist and do I have permission to read it?");
-            return;
+        
+        // Since we're processing multiple feeds (potentially), use a FeedValidationResultSet to save the output
+        FeedValidationResultSet results = new FeedValidationResultSet();
+        
+        // default name is directory name
+        results.name = new File(args[0]).getAbsoluteFile().getParentFile().getName();
+        
+        // loop over all arguments except the last (which is the name of the JSON file)
+        // TODO: throw all feeds in a queue and run as many threads as we have cores to do the validation
+        // not exactly urgent, since for all of New York State this takes only a few minutes on my laptop
+        for (int i = 0; i < args.length - 1; i++) {
+            File input = backend.getFeed(args[i]);
+            FeedProcessor processor = new FeedProcessor(input);
+            try {
+                processor.run();
+            } catch (IOException e) {
+                e.printStackTrace();
+                System.err.println("Unable to access input GTFS " + input.getPath() + ". Does the file exist and do I have permission to read it?");
+                return;
+            }
+
+            results.add(processor.getOutput());
         }
-        FeedValidationResults out = processor.getOutput();
-        JsonSerializer serializer = new JsonSerializer(out);
+        
+        JsonSerializer serializer = new JsonSerializer(results);
         // TODO: error handling
-        serializer.serializeToFile(new File(args[1]));
+        serializer.serializeToFile(new File(args[args.length - 1]));
 
     }
 

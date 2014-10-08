@@ -3,7 +3,7 @@ package com.conveyal.gtfs.validator.json.serialization;
 import java.io.File;
 import java.io.IOException;
 
-import com.conveyal.gtfs.validator.json.FeedValidationResults;
+import com.conveyal.gtfs.validator.json.FeedValidationResultSet;
 import com.fasterxml.jackson.core.JsonGenerationException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -20,7 +20,7 @@ public class JsonSerializer extends Serializer {
 	 * Create a JSON serializer for these validation results.
 	 * @param results
 	 */
-	public JsonSerializer (FeedValidationResults results) {
+	public JsonSerializer (FeedValidationResultSet results) {
 		super(results);
 		mapper = new ObjectMapper();
 	}
