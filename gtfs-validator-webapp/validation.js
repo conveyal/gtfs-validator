@@ -114,8 +114,8 @@ $(document).ready(function () {
     });
 
     // these keep track of webapp state
-    navModel = new NavModel();
-    navView = new NavView({model: navModel});
+    var navModel = new NavModel();
+    var navView = new NavView({model: navModel});
 
     // navigates (in a section 508 friendly way) to the specified facet
     var doNav = function (e) {
