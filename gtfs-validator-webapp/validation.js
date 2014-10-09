@@ -37,8 +37,10 @@ $(document).ready(function () {
     // view for a header with basic information about a feed
     var FeedView = Backbone.View.extend({
 	tagName: 'div',
-	className: 'tab-pane',
+	// they start out hidden
+	className: 'facet hidden',
 	id: function () { return 'feed-' + this.model.attributes.index },
+	attributes: function () { return {"data-name": this.model.attributes.loadStatus == 'SUCCESS' ? this.model.attributes.agencies.join(', ') : this.model.attributes.feedFileName };}, 
 	render: function () {
 	    this.$el.html(feedTemplate(this.model.attributes));
 
@@ -85,11 +87,49 @@ $(document).ready(function () {
 	}
     });
 
+
+    // a model representing what is open right now
+    var NavModel = Backbone.Model.extend({
+	defaults: {
+	    current: null
+	}
+    });
+
+    // template for the breadcrumb navigation
+    var navTemplate = _.template(require('./breadcrumb.html'));
+
+    // this is an ugly workaroud: doNav needs to be called from within NavView, but also needs a reference to a NavView
+    // so we define doNav here as a placeholder so it's in the closure, and then overwrite it below
+    var doNav = null;
+
+    // a view representing breadcrumb navigation for where we are right now
+    var NavView = Backbone.View.extend({
+	tagName: 'ol',
+	className: 'breadcrumb',
+	render: function () {
+	    this.$el.html(navTemplate(this.model.attributes));
+	    this.$('.jump').click(doNav);
+	    return this;
+	}
+    });
+
+    // these keep track of webapp state
+    navModel = new NavModel();
+    navView = new NavView({model: navModel});
+
+    // navigates (in a section 508 friendly way) to the specified facet
+    var doNav = function (e) {
+	$('.facet').addClass('hidden');
+	var target = $($(this).attr('href')).removeClass('hidden').focus();
+	navModel.attributes.current = target;
+	navView.render();
+	e.preventDefault();
+    }
+
     // represents an entire validation run
     var ValidationRunModel = Backbone.Model.extend();
 
     var validationRunTemplate = _.template(require('./validationrun.html'));
-    var feedTabTemplate = _.template(require('./feedTab.html'));
     var feedListEntryTemplate = _.template(require('./feedList.html'));
 
     // displays an entire validation run
@@ -99,14 +139,16 @@ $(document).ready(function () {
 	    this.$el.html(validationRunTemplate(this.model.attributes));
 
 	    // now attach the feed information
-	    var content = this.$('.the-tabs');
-	    var feedNav = this.$('.feed-nav');
 	    var feedList = this.$('.feed-list');
 	    this.collection.each(function (feed) {
-		new FeedView({model: feed}).render().$el.appendTo(content);
-		feedNav.append(feedTabTemplate(feed.attributes));
+		new FeedView({model: feed}).render().$el.appendTo(this.$('.facets'));
 		feedList.append(feedListEntryTemplate(feed.attributes))
 	    });
+
+	    navModel.attributes.current = this.$('#run');
+	    navView.render().$el.appendTo(this.$('.feed-nav'));
+
+	    this.$('.jump').click(doNav);
 
 	    return this;
 	}
@@ -166,7 +208,7 @@ $(document).ready(function () {
 	}).render().$el.appendTo('#content');
 
 	return;
-    }    
+    }					
 
     // load the json and, when both it and the DOM are loaded, render it
     var routes, stops, trips, shapes;
@@ -228,11 +270,7 @@ $(document).ready(function () {
 
 	    // when we click on a link to a tab, go to that tab
 	    // see http://stackoverflow.com/questions/15360112
-	    $('.tab-jump').click(function (e) {
-		var t = $('.feed-nav a[href="' + $(this).attr('href') + '"]');
-		t.tab('show');
-		e.preventDefault();
-	    });
+	    $('.jump').click();
 	},
 	error: function () {
 	    new ErrorView({

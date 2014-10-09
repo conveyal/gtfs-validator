@@ -1,17 +1,15 @@
 <!-- Represents a single validation run -->
 
-<ul class="nav nav-tabs feed-nav" role="tablist">
-  <li class="active"><a href="#run" role="tab" data-toggle="tab">Home</a></li>
-</ul>
+<span class="feed-nav"></span>
 
-<div class="tab-content the-tabs">
-  <div class="tab-pane active" id="run">
-    <h1><%= name %></h1>
-    Validation run on <%= date %>.<br>
-    <%= feedCount %> feeds processed, <%= loadCount %> successfully.
-
-    <h3>Feeds processed</h3>
-    <ul class="feed-list">
-    </ul>
-  </div>
+<div class="facets">
+<div class="facet" id="run">
+  <h1><%= name %></h1>
+  Validation run on <%= date %>.<br>
+  <%= feedCount %> feeds processed, <%= loadCount %> successfully.
+  
+  <h3>Feeds processed</h3>
+  <ul class="feed-list">
+  </ul>
+</div>
 </div>

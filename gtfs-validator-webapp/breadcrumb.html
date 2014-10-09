@@ -1,0 +1,8 @@
+<!-- This represents the breadcrumb navigation. We have a special case for when we are at home (i.e. top-level) -->
+<% if (current.attr('id') == 'run') { %>
+  <li class="active">Home</li>
+<% } else { %>
+  <li><a href="#run" class="jump">Home</a></li>
+  <!-- the name is generated in feed.html -->
+  <li class="active"><%= current.attr('data-name') %></li>
+<% } %>
