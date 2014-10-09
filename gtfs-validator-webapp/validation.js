@@ -185,7 +185,7 @@ $(document).ready(function () {
     var splitSearch = search.slice(1).split('&');
     for (var i = 0; i < splitSearch.length; i++) {
 	
-	if (!splitSearch[i].contains('=')) {
+	if (!splitSearch[i].indexOf('=') > -1) {
 	    params[splitSearch[i]] = null;
 	    continue;
 	}
