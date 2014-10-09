@@ -202,7 +202,7 @@ $(document).ready(function () {
 	return;
     }
 
-    if (params.report.startsWith('//') || params.report.contains('://')) {
+    if (params.report.startsWith('//') || params.report.indexOf('://') != -1) {
 	new ErrorView({
 	    model: new ErrorModel({title: 'Only local reports may be viewed', message: 'Please specify a local report to view'})
 	}).render().$el.appendTo('#content');
