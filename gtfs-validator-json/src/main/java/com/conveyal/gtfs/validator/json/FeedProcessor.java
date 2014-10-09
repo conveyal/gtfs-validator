@@ -84,6 +84,11 @@ public class FeedProcessor {
 				output.loadStatus = LoadStatus.MISSING_REQUIRED_FIELD;
 				output.loadFailureReason = cause.getMessage();
 			}
+			else if (cause instanceof IndexOutOfBoundsException) {
+			    output.loadStatus = LoadStatus.INCORRECT_FIELD_COUNT_IMPROPER_QUOTING;
+			    output.loadFailureReason = e.getMessage() + " (perhaps improper quoting)";
+			}
+			    
 			else {
 				output.loadStatus = LoadStatus.OTHER_FAILURE;
 			}
