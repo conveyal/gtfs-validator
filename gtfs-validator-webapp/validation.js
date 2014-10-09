@@ -248,7 +248,6 @@ $(document).ready(function () {
 		    routeCount: feedData.routeCount,
 		    startDate: new Date(feedData.startDate),
 		    endDate: new Date(feedData.endDate),
-		    stopCount: feedData.stopCount,
 		    stopTimesCount: feedData.stopTimesCount,
 		    loadStatus: feedData.loadStatus,
 		    feedFileName: feedData.feedFileName,
