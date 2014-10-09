@@ -32,6 +32,7 @@ public class JsonValidatorMain {
         // not exactly urgent, since for all of New York State this takes only a few minutes on my laptop
         for (int i = 0; i < args.length - 1; i++) {
             File input = backend.getFeed(args[i]);
+            System.err.println("Processing feed " + input.getName());
             FeedProcessor processor = new FeedProcessor(input);
             try {
                 processor.run();
