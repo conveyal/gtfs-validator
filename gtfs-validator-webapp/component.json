@@ -8,5 +8,6 @@
     },
     "main":"validation.js",
     "scripts": ["validation.js"],
-    "templates": ["list.html", "feed.html", "validationrun.html", "feedTab.html", "feedList.html"]
+    "templates": ["list.html", "feed.html", "validationrun.html", "feedTab.html", "feedList.html", "error.html"],
+    "styles": ["style.css"]
 }

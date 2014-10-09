@@ -112,15 +112,67 @@ $(document).ready(function () {
 	}
     });
 
+    // represents an application error
+    var ErrorModel = Backbone.Model.extend({
+	defaults: {
+	    title: 'Application error',
+	    message: ''
+	}
+    });
+    var errorTemplate = _.template(require('./error.html'));
+    var ErrorView = Backbone.View.extend({
+	className: 'bg-danger error',
+
+	render: function () {
+	    this.$el.html(errorTemplate(this.model.attributes));
+	    return this;
+	}
+    });	    
+
     // A collection of feed validation results
     var FeedColl = Backbone.Collection.extend();
+
+    // figure out what file we're pulling from
+    // TODO: malformed search string handling
+    var params = {};
+    // some browsers (I'm looking at you, Firefox) append a trailing slash after the query params
+    if (location.search[location.search.length - 1] == '/')
+	var search = location.search.slice(0, -1);
+    else
+	var search = location.search;
+    var splitSearch = search.slice(1).split('&');
+    for (var i = 0; i < splitSearch.length; i++) {
+	
+	if (!splitSearch[i].contains('=')) {
+	    params[splitSearch[i]] = null;
+	    continue;
+	}
+	
+	var splitParam = splitSearch[i].split('=');
+	params[splitParam[0]] = decodeURIComponent(splitParam[1]);
+    }
+
+    if (params['report'] == undefined) {
+	new ErrorView({
+	    model: new ErrorModel({title: 'No report specified', message: 'Please specify a report to view'})
+	}).render().$el.appendTo('#content');
+
+	return;
+    }
+
+    if (params.report.startsWith('//') || params.report.contains('://')) {
+	new ErrorView({
+	    model: new ErrorModel({title: 'Only local reports may be viewed', message: 'Please specify a local report to view'})
+	}).render().$el.appendTo('#content');
+
+	return;
+    }    
 
     // load the json and, when both it and the DOM are loaded, render it
     var routes, stops, trips, shapes;
 
     $.ajax({
-	// TODO: hardwired is bad
-	url: '/out.json',
+	url: params['report'],
 	dataType: 'json',
 	success: function (data) {
 	    var run = new ValidationRunModel({
@@ -182,7 +234,11 @@ $(document).ready(function () {
 		e.preventDefault();
 	    });
 	},
-	error: function () { console.log('oops'); },
+	error: function () {
+	    new ErrorView({
+		model: new ErrorModel({title: 'Report could not be loaded', message: 'There was an error loading the report ' + params.report + '. Does it exist?'})
+	    }).render().$el.appendTo('#content');
+	},
     });
 });
     
