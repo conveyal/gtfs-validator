@@ -1,12 +1,17 @@
-<h1>Feed validation report for <%= agencies.join(', ') %></h1>
+<h1>Feed validation report for <%= loadStatus == 'SUCCESS' ? agencies.join(', ') : feedFileName %></h1>
 
 <table class="table-striped">
   <tbody>
-    <tr><th>Number of Agencies</th><td><%= agencyCount %></td></tr>
-    <tr><th>Number of Routes</th><td><%= routeCount %></td></tr>
-    <tr><th>Number of Trips</th><td><%= tripCount %></td></tr>
-    <tr><th>Number of Stop Times</th><td><%= stopTimesCount %></td></tr>
-    <tr><th>Service Range</th><td><%= startDate.toDateString() %> to <%= endDate.toDateString() %></td></tr>
+    <tr><th>Load Status</th><td><%= loadStatus %></td></tr>
+    <% if (loadStatus == 'SUCCESS') { %>
+      <tr><th>Number of Agencies</th><td><%= agencyCount %></td></tr>
+      <tr><th>Number of Routes</th><td><%= routeCount %></td></tr>
+      <tr><th>Number of Trips</th><td><%= tripCount %></td></tr>
+      <tr><th>Number of Stop Times</th><td><%= stopTimesCount %></td></tr>
+      <tr><th>Service Range</th><td><%= startDate.toDateString() %> to <%= endDate.toDateString() %></td></tr>
+    <% } else { %>
+      <tr><th>Reason</th><td><%= loadFailureReason %></td></tr>
+    <% } %>
   </tbody>
 </table>
 	

@@ -43,14 +43,16 @@ $(document).ready(function () {
 	    this.$el.html(feedTemplate(this.model.attributes));
 
 	    // append the invalid value information
-	    var content = this.$('.error-panel');
+	    // create the panels and populate them, but only if the load was successful (otherwise we have nothing to show)
+	    if (this.model.attributes.loadStatus == 'SUCCESS') {
+		var content = this.$('.error-panel');
 
-	    // create the panels and populate them
-	    // the index is so that link hrefs remain unique
-	    new InvalidValueListView({collection: this.model.attributes.routes, model: new TypeModel({sing: 'Route', pl: 'Routes', index: this.model.attributes.index})}).render().$el.appendTo(content);
-	    new InvalidValueListView({collection: this.model.attributes.trips, model: new TypeModel({sing: 'Trip', pl: 'Trips', index: this.model.attributes.index})}).render().$el.appendTo(content);
-	    new InvalidValueListView({collection: this.model.attributes.stops, model: new TypeModel({sing: 'Stop', pl: 'Stops', index: this.model.attributes.index})}).render().$el.appendTo(content);
-	    new InvalidValueListView({collection: this.model.attributes.shapes, model: new TypeModel({sing: 'Shape', pl: 'Shapes', index: this.model.attributes.index})}).render().$el.appendTo(content);
+		// the index is so that link hrefs remain unique
+		new InvalidValueListView({collection: this.model.attributes.routes, model: new TypeModel({sing: 'Route', pl: 'Routes', index: this.model.attributes.index})}).render().$el.appendTo(content);
+		new InvalidValueListView({collection: this.model.attributes.trips, model: new TypeModel({sing: 'Trip', pl: 'Trips', index: this.model.attributes.index})}).render().$el.appendTo(content);
+		new InvalidValueListView({collection: this.model.attributes.stops, model: new TypeModel({sing: 'Stop', pl: 'Stops', index: this.model.attributes.index})}).render().$el.appendTo(content);
+		new InvalidValueListView({collection: this.model.attributes.shapes, model: new TypeModel({sing: 'Shape', pl: 'Shapes', index: this.model.attributes.index})}).render().$el.appendTo(content);
+	    }	
 	    
 	    return this;
 	}
@@ -87,9 +89,8 @@ $(document).ready(function () {
     var ValidationRunModel = Backbone.Model.extend();
 
     var validationRunTemplate = _.template(require('./validationrun.html'));
-    var feedTabTemplate = _.template('<li><a href="#feed-<%= index %>" role="tab" data-toggle="tab"><%= agencies[0].slice(0, 15) + ' + 
-				     '(agencies[0].length > 15 ? "&hellip;" : "") + (agencies.length > 1 ? " et al." : "") %></a></li>');
-    var feedListEntryTemplate = _.template('<li><a href="#feed-<%= index %>" class="tab-jump" data-toggle="tab"><%= agencies.join(", ") %></a></li>');
+    var feedTabTemplate = _.template(require('./feedTab.html'));
+    var feedListEntryTemplate = _.template(require('./feedList.html'));
 
     // displays an entire validation run
     var ValidationRunView = Backbone.View.extend({
@@ -134,7 +135,19 @@ $(document).ready(function () {
 	    var nfeeds = data.results.length;
 	    for (var i = 0; i < nfeeds; i++) {
 		var feedData = data.results[i];
-		var feed = new FeedModel({
+		
+		var routes, trips, stops, shapes;
+		if (feedData.loadStatus == 'SUCCESS') {
+		    routes= new InvalidValueColl(feedData.routes.invalidValues);
+		    stops= new InvalidValueColl(feedData.stops.invalidValues);
+		    trips= new InvalidValueColl(feedData.trips.invalidValues);
+		    shapes= new InvalidValueColl(feedData.shapes.invalidValues);
+		}
+		else {
+		    routes = shapes = trips = stops = null;
+		}
+
+		feed = new FeedModel({
 		    agencies: feedData.agencies,
 		    agencyCount: feedData.agencyCount,
 		    tripCount: feedData.tripCount,
@@ -143,15 +156,17 @@ $(document).ready(function () {
 		    endDate: new Date(feedData.endDate),
 		    stopCount: feedData.stopCount,
 		    stopTimesCount: feedData.stopTimesCount,
+		    loadStatus: feedData.loadStatus,
+		    feedFileName: feedData.feedFileName,
+		    loadFailureReason: feedData.loadFailureReason,
 		    
 		    // just need a guaranteed-unique value attached to each feed for tabnav
 		    index: i,
-		
-		    // TODO: check for total load failure by OBA, i.e. missing required fields and so on
-		    routes: new InvalidValueColl(feedData.routes.invalidValues),
-		    stops: new InvalidValueColl(feedData.stops.invalidValues),
-		    trips: new InvalidValueColl(feedData.trips.invalidValues),
-		    shapes: new InvalidValueColl(feedData.shapes.invalidValues)
+		    
+		    routes: routes,
+		    trips: trips,
+		    stops: stops,
+		    shapes: shapes,
 		});
 
 		feeds.add(feed);		

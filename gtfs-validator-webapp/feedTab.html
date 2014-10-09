@@ -1,0 +1,9 @@
+<li>
+  <a href="#feed-<%= index %>" role="tab" data-toggle="tab">
+    <% if (loadStatus == 'SUCCESS') { %>
+      <%= agencies[0].slice(0, 15) + (agencies[0].length > 15 ? "&hellip;" : "") + (agencies.length > 1 ? " et al." : "") %>
+    <% } else { %>
+      <%= feedFileName %>
+    <% } %>
+  </a>
+</li>
