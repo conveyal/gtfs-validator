@@ -1,0 +1,28 @@
+<% if (loadStatus == 'SUCCESS') { %>
+  <% var totalErrors = routes.length + stops.length + trips.length + shapes.length; %>
+  <tr>
+    <td>
+      <a href="#feed-<%= index %>" class="jump"><%= agencies.join(", ") %></a>
+    </td>
+    <td class="<%= totalErrors > 0 ? 'bg-warning' : 'bg-success' %>">Yes</span></td>
+    <td><%= totalErrors %></td>
+    <td><%= routeCount %></td>
+    <td><%= tripCount %></td>
+    <td><%= stopCount %></td>
+    <td><%= startDate.toDateString() %></td>
+    <td><%= endDate.toDateString() %></td>
+  </tr>
+<% } else { %>
+  <tr>
+    <td>
+      <a href="#feed-<%= index %>" class="jump"><%= feedFileName %></a>
+    </td>
+    <td class="bg-danger">No</span></td>
+    <td>-</td>
+    <td>-</td>
+    <td>-</td>
+    <td>-</td>
+    <td>-</td>
+    <td>-</td>
+  </tr>
+<% } %>

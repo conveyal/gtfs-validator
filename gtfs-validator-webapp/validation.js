@@ -130,7 +130,7 @@ $(document).ready(function () {
     var ValidationRunModel = Backbone.Model.extend();
 
     var validationRunTemplate = _.template(require('./validationrun.html'));
-    var feedListEntryTemplate = _.template(require('./feedList.html'));
+    var feedTableEntryTemplate = _.template(require('./feedTable.html'));
 
     // displays an entire validation run
     var ValidationRunView = Backbone.View.extend({
@@ -139,10 +139,10 @@ $(document).ready(function () {
 	    this.$el.html(validationRunTemplate(this.model.attributes));
 
 	    // now attach the feed information
-	    var feedList = this.$('.feed-list');
+	    var feedTable = this.$('.feed-table');
 	    this.collection.each(function (feed) {
 		new FeedView({model: feed}).render().$el.appendTo(this.$('.facets'));
-		feedList.append(feedListEntryTemplate(feed.attributes))
+		feedTable.append(feedTableEntryTemplate(feed.attributes))
 	    });
 
 	    navModel.attributes.current = this.$('#run');
