@@ -172,7 +172,11 @@ $(document).ready(function () {
     });	    
 
     // A collection of feed validation results
-    var FeedColl = Backbone.Collection.extend();
+    var FeedColl = Backbone.Collection.extend({
+	comparator: function (feed) {
+	    return feed.attributes.loadStatus == 'SUCCESS' ? feed.attributes.agencies.join(', ') : feed.attributes.feedFileName;
+	}
+    });
 
     // figure out what file we're pulling from
     // TODO: malformed search string handling
