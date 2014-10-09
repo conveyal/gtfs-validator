@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.Date;
 
 import com.conveyal.gtfs.model.ValidationResult;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * A class to hold all of the results of a validation on a single feed.
@@ -16,6 +17,7 @@ public class FeedValidationResult {
 	/** Were we able to load the GTFS at all (note that this should only indicate corrupted files,
 	 * not missing ones; that should raise an exception instead.)
 	 */
+        @JsonProperty
 	public LoadStatus loadStatus;
 	
 	/**
