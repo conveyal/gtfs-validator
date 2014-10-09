@@ -266,10 +266,6 @@ $(document).ready(function () {
 	    }
 
 	    new ValidationRunView({model: run, collection: feeds}).render().$el.appendTo($('#content'));
-
-	    // when we click on a link to a tab, go to that tab
-	    // see http://stackoverflow.com/questions/15360112
-	    $('.jump').click();
 	},
 	error: function () {
 	    new ErrorView({
