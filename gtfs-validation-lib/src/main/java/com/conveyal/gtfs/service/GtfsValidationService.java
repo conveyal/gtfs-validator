@@ -422,7 +422,7 @@ public class GtfsValidationService {
 			try {
 			  projectedStopCoord = GeoUtils.convertLatLonToEuclidean(stopCoord);
 			  } catch (IllegalArgumentException iae) {
-			    result.add(new InvalidValue("stop", "duplicateStops", stop.toString(), "MissingCoordinates", "stop " + stop + " is missing coordinates", null, Priority.HIGH));
+			    result.add(new InvalidValue("stop", "duplicateStops", stop.toString(), "MissingCoordinates", "stop " + stop + " is missing coordinates", null, Priority.MEDIUM));
 			  }
 			
 			Geometry geom = geometryFactory.createPoint(projectedStopCoord);
@@ -584,7 +584,7 @@ public class GtfsValidationService {
           firstShapeGeom = geometryFactory.createPoint(GeoUtils.convertLatLonToEuclidean(firstShapeCoord));
           lastShapeGeom = geometryFactory.createPoint(GeoUtils.convertLatLonToEuclidean(lastShapeCoord));
     		} catch (Exception any) {
-          result.add(new InvalidValue("trip", "shape_id", tripId, "MissingCoordinates", "Trip " + tripId + " is missing coordinates", null, Priority.HIGH));
+          result.add(new InvalidValue("trip", "shape_id", tripId, "MissingCoordinates", "Trip " + tripId + " is missing coordinates", null, Priority.MEDIUM));
     		  continue;
     		}
 
