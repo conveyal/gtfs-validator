@@ -70,20 +70,60 @@ $(document).ready(function () {
 	render: function () {
 	    this.$el.html(invalidValuesListTemplate({type: this.model.attributes.pl, errorCount: this.collection.length, index: this.model.attributes.index}));
 
-	    var tbody = this.$('tbody');
-
 	    // populate the table
+	    // partition by error type to provide a more user friendly display
+	    var errorTypes = [];
+	    var errors = {};
+
+	    // list is already sorted by error type
 	    this.collection.each(function (item) {
-		new InvalidValueView({model: item}).render().$el.appendTo(tbody);
+		if (errorTypes.indexOf(item.attributes.problemType) == -1) {
+		    errorTypes.push(item.attributes.problemType);
+		    errors[item.attributes.problemType] = new InvalidValueColl();
+		}
+
+		errors[item.attributes.problemType].add(item);
 	    });
+
+	    // render everything up
+	    for (var i = 0; i < errorTypes.length; i++) {
+		new InvalidValueGroupView({collection: errors[errorTypes[i]]})
+		    .render()
+		    .$el.appendTo(this.$('table'));
+	    }
 
 	    return this;
 	},
+    });
 
-	/** Pass in an InvalidValueColl to populate this list view */
-	populate: function (coll) {
-	    var tbody = this.$el.find('tbody');
+    // Not a list of errors (e.g. route errors) but a list of all errors for a specific type
+    var InvalidValueGroupView = Backbone.View.extend({
+	tagName: 'tbody', // this results in multiple tbody elements, which is legal per MDN
+	template: _.template(require('./group.html')),
+	render: function () {
+	    this.$el.html(this.template(this.collection));
+	    
+	    var instance = this;
+	    this.collection.each(function (item) {
+		new InvalidValueView({model: item}).render().$el.appendTo(instance.$el);
+	    });
 
+	    this.hidden = false;
+
+	    this.$('a.error-type').click(function (e) {
+		e.preventDefault();
+		if (instance.hidden) {
+		    instance.$('.invalid-value').removeClass('hidden');
+		}
+		else {
+		    instance.$('.invalid-value').addClass('hidden');
+		}
+
+		instance.hidden = !instance.hidden;
+	    // we toggle a click to make it start out hidden
+	    }).click();
+	    
+	    return this;
 	}
     });
 
