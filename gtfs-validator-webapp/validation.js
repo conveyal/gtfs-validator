@@ -9,7 +9,11 @@ var _ = require('underscore');
 $(document).ready(function () {
     var InvalidValue = Backbone.Model.extend({});
     var InvalidValueColl = Backbone.Collection.extend({
-	model: InvalidValue
+	model: InvalidValue,
+	// we sort by status, but in a particular order; this way they get grouped with highest-priority items on top
+	comparator: function (item) {
+	    return ['HIGH', 'MEDIUM', 'LOW', 'UNKNOWN'].indexOf(item.attributes.priority);
+	}
     });
 
     // template for showing invalid values

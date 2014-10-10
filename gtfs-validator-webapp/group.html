@@ -1,4 +1,10 @@
 <!-- Assume there is but a single problem type in this collection.
      Note that the collection is the scope of the template. -->
-<tr><th colspan="4"><a href="#" class="error-type" title="show errors"><%= at(0).attributes.problemType %> (<%= length %> warnings)&nbsp;&nbsp;<span class="caret"></span></a></th><tr>
+<tr>
+  <th colspan="4"  class="<%= {HIGH: 'bg-danger', MEDIUM: 'bg-warning', LOW: '', UNKNOWN: ''}[at(0).attributes.priority] %>">
+    <a href="#" class="error-type" title="show warnings"><%= at(0).attributes.problemType %> (<%= length %> warnings)
+      <small><i><%= {HIGH: 'High priority', MEDIUM: 'Medium priority', LOW: 'Low priority', UNKNOWN: ''}[at(0).attributes.priority] %></i></small>
+	  &nbsp;&nbsp;<span class="caret"></span></a>
+  </th>
+<tr>
 <tr class="invalid-value"><th>Problem Type</th><th>Affected Entity</th><th>Affected Field</th><th>Description</th></tr>
