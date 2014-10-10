@@ -23,6 +23,7 @@ import org.opengis.referencing.operation.TransformException;
 
 import com.conveyal.gtfs.model.DuplicateStops;
 import com.conveyal.gtfs.model.InvalidValue;
+import com.conveyal.gtfs.model.Priority;
 import com.conveyal.gtfs.model.ValidationResult;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
@@ -68,23 +69,23 @@ public class GtfsValidationService {
 			
 			//RouteShortAndLongNamesAreBlank
 			if(longName.isEmpty() && shortName.isEmpty())
-				result.add(new InvalidValue("route", "route_short_name,route_long_name", routeId , "RouteShortAndLongNamesAreBlank", "", null));
+				result.add(new InvalidValue("route", "route_short_name,route_long_name", routeId , "RouteShortAndLongNamesAreBlank", "", null, Priority.HIGH));
 			
 			//ValidateRouteShortNameIsTooLong
 			if(shortName.length() > 6)
-				result.add(new InvalidValue("route", "route_short_name", routeId, "ValidateRouteShortNameIsTooLong", "route_short_name is " +  shortName.length() + " chars ('" +  shortName + "')" , null));
+				result.add(new InvalidValue("route", "route_short_name", routeId, "ValidateRouteShortNameIsTooLong", "route_short_name is " +  shortName.length() + " chars ('" +  shortName + "')" , null, Priority.MEDIUM));
 			
 			//ValidateRouteLongNameContainShortName
 			if(!longName.isEmpty() && !shortName.isEmpty() &&longName.contains(shortName))
-				result.add(new InvalidValue("route", "route_short_name,route_long_name", routeId, "ValidateRouteLongNameContainShortName", "'" + longName + "' contains '" + shortName + "'", null));
+				result.add(new InvalidValue("route", "route_short_name,route_long_name", routeId, "ValidateRouteLongNameContainShortName", "'" + longName + "' contains '" + shortName + "'", null, Priority.MEDIUM));
 			
 			//ValidateRouteDescriptionSameAsRouteName
 			if(!desc.isEmpty() && (desc.equals(shortName) || desc.equals(longName)))
-				result.add(new InvalidValue("route", "route_short_name,route_long_name,route_desc", routeId, "ValidateRouteDescriptionSameAsRouteName", "", null));
+				result.add(new InvalidValue("route", "route_short_name,route_long_name,route_desc", routeId, "ValidateRouteDescriptionSameAsRouteName", "", null, Priority.MEDIUM));
 			
 			//ValidateRouteTypeInvalidValid
 			if(route.getType() < 0 || route.getType() > 7)
-				result.add(new InvalidValue("route", "route_type", routeId, "ValidateRouteTypeInvalidValid", "route_type is " + route.getType(), null ));
+				result.add(new InvalidValue("route", "route_type", routeId, "ValidateRouteTypeInvalidValid", "route_type is " + route.getType(), null,  Priority.HIGH));
 			
 		}
 		
@@ -157,7 +158,7 @@ public class GtfsValidationService {
 				
 				shapeCoords.add(projectedStopCoord);
 				} catch (Exception e) {
-				  result.add(new InvalidValue("stop", "shapeId", shapeId , "Illegal stopCoord for shape", "", null));
+				  result.add(new InvalidValue("stop", "shapeId", shapeId , "Illegal stopCoord for shape", "", null, Priority.MEDIUM));
 				}
 			}
 			
@@ -245,7 +246,7 @@ public class GtfsValidationService {
 			String stopId = stop.getId().toString();
 			
 			if(!usedStopIds.contains(stopId)) {
-				result.add(new InvalidValue("stop", "stop_id", stopId, "UnusedStop", "Stop Id " + stopId + " is not used in any trips." , null));
+				result.add(new InvalidValue("stop", "stop_id", stopId, "UnusedStop", "Stop Id " + stopId + " is not used in any trips." , null, Priority.LOW));
 			}
 		}
 		
@@ -262,7 +263,7 @@ public class GtfsValidationService {
 			ArrayList<StopTime> stopTimes = tripStopTimes.get(tripId);
 			
 			if(stopTimes == null || stopTimes.isEmpty()) {
-				result.add(new InvalidValue("trip", "trip_id", tripId, "NoStopTimesForTrip", "Trip Id " + tripId + " has no stop times." , null));
+				result.add(new InvalidValue("trip", "trip_id", tripId, "NoStopTimesForTrip", "Trip Id " + tripId + " has no stop times." , null, Priority.HIGH));
 				continue;
 			}
 				
@@ -272,12 +273,12 @@ public class GtfsValidationService {
 			for(StopTime stopTime : stopTimes) {
 				
 				if(stopTime.getDepartureTime() < stopTime.getArrivalTime()) 
-					result.add(new InvalidValue("stop_time", "trip_id", tripId, "StopTimeDepartureBeforeArrival", "Trip Id " + tripId + " stop sequence " + stopTime.getStopSequence() + " departs before arriving.", null));
+					result.add(new InvalidValue("stop_time", "trip_id", tripId, "StopTimeDepartureBeforeArrival", "Trip Id " + tripId + " stop sequence " + stopTime.getStopSequence() + " departs before arriving.", null, Priority.HIGH));
 				
 				if(previousStopTime != null) {					
 					
 					if(stopTime.getArrivalTime() < previousStopTime.getDepartureTime()) {
-						result.add(new InvalidValue("stop_time", "trip_id", tripId, "StopTimesOutOfSequence", "Trip Id " + tripId + " stop sequence " + stopTime.getStopSequence() + " arrives before departing " + previousStopTime.getStopSequence(), null));
+						result.add(new InvalidValue("stop_time", "trip_id", tripId, "StopTimesOutOfSequence", "Trip Id " + tripId + " stop sequence " + stopTime.getStopSequence() + " arrives before departing " + previousStopTime.getStopSequence(), null, Priority.HIGH));
 						
 						// only capturing first out of sequence stop for now -- could consider collapsing duplicates based on tripId
 						break;					
@@ -325,7 +326,7 @@ public class GtfsValidationService {
 			
 			if(duplicateTripHash.containsKey(tripKey)) {
 				String duplicateTripId = duplicateTripHash.get(tripKey);
-				result.add(new InvalidValue("trip", "trip_id", tripId, "DuplicateTrip", "Trip Ids " + duplicateTripId + " & " + tripId + " are duplicates (" + tripKey + ")" , null));
+				result.add(new InvalidValue("trip", "trip_id", tripId, "DuplicateTrip", "Trip Ids " + duplicateTripId + " & " + tripId + " are duplicates (" + tripKey + ")" , null, Priority.LOW));
 				
 			}
 			else
@@ -359,7 +360,7 @@ public class GtfsValidationService {
 						
 						// if trips have same service id they overlap
 						if(i1.trip.getServiceId().getId().equals(i2.trip.getServiceId().getId()))
-							result.add(new InvalidValue("trip", "block_id", blockId, "OverlappingTripsInBlock", "Trip Ids " + tripId1 + " & " + tripId2 + " overlap and share block Id " + blockId , null));
+							result.add(new InvalidValue("trip", "block_id", blockId, "OverlappingTripsInBlock", "Trip Ids " + tripId1 + " & " + tripId2 + " overlap and share block Id " + blockId , null, Priority.HIGH));
 						
 						else {
 							
@@ -368,7 +369,7 @@ public class GtfsValidationService {
 							for(Date d1 : serviceCalendarDates.get(i1.trip.getServiceId().getId())) {
 								
 								if(serviceCalendarDates.get(i2.trip.getServiceId().getId()).contains(d1)) {
-									result.add(new InvalidValue("trip", "block_id", blockId, "OverlappingTripsInBlock", "Trip Ids " + tripId1 + " & " + tripId2 + " overlap and share block Id " + blockId , null));
+									result.add(new InvalidValue("trip", "block_id", blockId, "OverlappingTripsInBlock", "Trip Ids " + tripId1 + " & " + tripId2 + " overlap and share block Id " + blockId , null, Priority.HIGH));
 									break;
 								}
 							}
@@ -421,7 +422,7 @@ public class GtfsValidationService {
 			try {
 			  projectedStopCoord = GeoUtils.convertLatLonToEuclidean(stopCoord);
 			  } catch (IllegalArgumentException iae) {
-			    result.add(new InvalidValue("stop", "duplicateStops", stop.toString(), "MissingCoordinates", "stop " + stop + " is missing coordinates", null));
+			    result.add(new InvalidValue("stop", "duplicateStops", stop.toString(), "MissingCoordinates", "stop " + stop + " is missing coordinates", null, Priority.HIGH));
 			  }
 			
 			Geometry geom = geometryFactory.createPoint(projectedStopCoord);
@@ -474,7 +475,7 @@ public class GtfsValidationService {
 								
 								duplicateStops.add(duplicateStop);
 								
-								result.add(new InvalidValue("stop", "stop_lat,stop_lon", duplicateStop.getStopIds(), "DuplicateStops", duplicateStop.toString(), duplicateStop));
+								result.add(new InvalidValue("stop", "stop_lat,stop_lon", duplicateStop.getStopIds(), "DuplicateStops", duplicateStop.toString(), duplicateStop, Priority.LOW));
 								
 							}
 						}
@@ -554,7 +555,7 @@ public class GtfsValidationService {
     		
     	  String tripId = trip.getId().toString();
     	  if (trip.getShapeId() == null) {
-    	    result.add(new InvalidValue("trip", "shape_id", tripId, "MissingShape", "Trip " + tripId + " is missing a shape", null));
+    	    result.add(new InvalidValue("trip", "shape_id", tripId, "MissingShape", "Trip " + tripId + " is missing a shape", null, Priority.MEDIUM));
     	    continue;
     	  }
     		String shapeId = trip.getShapeId().getId();
@@ -583,7 +584,7 @@ public class GtfsValidationService {
           firstShapeGeom = geometryFactory.createPoint(GeoUtils.convertLatLonToEuclidean(firstShapeCoord));
           lastShapeGeom = geometryFactory.createPoint(GeoUtils.convertLatLonToEuclidean(lastShapeCoord));
     		} catch (Exception any) {
-          result.add(new InvalidValue("trip", "shape_id", tripId, "MissingCoordinates", "Trip " + tripId + " is missing coordinates", null));
+          result.add(new InvalidValue("trip", "shape_id", tripId, "MissingCoordinates", "Trip " + tripId + " is missing coordinates", null, Priority.HIGH));
     		  continue;
     		}
 
@@ -599,7 +600,7 @@ public class GtfsValidationService {
 			
     		// check if first stop is x times closer to end of shape than the beginning or last stop is x times closer to start than the end
     		if(distanceFirstStopToStart > (distanceFirstStopToEnd * distanceMultiplier) && distanceLastStopToEnd > (distanceLastStopToStart * distanceMultiplier)) {
-    		  result.add(new InvalidValue("trip", "shape_id", tripId, "ReversedTripShape", "Trip " + tripId + " references reversed shape " + shapeId, null));
+    		  result.add(new InvalidValue("trip", "shape_id", tripId, "ReversedTripShape", "Trip " + tripId + " references reversed shape " + shapeId, null, Priority.MEDIUM));
     		}
     	}
     	
