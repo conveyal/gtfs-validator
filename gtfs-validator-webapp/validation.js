@@ -7,6 +7,50 @@ var _ = require('underscore');
 
 // framework for representing invalid values
 $(document).ready(function () {
+    // Helpers for the views
+    // hat tip: http://lostechies.com/derickbailey/2012/04/26/view-helpers-for-underscore-templates/
+    var viewHelpers = {
+	// highlight the date appropriately for if it is within 2 weeks (yellow) or past (red)
+	getClassForEndDate: function (date) {
+	    var daysToExpiration = (date - new Date()) / (60 * 60 * 24 * 1000);
+
+	    if (daysToExpiration > 14) {
+		return '';
+	    }
+	    else if (daysToExpiration >= 0) {
+		return 'bg-warning';
+	    }
+	    else return 'bg-danger';
+	},
+
+	getClassForStartDate: function (date) {
+	    if (new Date() - date >= 0)
+		return '';
+	    else return 'bg-danger';
+	},
+
+	getClassForSpan: function (startDate, endDate) {
+	    var daysToExpiration = (endDate - new Date()) / (60 * 60 * 24 * 1000);
+	    var daysSinceStart = (new Date() - startDate) / (60 * 60 * 24 * 1000);
+
+	    if (daysToExpiration < 0) {
+		return 'bg-danger';
+	    }
+	    else if (daysSinceStart < 0) {
+		return 'bg-danger';
+	    }
+	    else if (daysToExpiration < 14) {
+		return 'bg-warning';
+	    }
+	    else return '';
+	},
+
+	// bg-danger if the count is zero
+	highlightZeroCount: function (count) {
+	    return count == 0 ? 'bg-danger' : '';
+	}
+    };
+
     var InvalidValue = Backbone.Model.extend({});
     var InvalidValueColl = Backbone.Collection.extend({
 	model: InvalidValue,
@@ -46,7 +90,7 @@ $(document).ready(function () {
 	id: function () { return 'feed-' + this.model.attributes.index },
 	attributes: function () { return {"data-name": this.model.attributes.loadStatus == 'SUCCESS' ? this.model.attributes.agencies.join(', ') : this.model.attributes.feedFileName };}, 
 	render: function () {
-	    this.$el.html(feedTemplate(this.model.attributes));
+	    this.$el.html(feedTemplate(_.extend(this.model.attributes, viewHelpers)));
 
 	    // append the invalid value information
 	    // create the panels and populate them, but only if the load was successful (otherwise we have nothing to show)
@@ -186,7 +230,7 @@ $(document).ready(function () {
 	    var feedTable = this.$('.feed-table');
 	    this.collection.each(function (feed) {
 		new FeedView({model: feed}).render().$el.appendTo(this.$('.facets'));
-		feedTable.append(feedTableEntryTemplate(feed.attributes))
+		feedTable.append(feedTableEntryTemplate(_.extend(feed.attributes, viewHelpers)))
 	    });
 
 	    navModel.attributes.current = this.$('#run');

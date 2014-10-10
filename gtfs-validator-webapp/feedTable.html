@@ -6,10 +6,15 @@
     </td>
     <td class="<%= totalErrors > 0 ? 'bg-warning' : 'bg-success' %>">Yes</span></td>
     <td><%= totalErrors %></td>
-    <td><%= routeCount %></td>
-    <td><%= tripCount %></td>
-    <td><%= startDate.toDateString() %></td>
-    <td><%= endDate.toDateString() %></td>
+    <td class="<%= highlightZeroCount(routeCount) %>"><%= routeCount %></td>
+    <td class="<%= highlightZeroCount(tripCount) %>"><%= tripCount %></td>
+    <td class="<%= highlightZeroCount(stopTimesCount) %>"><%= stopTimesCount %></td>
+    <% if (stopTimesCount > 0) { %>
+      <td class="<%= getClassForStartDate(startDate) %>"><%= startDate.toDateString() %></td>
+      <td class="<%= getClassForEndDate(endDate) %>"><%= endDate.toDateString() %></td>
+    <% } else { %>
+      <td>-</td><td>-</td>
+    <% } %>
   </tr>
 <% } else { %>
   <tr>
