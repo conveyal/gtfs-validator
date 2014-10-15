@@ -1,6 +1,8 @@
 package com.conveyal.gtfs.model;
 
-public class InvalidValue {
+import java.io.Serializable;
+
+public class InvalidValue implements Serializable {
 
 	public String affectedEntity;
 	

@@ -1,5 +1,6 @@
 package com.conveyal.gtfs.validator.json;
 
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.Date;
 
@@ -13,7 +14,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * @author mattwigway
  *
  */
-public class FeedValidationResult {
+public class FeedValidationResult implements Serializable {
 	/** Were we able to load the GTFS at all (note that this should only indicate corrupted files,
 	 * not missing ones; that should raise an exception instead.)
 	 */

@@ -1,8 +1,10 @@
 package com.conveyal.gtfs.model;
 
+import java.io.Serializable;
+
 import org.onebusaway.gtfs.model.Stop;
 
-public class DuplicateStops {
+public class DuplicateStops implements Serializable {
 
 	public Stop stop1;
 	public Stop stop2;
