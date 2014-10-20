@@ -77,6 +77,7 @@ public class FeedProcessor {
 		}
 		catch (ZipException e) {
 			output.loadStatus = LoadStatus.INVALID_ZIP_FILE;
+			output.loadFailureReason = "Invalid ZIP file, not a ZIP file, or file corrupted";
 		}
 		catch (CsvEntityIOException e) {
 			Throwable cause = e.getCause();
@@ -91,6 +92,7 @@ public class FeedProcessor {
 			    
 			else {
 				output.loadStatus = LoadStatus.OTHER_FAILURE;
+				output.loadFailureReason = "Unknown failure";
 			}
 		}
 		catch (IOException e) {
