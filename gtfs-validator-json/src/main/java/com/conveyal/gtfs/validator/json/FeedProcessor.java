@@ -128,6 +128,7 @@ public class FeedProcessor {
 		output.routeCount = stats.getRouteCount();
 		output.tripCount = stats.getTripCount();
 		output.stopTimesCount = stats.getStopTimesCount();
+		output.bounds = stats.getBounds();
 		
 		Date calDateStart = stats.getCalendarDateStart();
 		Date calSvcStart = stats.getCalendarServiceRangeStart();

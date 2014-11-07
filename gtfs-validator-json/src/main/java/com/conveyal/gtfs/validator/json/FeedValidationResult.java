@@ -1,5 +1,6 @@
 package com.conveyal.gtfs.validator.json;
 
+import java.awt.geom.Rectangle2D;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.Date;
@@ -52,4 +53,7 @@ public class FeedValidationResult implements Serializable {
 	
 	/** The last date the feed has service, either in calendar.txt or calendar_dates.txt */
 	public Date endDate;
+	
+	/** The bounding box of the stops in this feed */
+	public Rectangle2D bounds;
 }

@@ -1,5 +1,7 @@
 package com.conveyal.gtfs.service.impl;
 
+import java.awt.geom.Point2D;
+import java.awt.geom.Rectangle2D;
 import java.util.Collection;
 import java.util.Date;
 
@@ -215,6 +217,26 @@ public class GtfsStatisticsService implements StatisticsService {
 
     return endDate;
   }
+  
+  /**
+   * Get the bounding box of this GTFS feed.
+   * We use a Rectangle2D rather than a Geotools envelope because GTFS is always in WGS 84.
+   * Note that stops do not have bounds in GTFS.
+   */
+  public Rectangle2D getBounds () {
+      Rectangle2D ret = null;
+      
+      for (Stop stop : gtfsDao.getAllStops()) {
+          if (ret == null) {
+              ret = new Rectangle2D.Double(stop.getLon(), stop.getLat(), 0, 0);
+          }
+          else {
+              ret.add(new Point2D.Double(stop.getLon(), stop.getLat()));
+          }
+      }
+  
+      return ret;
+  }
 
   public Statistic getStatistic(String agencyId) {
     Statistic gs = new Statistic();
@@ -227,6 +249,7 @@ public class GtfsStatisticsService implements StatisticsService {
     gs.setCalendarEndDate(getCalendarDateEnd(agencyId));
     gs.setCalendarServiceStart(getCalendarServiceRangeStart(agencyId));
     gs.setCalendarServiceEnd(getCalendarServiceRangeEnd(agencyId));
+    gs.setBounds(getBounds());
     return gs;
   }
 
