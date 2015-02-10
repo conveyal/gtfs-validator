@@ -221,7 +221,7 @@ public class GtfsStatisticsService implements StatisticsService {
   /**
    * Get the bounding box of this GTFS feed.
    * We use a Rectangle2D rather than a Geotools envelope because GTFS is always in WGS 84.
-   * Note that stops do not have bounds in GTFS.
+   * Note that stops do not have agencies in GTFS.
    */
   public Rectangle2D getBounds () {
       Rectangle2D ret = null;

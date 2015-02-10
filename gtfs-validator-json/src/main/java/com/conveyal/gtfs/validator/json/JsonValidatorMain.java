@@ -48,7 +48,5 @@ public class JsonValidatorMain {
         JsonSerializer serializer = new JsonSerializer(results);
         // TODO: error handling
         serializer.serializeToFile(new File(args[args.length - 1]));
-
     }
-
 }
