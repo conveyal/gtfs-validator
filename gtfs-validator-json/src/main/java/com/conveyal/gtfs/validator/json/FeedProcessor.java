@@ -153,7 +153,7 @@ public class FeedProcessor {
 		else if (calSvcEnd == null)
 			output.endDate = calDateEnd;
 		else
-			output.endDate = calDateEnd.before(calSvcEnd) ? calDateEnd : calSvcEnd;
+			output.endDate = calDateEnd.after(calSvcEnd) ? calDateEnd : calSvcEnd;
 		
 		Collection<Agency> agencies = dao.getAllAgencies();
 		output.agencies = new HashSet<String>(agencies.size());
