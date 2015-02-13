@@ -263,7 +263,9 @@ public class GtfsValidationService {
 			ArrayList<StopTime> stopTimes = tripStopTimes.get(tripId);
 			
 			if(stopTimes == null || stopTimes.isEmpty()) {
-				result.add(new InvalidValue("trip", "trip_id", tripId, "NoStopTimesForTrip", "Trip Id " + tripId + " has no stop times." , null, Priority.HIGH));
+				InvalidValue iv = new InvalidValue("trip", "trip_id", tripId, "NoStopTimesForTrip", "Trip Id " + tripId + " has no stop times." , null, Priority.HIGH);
+				iv.route = trip.getRoute();
+				result.add(iv);
 				continue;
 			}
 				
@@ -272,13 +274,20 @@ public class GtfsValidationService {
 			StopTime previousStopTime = null;
 			for(StopTime stopTime : stopTimes) {
 				
-				if(stopTime.getDepartureTime() < stopTime.getArrivalTime()) 
-					result.add(new InvalidValue("stop_time", "trip_id", tripId, "StopTimeDepartureBeforeArrival", "Trip Id " + tripId + " stop sequence " + stopTime.getStopSequence() + " departs before arriving.", null, Priority.HIGH));
+				if(stopTime.getDepartureTime() < stopTime.getArrivalTime()) {
+					InvalidValue iv = 
+						new InvalidValue("stop_time", "trip_id", tripId, "StopTimeDepartureBeforeArrival", "Trip Id " + tripId + " stop sequence " + stopTime.getStopSequence() + " departs before arriving.", null, Priority.HIGH);
+					iv.route = trip.getRoute();
+					result.add(iv);
+				}
 				
 				if(previousStopTime != null) {					
 					
 					if(stopTime.getArrivalTime() < previousStopTime.getDepartureTime()) {
-						result.add(new InvalidValue("stop_time", "trip_id", tripId, "StopTimesOutOfSequence", "Trip Id " + tripId + " stop sequence " + stopTime.getStopSequence() + " arrives before departing " + previousStopTime.getStopSequence(), null, Priority.HIGH));
+						InvalidValue iv =
+								new InvalidValue("stop_time", "trip_id", tripId, "StopTimesOutOfSequence", "Trip Id " + tripId + " stop sequence " + stopTime.getStopSequence() + " arrives before departing " + previousStopTime.getStopSequence(), null, Priority.HIGH);
+						iv.route = trip.getRoute();
+						result.add(iv);
 						
 						// only capturing first out of sequence stop for now -- could consider collapsing duplicates based on tripId
 						break;					
@@ -326,7 +335,10 @@ public class GtfsValidationService {
 			
 			if(duplicateTripHash.containsKey(tripKey)) {
 				String duplicateTripId = duplicateTripHash.get(tripKey);
-				result.add(new InvalidValue("trip", "trip_id", tripId, "DuplicateTrip", "Trip Ids " + duplicateTripId + " & " + tripId + " are duplicates (" + tripKey + ")" , null, Priority.LOW));
+				InvalidValue iv =
+						new InvalidValue("trip", "trip_id", tripId, "DuplicateTrip", "Trip Ids " + duplicateTripId + " & " + tripId + " are duplicates (" + tripKey + ")" , null, Priority.LOW);
+				iv.route = trip.getRoute();
+				result.add(iv);
 				
 			}
 			else
@@ -359,8 +371,13 @@ public class GtfsValidationService {
 							continue;
 						
 						// if trips have same service id they overlap
-						if(i1.trip.getServiceId().getId().equals(i2.trip.getServiceId().getId()))
-							result.add(new InvalidValue("trip", "block_id", blockId, "OverlappingTripsInBlock", "Trip Ids " + tripId1 + " & " + tripId2 + " overlap and share block Id " + blockId , null, Priority.HIGH));
+						if(i1.trip.getServiceId().getId().equals(i2.trip.getServiceId().getId())) {
+							InvalidValue iv =
+								new InvalidValue("trip", "block_id", blockId, "OverlappingTripsInBlock", "Trip Ids " + tripId1 + " & " + tripId2 + " overlap and share block Id " + blockId , null, Priority.HIGH);
+							// not strictly correct; they could be on different routes
+							iv.route = i1.trip.getRoute();
+							result.add(iv);
+						}
 						
 						else {
 							
@@ -369,7 +386,9 @@ public class GtfsValidationService {
 							for(Date d1 : serviceCalendarDates.get(i1.trip.getServiceId().getId())) {
 								
 								if(serviceCalendarDates.get(i2.trip.getServiceId().getId()).contains(d1)) {
-									result.add(new InvalidValue("trip", "block_id", blockId, "OverlappingTripsInBlock", "Trip Ids " + tripId1 + " & " + tripId2 + " overlap and share block Id " + blockId , null, Priority.HIGH));
+									InvalidValue iv = new InvalidValue("trip", "block_id", blockId, "OverlappingTripsInBlock", "Trip Ids " + tripId1 + " & " + tripId2 + " overlap and share block Id " + blockId , null, Priority.HIGH);
+									iv.route = i1.trip.getRoute();
+									result.add(iv);
 									break;
 								}
 							}
@@ -555,7 +574,9 @@ public class GtfsValidationService {
     		
     	  String tripId = trip.getId().toString();
     	  if (trip.getShapeId() == null) {
-    	    result.add(new InvalidValue("trip", "shape_id", tripId, "MissingShape", "Trip " + tripId + " is missing a shape", null, Priority.MEDIUM));
+    		InvalidValue iv = new InvalidValue("trip", "shape_id", tripId, "MissingShape", "Trip " + tripId + " is missing a shape", null, Priority.MEDIUM);
+    		iv.route = trip.getRoute();
+    	    result.add(iv);
     	    continue;
     	  }
     		String shapeId = trip.getShapeId().getId();
@@ -584,7 +605,9 @@ public class GtfsValidationService {
           firstShapeGeom = geometryFactory.createPoint(GeoUtils.convertLatLonToEuclidean(firstShapeCoord));
           lastShapeGeom = geometryFactory.createPoint(GeoUtils.convertLatLonToEuclidean(lastShapeCoord));
     		} catch (Exception any) {
-          result.add(new InvalidValue("trip", "shape_id", tripId, "MissingCoordinates", "Trip " + tripId + " is missing coordinates", null, Priority.MEDIUM));
+    			InvalidValue iv = new InvalidValue("trip", "shape_id", tripId, "MissingCoordinates", "Trip " + tripId + " is missing coordinates", null, Priority.MEDIUM);
+    			iv.route = trip.getRoute();
+    			result.add(iv);
     		  continue;
     		}
 
@@ -600,7 +623,10 @@ public class GtfsValidationService {
 			
     		// check if first stop is x times closer to end of shape than the beginning or last stop is x times closer to start than the end
     		if(distanceFirstStopToStart > (distanceFirstStopToEnd * distanceMultiplier) && distanceLastStopToEnd > (distanceLastStopToStart * distanceMultiplier)) {
-    		  result.add(new InvalidValue("trip", "shape_id", tripId, "ReversedTripShape", "Trip " + tripId + " references reversed shape " + shapeId, null, Priority.MEDIUM));
+    			InvalidValue iv =
+    					new InvalidValue("trip", "shape_id", tripId, "ReversedTripShape", "Trip " + tripId + " references reversed shape " + shapeId, null, Priority.MEDIUM);
+    			iv.route = trip.getRoute();
+    		  result.add(iv);
     		}
     	}
     	

@@ -2,6 +2,8 @@ package com.conveyal.gtfs.model;
 
 import java.io.Serializable;
 
+import org.onebusaway.gtfs.model.Route;
+
 public class InvalidValue implements Serializable {
 
 	public String affectedEntity;
@@ -18,6 +20,9 @@ public class InvalidValue implements Serializable {
 	public Priority priority;
 	
 	public Object problemData;
+	
+	/** The route affected by this issue */
+	public Route route;
 	
 	@Deprecated
 	/**
