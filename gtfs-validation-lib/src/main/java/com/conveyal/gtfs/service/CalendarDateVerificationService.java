@@ -5,10 +5,12 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Set;
 
 import org.onebusaway.gtfs.impl.calendar.CalendarServiceDataFactoryImpl;
 import org.onebusaway.gtfs.model.AgencyAndId;
 import org.onebusaway.gtfs.model.ServiceCalendar;
+import org.onebusaway.gtfs.model.ServiceCalendarDate;
 import org.onebusaway.gtfs.model.Trip;
 import org.onebusaway.gtfs.model.calendar.ServiceDate;
 import org.onebusaway.gtfs.services.GtfsMutableRelationalDao;
@@ -30,10 +32,8 @@ public class CalendarDateVerificationService {
 	public CalendarDateVerificationService(GtfsMutableRelationalDao gmd){
 		gtfsMDao = gmd;
 		stats = new GtfsStatisticsService(gmd);
-		CalendarServiceDataFactoryImpl factory = new CalendarServiceDataFactoryImpl();
-		factory.setGtfsDao(gmd);
 		calendarService = CalendarServiceDataFactoryImpl.createService(gmd);
-		
+				
 		start = Calendar.getInstance();
 		end = Calendar.getInstance();
 		from = stats.getCalendarServiceRangeStart();
@@ -43,6 +43,14 @@ public class CalendarDateVerificationService {
 	public HashMap<AgencyAndId, Integer> getTripCountsForAllServiceIDs() {
 		HashMap<AgencyAndId, Integer> tripsPerCalHash = new HashMap<AgencyAndId, Integer>();
 		for (ServiceCalendar serviceCalendar : gtfsMDao.getAllCalendars()) {
+			int tripCount =0;
+			for (Trip t: gtfsMDao.getAllTrips()){
+				if (t.getServiceId().equals(serviceCalendar.getServiceId())){
+					tripCount++;
+				}
+				tripsPerCalHash.put(serviceCalendar.getServiceId(), tripCount);
+			}}
+		for (ServiceCalendarDate serviceCalendar : gtfsMDao.getAllCalendarDates()) {
 			int tripCount =0;
 			for (Trip t: gtfsMDao.getAllTrips()){
 				if (t.getServiceId().equals(serviceCalendar.getServiceId())){
@@ -73,10 +81,10 @@ public class CalendarDateVerificationService {
 					tripCount = tripCount + tripsPerServHash.get(sid);
 				}
 			}
-				
 			tripsPerDateHash.put(targetDay.getAsDate(), tripCount);
 			start.add(Calendar.DATE, 1);
 		}
+		
 		return tripsPerDateHash;
 	}
 	
@@ -93,13 +101,23 @@ public class CalendarDateVerificationService {
 			for (AgencyAndId sid : calendarService.getServiceIdsOnDate(targetDay)){
 				serviceIdsForTargetDay.add(sid);
 				}
+			for (ServiceCalendarDate serviceCalendar : gtfsMDao.getAllCalendarDates()) {
+				if (serviceCalendar.getDate() == targetDay && serviceCalendar.getExceptionType() == 1){
+					AgencyAndId sid = serviceCalendar.getServiceId();
+					serviceIdsForTargetDay.add(sid);
+				}
+			}
 			serviceIdsForDates.put(targetDay.getAsDate(), serviceIdsForTargetDay);
 			start.add(Calendar.DATE, 1);
 		}
-
 		return serviceIdsForDates;
 		
 	}
+	
+	public static Set<AgencyAndId> getCalendars(ServiceDate date) {
+		return calendarService.getServiceIdsOnDate(date);
+	}
+	
 	public static String formatTripCountForServiceIDs(CalendarDateVerificationService t){
 		return Arrays.toString(t.getTripCountsForAllServiceIDs().entrySet().toArray());
 	}
