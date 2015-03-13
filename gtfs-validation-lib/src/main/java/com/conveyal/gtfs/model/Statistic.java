@@ -1,5 +1,6 @@
 package com.conveyal.gtfs.model;
 
+import java.awt.geom.Rectangle2D;
 import java.util.Date;
 import java.util.HashMap;
 
@@ -20,6 +21,7 @@ public class Statistic {
 	private Date calendarServiceEnd;
 	private Date calendarStartDate;
 	private Date calendarEndDate;
+	private Rectangle2D bounds;
 		
 	public String getAgencyId() {
 		return agencyId;
@@ -75,6 +77,10 @@ public class Statistic {
 	public void setCalendarServiceEnd(Date calendarServiceEnd) {
 		this.calendarServiceEnd = calendarServiceEnd;
 	}
-	
-	
+        public Rectangle2D getBounds() {
+            return bounds;
+        }
+        public void setBounds(Rectangle2D bounds) {
+            this.bounds = bounds;
+        }	
 }

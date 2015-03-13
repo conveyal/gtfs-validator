@@ -1,0 +1,12 @@
+<div class="panel panel-default">
+  <h4>
+    <a data-toggle="collapse" href="#<%= type + '-' + index %>"><%= type %> (<%= errorCount %> warnings)&nbsp;&nbsp;<span class="caret"></span></a>
+  </h4>
+</div>
+<div class="panel-collapse collapse" id="<%= type + '-' + index %>">
+  <table class="table table-condensed">
+    <tbody class="errors">
+    </tbody>
+  </table>
+</div>
+

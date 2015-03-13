@@ -1,0 +1,27 @@
+<% if (loadStatus == 'SUCCESS') { %>
+  <% var totalErrors = routes.length + stops.length + trips.length + shapes.length; %>
+  <tr>
+    <td>
+      <a href="#feed-<%= index %>" class="jump"><%= agencies.join(", ") %></a>
+    </td>
+    <td class="<%= totalErrors > 0 ? 'bg-warning' : 'bg-success' %>">Yes</span></td>
+    <td><%= totalErrors %></td>
+    <td class="<%= highlightZeroCount(routeCount) %>"><%= routeCount %></td>
+    <td class="<%= highlightZeroCount(tripCount) %>"><%= tripCount %></td>
+    <td class="<%= highlightZeroCount(stopTimesCount) %>"><%= stopTimesCount %></td>
+    <% if (stopTimesCount > 0) { %>
+      <td class="<%= getClassForStartDate(startDate) %>"><%= startDate.toDateString() %></td>
+      <td class="<%= getClassForEndDate(endDate) %>"><%= endDate.toDateString() %></td>
+    <% } else { %>
+      <td>-</td><td>-</td>
+    <% } %>
+  </tr>
+<% } else { %>
+  <tr>
+    <td>
+      <a href="#feed-<%= index %>" class="jump"><%= feedFileName %></a>
+    </td>
+    <td class="bg-danger">No</span></td>
+    <td colspan="6"><%= loadFailureReason %></td>
+  </tr>
+<% } %>

@@ -1,0 +1,24 @@
+<h1>Feed validation report for <%= loadStatus == 'SUCCESS' ? agencies.join(', ') : feedFileName %></h1>
+
+<table class="table">
+  <tbody>
+    <tr><th>Load Status</th><td><%= loadStatus %></td></tr>
+    <% if (loadStatus == 'SUCCESS') { %>
+      <tr><th>Number of Agencies</th><td class="<%= highlightZeroCount(agencyCount) %>"><%= agencyCount %></td></tr>
+      <tr><th>Number of Routes</th><td class="<%= highlightZeroCount(routeCount) %>"><%= routeCount %></td></tr>
+      <tr><th>Number of Trips</th><td class="<%= highlightZeroCount(tripCount) %>"><%= tripCount %></td></tr>
+      <tr><th>Number of Stop Times</th><td class="<%= highlightZeroCount(stopTimesCount) %>"><%= stopTimesCount %></td></tr>
+      <tr>
+	<th>Service Range</th>
+        <% if (stopTimesCount > 0) { %>
+          <td class="<%= getClassForSpan(startDate, endDate) %>"><%= startDate.toDateString() %> to <%= endDate.toDateString() %></td></tr>
+        <% } else { %>
+          <td>-</td>
+	<% } %>
+    <% } else { %>
+      <tr><th>Reason</th><td><%= loadFailureReason %></td></tr>
+    <% } %>
+  </tbody>
+</table>
+	
+<div class="panel-group error-panel"></div>

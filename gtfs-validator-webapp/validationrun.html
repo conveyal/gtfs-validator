@@ -1,0 +1,22 @@
+<!-- Represents a single validation run -->
+
+<span class="feed-nav"></span>
+
+<div class="facets">
+<div class="facet" id="run">
+  <h1><%= name %></h1>
+  Validation run on <%= date %>.<br>
+  <%= feedCount %> feeds processed, <%= loadCount %> successfully.
+  
+  <h3>Feeds processed</h3>
+  <table class="table">
+    <thead>
+      <tr>
+	<th>Feed</th><th>Loaded successfully?</th><th>Warnings</th><th>Routes</th><th>Trips</th><th>Stop times</th><th>Valid from</th><th>Valid to</th>
+      </tr>
+    </thead>
+    <tbody class="feed-table">
+    </tbody>
+  </table>
+</div>
+</div>

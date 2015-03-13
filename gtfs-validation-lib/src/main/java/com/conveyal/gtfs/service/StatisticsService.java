@@ -1,5 +1,6 @@
 package com.conveyal.gtfs.service;
 
+import java.awt.geom.Rectangle2D;
 import java.util.Date;
 
 import com.conveyal.gtfs.model.Statistic;
@@ -53,6 +54,8 @@ public interface StatisticsService {
 	Date getCalendarServiceRangeStart(String agencyId);
 
 	Date getCalendarServiceRangeEnd(String agencyId);
+	
+	Rectangle2D getBounds ();
 
 	Statistic getStatistic(String agencyId);
 }
