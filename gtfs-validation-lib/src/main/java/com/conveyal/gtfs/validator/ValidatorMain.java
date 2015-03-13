@@ -12,9 +12,12 @@ import java.util.logging.Logger;
 import org.onebusaway.gtfs.impl.GtfsRelationalDaoImpl;
 import org.onebusaway.gtfs.model.Agency;
 import org.onebusaway.gtfs.serialization.GtfsReader;
+import org.onebusaway.gtfs.services.GtfsMutableDao;
+import org.onebusaway.gtfs.services.GtfsMutableRelationalDao;
 
 import com.conveyal.gtfs.model.InvalidValue;
 import com.conveyal.gtfs.model.ValidationResult;
+import com.conveyal.gtfs.service.CalendarDateVerificationService;
 import com.conveyal.gtfs.service.GtfsValidationService;
 import com.conveyal.gtfs.service.StatisticsService;
 import com.conveyal.gtfs.service.impl.GtfsStatisticsService;
@@ -42,6 +45,7 @@ public class ValidatorMain {
 		System.err.println("Reading GTFS from " + inputGtfs.getPath());
 		
 		GtfsRelationalDaoImpl dao = new GtfsRelationalDaoImpl();
+		
 		GtfsReader reader = new GtfsReader();
 		
 		try {
@@ -57,6 +61,8 @@ public class ValidatorMain {
 		System.err.println("Read GTFS");
 				
 		GtfsValidationService validationService = new GtfsValidationService(dao);
+			
+		CalendarDateVerificationService calendarDateVerService = new CalendarDateVerificationService(dao);
 		
 		System.err.println("Validating routes");
 		ValidationResult routes = validationService.validateRoutes();
@@ -69,6 +75,9 @@ public class ValidatorMain {
 		
 		System.err.println("Checking for reversed trip shapes");
 		ValidationResult shapes = validationService.listReversedTripShapes();
+		
+		System.err.println("Checking for dates with no trips");
+		ValidationResult dates = calendarDateVerService.getCalendarProblems(); 
 		
 		System.err.println("Validation complete");
 		System.err.println("Calculating statistics");
@@ -124,6 +133,7 @@ public class ValidatorMain {
 		System.out.println("- Trips: " + getValidationSummary(trips));
 		System.out.println("- Stops: " + getValidationSummary(stops));
 		System.out.println("- Shapes: " + getValidationSummary(shapes));
+		System.out.println("- Dates: " + getValidationSummary(dates));
 		
 		System.out.println("\n### Routes");
 		System.out.println(getValidationReport(routes));
@@ -138,6 +148,9 @@ public class ValidatorMain {
 		
 		System.out.println("\n### Shapes");
 		System.out.println(getValidationReport(shapes));
+		
+		System.out.println("\n### Dates");
+		System.out.println(getValidationReport(dates));
 	}
 	
 	/**

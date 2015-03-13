@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 
 import org.onebusaway.gtfs.impl.calendar.CalendarServiceDataFactoryImpl;
@@ -16,6 +17,9 @@ import org.onebusaway.gtfs.model.calendar.ServiceDate;
 import org.onebusaway.gtfs.services.GtfsMutableRelationalDao;
 import org.onebusaway.gtfs.services.calendar.CalendarService;
 
+import com.conveyal.gtfs.model.InvalidValue;
+import com.conveyal.gtfs.model.Priority;
+import com.conveyal.gtfs.model.ValidationResult;
 import com.conveyal.gtfs.service.impl.GtfsStatisticsService;
 
 
@@ -114,7 +118,32 @@ public class CalendarDateVerificationService {
 		
 	}
 	
-	public static Set<AgencyAndId> getCalendars(ServiceDate date) {
+	public ArrayList<Date> getDatesWithNoTrips(){
+		ArrayList<Date> datesWithNoTrips = new ArrayList<Date>();
+		HashMap<Date, Integer> tc = getTripCountForDates();
+		for(Map.Entry<Date, Integer> d: tc.entrySet()){
+			if (d.getValue()==0){
+				datesWithNoTrips.add(d.getKey());
+			}
+		}
+		return datesWithNoTrips;
+	}
+
+	//I got 99 problems, and a calendar is one
+	public ValidationResult getCalendarProblems(){
+		ValidationResult vr = new ValidationResult();
+		ArrayList<Date> datesWithNoTrips = getDatesWithNoTrips();
+		for (Date d: datesWithNoTrips){
+			InvalidValue iv = new InvalidValue("calendar", "service_id", d.toString(), "NoServiceOnThisDate", "There is no service on " + d.toString(), null, Priority.HIGH);
+			vr.add(iv);
+		}
+		
+		//TODO add checks for dates with significant decreases in service (e.g. missing depot) 
+		
+		return vr;
+	}
+	
+	public static Set<AgencyAndId> getCalendarsForDate(ServiceDate date) {
 		return calendarService.getServiceIdsOnDate(date);
 	}
 	
