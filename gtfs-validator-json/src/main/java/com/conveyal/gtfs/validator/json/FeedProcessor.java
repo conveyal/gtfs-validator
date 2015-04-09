@@ -172,7 +172,8 @@ public class FeedProcessor {
 		Collection<Agency> agencies = dao.getAllAgencies();
 		output.agencies = new HashSet<String>(agencies.size());
 		for (Agency agency : agencies) {
-			output.agencies.add(agency.getName());
+			String agencyId = agency.getId();
+			output.agencies.add(agencyId == null || agencyId.isEmpty() ? agency.getName() : agencyId);
 		}
 	}
 	
