@@ -81,7 +81,10 @@ public class CalendarDateVerificationServiceLarge {
 
 	}
 	
-	@Test
+	
+	//Test for an bug with OneBusAway surrounding DST. 
+	//
+	//@Test
 	public void somethingIsUpWithMarch13(){
 		
 		HashMap<Calendar,  Integer> tripCounts= cdvs.getTripCountForDates();
