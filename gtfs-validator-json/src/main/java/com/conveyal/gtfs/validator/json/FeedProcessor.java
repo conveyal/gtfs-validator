@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.logging.Logger;
 import java.util.zip.ZipException;
 
@@ -15,6 +16,7 @@ import org.onebusaway.gtfs.model.Agency;
 import org.onebusaway.gtfs.serialization.GtfsReader;
 import org.onebusaway.gtfs.services.GtfsDao;
 
+import com.conveyal.gtfs.model.InvalidValue;
 import com.conveyal.gtfs.service.GtfsValidationService;
 import com.conveyal.gtfs.service.StatisticsService;
 import com.conveyal.gtfs.service.impl.GtfsStatisticsService;
@@ -114,6 +116,18 @@ public class FeedProcessor {
 		output.stops = validator.duplicateStops();
 		_log.fine("Checking shapes");
 		output.shapes = validator.listReversedTripShapes();
+		
+		// even though unused stops are found by validating trips, they make more sense as stop-level warnings
+		// move them over
+		Iterator<InvalidValue> tripIt = output.trips.invalidValues.iterator();
+		
+		while (tripIt.hasNext()) {
+			InvalidValue next = tripIt.next();
+			if (next.problemType.equals("UnusedStop")) {
+				output.stops.invalidValues.add(next);
+				tripIt.remove();
+			}					
+		}
 	}
 	
 	/**
@@ -158,7 +172,8 @@ public class FeedProcessor {
 		Collection<Agency> agencies = dao.getAllAgencies();
 		output.agencies = new HashSet<String>(agencies.size());
 		for (Agency agency : agencies) {
-			output.agencies.add(agency.getName());
+			String agencyId = agency.getId();
+			output.agencies.add(agencyId == null || agencyId.isEmpty() ? agency.getName() : agencyId);
 		}
 	}
 	
