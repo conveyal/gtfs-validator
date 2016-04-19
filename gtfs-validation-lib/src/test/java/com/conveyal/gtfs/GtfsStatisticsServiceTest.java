@@ -9,6 +9,7 @@ import junit.framework.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.onebusaway.gtfs.impl.GtfsDaoImpl;
+import org.onebusaway.gtfs.model.AgencyAndId;
 import org.onebusaway.gtfs.serialization.GtfsReader;
 
 import com.conveyal.gtfs.service.impl.GtfsStatisticsService;
@@ -92,5 +93,6 @@ public class GtfsStatisticsServiceTest {
 		Assert.assertEquals(gtfsStats.getCalendarDateEnd(), new Date(1401076800000l));
 	}
 	
+
 }
 

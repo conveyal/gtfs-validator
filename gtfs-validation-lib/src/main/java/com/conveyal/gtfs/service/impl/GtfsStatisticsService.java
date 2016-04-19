@@ -2,9 +2,12 @@ package com.conveyal.gtfs.service.impl;
 
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 
+import org.onebusaway.gtfs.impl.calendar.CalendarServiceDataFactoryImpl;
 import org.onebusaway.gtfs.model.Agency;
 import org.onebusaway.gtfs.model.AgencyAndId;
 import org.onebusaway.gtfs.model.Route;
@@ -13,7 +16,11 @@ import org.onebusaway.gtfs.model.ServiceCalendarDate;
 import org.onebusaway.gtfs.model.Stop;
 import org.onebusaway.gtfs.model.StopTime;
 import org.onebusaway.gtfs.model.Trip;
+import org.onebusaway.gtfs.model.calendar.ServiceDate;
 import org.onebusaway.gtfs.services.GtfsDao;
+import org.onebusaway.gtfs.services.GtfsMutableRelationalDao;
+import org.onebusaway.gtfs.services.GtfsRelationalDao;
+import org.onebusaway.gtfs.services.calendar.CalendarService;
 
 import com.conveyal.gtfs.model.Statistic;
 import com.conveyal.gtfs.service.StatisticsService;
@@ -24,199 +31,197 @@ import com.conveyal.gtfs.service.StatisticsService;
  */
 public class GtfsStatisticsService implements StatisticsService {
 
-  private GtfsDao gtfsDao = null;
+	private GtfsDao gtfsDao = null;
+	public GtfsStatisticsService(GtfsDao dao) {
+		gtfsDao = dao;
+		}
+	
+	public Integer getAgencyCount() {
+		return gtfsDao.getAllAgencies().size();
+	}
 
-  public GtfsStatisticsService(GtfsDao dao) {
-    gtfsDao = dao;
-  }
+	public Integer getRouteCount() {
+		return gtfsDao.getAllRoutes().size();
+	}
 
-  public Integer getAgencyCount() {
-    return gtfsDao.getAllAgencies().size();
-  }
+	public Integer getTripCount() {
+		return gtfsDao.getAllTrips().size();
+	}
 
-  public Integer getRouteCount() {
-    return gtfsDao.getAllRoutes().size();
-  }
+	public Integer getStopCount() {
+		return gtfsDao.getAllStops().size();
+	}
 
-  public Integer getTripCount() {
-    return gtfsDao.getAllTrips().size();
-  }
+	public Integer getStopTimesCount() {
+		return gtfsDao.getAllStopTimes().size();
+	}
 
-  public Integer getStopCount() {
-    return gtfsDao.getAllStops().size();
-  }
+	// calendar date range start/end assume a service calendar based schedule
+	// returns null for schedules without calendar service schedules
 
-  public Integer getStopTimesCount() {
-    return gtfsDao.getAllStopTimes().size();
-  }
+	public Date getCalendarServiceRangeStart() {
 
-  // calendar date range start/end assume a service calendar based schedule
-  // returns null for schedules without calendar service schedules
+		Date startDate = null;
 
-  public Date getCalendarServiceRangeStart() {
+		for (ServiceCalendar serviceCalendar : gtfsDao.getAllCalendars()) {
 
-    Date startDate = null;
+			if (startDate == null
+					|| serviceCalendar.getStartDate().getAsDate().before(startDate))
+				startDate = serviceCalendar.getStartDate().getAsDate();
+		}
 
-    for (ServiceCalendar serviceCalendar : gtfsDao.getAllCalendars()) {
+		return startDate;
 
-      if (startDate == null
-          || serviceCalendar.getStartDate().getAsDate().before(startDate))
-        startDate = serviceCalendar.getStartDate().getAsDate();
-    }
+	}
 
-    return startDate;
+	public Date getCalendarServiceRangeEnd() {
 
-  }
+		Date endDate = null;
 
-  public Date getCalendarServiceRangeEnd() {
-
-    Date endDate = null;
-
-    for (ServiceCalendar serviceCalendar : gtfsDao.getAllCalendars()) {
-
-      if (endDate == null
+		for (ServiceCalendar serviceCalendar : gtfsDao.getAllCalendars()) {
+			if (endDate == null
           || serviceCalendar.getEndDate().getAsDate().after(endDate))
         endDate = serviceCalendar.getEndDate().getAsDate();
-    }
+		}
 
-    return endDate;
-  }
+		return endDate;
+	}
 
-  public Date getCalendarDateStart() {
+	public Date getCalendarDateStart() {
 
-    Date startDate = null;
+		Date startDate = null;
 
-    for (ServiceCalendarDate serviceCalendarDate : gtfsDao.getAllCalendarDates()) {
+		for (ServiceCalendarDate serviceCalendarDate : gtfsDao.getAllCalendarDates()) {
 
-      if (startDate == null
-          || serviceCalendarDate.getDate().getAsDate().before(startDate))
-        startDate = serviceCalendarDate.getDate().getAsDate();
-    }
+			if (startDate == null
+					|| serviceCalendarDate.getDate().getAsDate().before(startDate))
+				startDate = serviceCalendarDate.getDate().getAsDate();
+		}
 
-    return startDate;
+		return startDate;
 
-  }
+	}
 
-  public Date getCalendarDateEnd() {
+	public Date getCalendarDateEnd() {
 
-    Date endDate = null;
+		Date endDate = null;
 
-    for (ServiceCalendarDate serviceCalendarDate : gtfsDao.getAllCalendarDates()) {
+		for (ServiceCalendarDate serviceCalendarDate : gtfsDao.getAllCalendarDates()) {
 
-      if (endDate == null
-          || serviceCalendarDate.getDate().getAsDate().after(endDate))
-        endDate = serviceCalendarDate.getDate().getAsDate();
-    }
+			if (endDate == null
+					|| serviceCalendarDate.getDate().getAsDate().after(endDate))
+				endDate = serviceCalendarDate.getDate().getAsDate();
+		}
 
-    return endDate;
-  }
+		return endDate;
+	}
 
-  public Collection<Agency> getAllAgencies() {
-    return gtfsDao.getAllAgencies();
-  }
+	public Collection<Agency> getAllAgencies() {
+		return gtfsDao.getAllAgencies();
+	}
 
-  public Integer getRouteCount(String agencyId) {
-    int count = 0;
-    Collection<Route> routes = gtfsDao.getAllRoutes();
-    for (Route route : routes) {
-      if (agencyId.equals(route.getAgency().getId())) {
-        count++;
-      }
-    }
-    return count;
-  }
+	public Integer getRouteCount(String agencyId) {
+		int count = 0;
+		Collection<Route> routes = gtfsDao.getAllRoutes();
+		for (Route route : routes) {
+			if (agencyId.equals(route.getAgency().getId())) {
+				count++;
+			}
+		}
+		return count;
+	}
 
-  public Integer getTripCount(String agencyId) {
-    int count = 0;
-    Collection<Trip> trips = gtfsDao.getAllTrips();
-    for (Trip trip : trips) {
-      if (agencyId.equals(trip.getRoute().getAgency().getId())) {
-        count++;
-      }
-    }
-    return count;
-  }
+	public Integer getTripCount(String agencyId) {
+		int count = 0;
+		Collection<Trip> trips = gtfsDao.getAllTrips();
+		for (Trip trip : trips) {
+			if (agencyId.equals(trip.getRoute().getAgency().getId())) {
+				count++;
+			}
+		}
+		return count;
+	}
 
-  public Integer getStopCount(String agencyId) {
-    int count = 0;
-    Collection<Stop> stops = gtfsDao.getAllStops();
-    for (Stop stop : stops) {
-      AgencyAndId id = stop.getId();
-      if (agencyId.equals(id.getAgencyId())) {
-        count++;
-      }
-    }
-    return count;
-  }
+	public Integer getStopCount(String agencyId) {
+		int count = 0;
+		Collection<Stop> stops = gtfsDao.getAllStops();
+		for (Stop stop : stops) {
+			AgencyAndId id = stop.getId();
+			if (agencyId.equals(id.getAgencyId())) {
+				count++;
+			}
+		}
+		return count;
+	}
 
-  public Integer getStopTimesCount(String agencyId) {
-    int count = 0;
-    Collection<StopTime> stopTimes = gtfsDao.getAllStopTimes();
-    for (StopTime stopTime : stopTimes) {
-      if (agencyId.equals(stopTime.getTrip().getRoute().getAgency().getId())) {
-        count++;
-      }
-    }
-    return count;
-  }
+	public Integer getStopTimesCount(String agencyId) {
+		int count = 0;
+		Collection<StopTime> stopTimes = gtfsDao.getAllStopTimes();
+		for (StopTime stopTime : stopTimes) {
+			if (agencyId.equals(stopTime.getTrip().getRoute().getAgency().getId())) {
+				count++;
+			}
+		}
+		return count;
+	}
 
-  public Date getCalendarServiceRangeStart(String agencyId) {
+	public Date getCalendarServiceRangeStart(String agencyId) {
 
-    Date startDate = null;
+		Date startDate = null;
 
-    for (ServiceCalendar serviceCalendar : gtfsDao.getAllCalendars()) {
-      if (agencyId.equals(serviceCalendar.getServiceId().getAgencyId())) {
-        if (startDate == null
-            || serviceCalendar.getStartDate().getAsDate().before(startDate))
-          startDate = serviceCalendar.getStartDate().getAsDate();
-      }
-    }
+		for (ServiceCalendar serviceCalendar : gtfsDao.getAllCalendars()) {
+			if (agencyId.equals(serviceCalendar.getServiceId().getAgencyId())) {
+				if (startDate == null
+						|| serviceCalendar.getStartDate().getAsDate().before(startDate))
+					startDate = serviceCalendar.getStartDate().getAsDate();
+			}
+		}
 
-    return startDate;
+		return startDate;
 
-  }
+	}
 
-  public Date getCalendarServiceRangeEnd(String agencyId) {
-    Date endDate = null;
-    for (ServiceCalendar serviceCalendar : gtfsDao.getAllCalendars()) {
-      if (agencyId.equals(serviceCalendar.getServiceId().getAgencyId())) {
-        if (endDate == null
-            || serviceCalendar.getEndDate().getAsDate().after(endDate))
-          endDate = serviceCalendar.getEndDate().getAsDate();
-      }
-    }
+	public Date getCalendarServiceRangeEnd(String agencyId) {
+		Date endDate = null;
+		for (ServiceCalendar serviceCalendar : gtfsDao.getAllCalendars()) {
+			if (agencyId.equals(serviceCalendar.getServiceId().getAgencyId())) {
+				if (endDate == null
+						|| serviceCalendar.getEndDate().getAsDate().after(endDate))
+					endDate = serviceCalendar.getEndDate().getAsDate();
+			}
+		}
 
-    return endDate;
-  }
+		return endDate;
+	}
 
-  public Date getCalendarDateStart(String agencyId) {
+	public Date getCalendarDateStart(String agencyId) {
 
-    Date startDate = null;
+		Date startDate = null;
 
-    for (ServiceCalendarDate serviceCalendarDate : gtfsDao.getAllCalendarDates()) {
-      if (agencyId.equals(serviceCalendarDate.getServiceId().getAgencyId())) {
-        if (startDate == null
-            || serviceCalendarDate.getDate().getAsDate().before(startDate))
-          startDate = serviceCalendarDate.getDate().getAsDate();
-      }
-    }
+		for (ServiceCalendarDate serviceCalendarDate : gtfsDao.getAllCalendarDates()) {
+			if (agencyId.equals(serviceCalendarDate.getServiceId().getAgencyId())) {
+				if (startDate == null
+						|| serviceCalendarDate.getDate().getAsDate().before(startDate))
+					startDate = serviceCalendarDate.getDate().getAsDate();
+			}
+		}
 
-    return startDate;
+		return startDate;
 
-  }
+	}
 
-  public Date getCalendarDateEnd(String agencyId) {
-    Date endDate = null;
-    for (ServiceCalendarDate serviceCalendarDate : gtfsDao.getAllCalendarDates()) {
-      if (agencyId.equals(serviceCalendarDate.getServiceId().getAgencyId())) {
-        if (endDate == null
-            || serviceCalendarDate.getDate().getAsDate().after(endDate))
-          endDate = serviceCalendarDate.getDate().getAsDate();
-      }
-    }
+	public Date getCalendarDateEnd(String agencyId) {
+		Date endDate = null;
+		for (ServiceCalendarDate serviceCalendarDate : gtfsDao.getAllCalendarDates()) {
+			if (agencyId.equals(serviceCalendarDate.getServiceId().getAgencyId())) {
+				if (endDate == null
+						|| serviceCalendarDate.getDate().getAsDate().after(endDate))
+					endDate = serviceCalendarDate.getDate().getAsDate();
+			}
+		}
 
-    return endDate;
-  }
+		return endDate;
+	}
   
   /**
    * Get the bounding box of this GTFS feed.
@@ -238,46 +243,48 @@ public class GtfsStatisticsService implements StatisticsService {
       return ret;
   }
 
-  public Statistic getStatistic(String agencyId) {
-    Statistic gs = new Statistic();
-    gs.setAgencyId(agencyId);
-    gs.setRouteCount(getRouteCount(agencyId));
-    gs.setTripCount(getTripCount(agencyId));
-    gs.setStopCount(getStopCount(agencyId));
-    gs.setStopTimeCount(getStopTimesCount(agencyId));
-    gs.setCalendarStartDate(getCalendarDateStart(agencyId));
-    gs.setCalendarEndDate(getCalendarDateEnd(agencyId));
-    gs.setCalendarServiceStart(getCalendarServiceRangeStart(agencyId));
-    gs.setCalendarServiceEnd(getCalendarServiceRangeEnd(agencyId));
+	public Statistic getStatistic(String agencyId) {
+		Statistic gs = new Statistic();
+		gs.setAgencyId(agencyId);
+		gs.setRouteCount(getRouteCount(agencyId));
+		gs.setTripCount(getTripCount(agencyId));
+		gs.setStopCount(getStopCount(agencyId));
+		gs.setStopTimeCount(getStopTimesCount(agencyId));
+		gs.setCalendarStartDate(getCalendarDateStart(agencyId));
+		gs.setCalendarEndDate(getCalendarDateEnd(agencyId));
+		gs.setCalendarServiceStart(getCalendarServiceRangeStart(agencyId));
+		gs.setCalendarServiceEnd(getCalendarServiceRangeEnd(agencyId));
     gs.setBounds(getBounds());
-    return gs;
-  }
 
-  public String getStatisticAsCSV(String agencyId) {
-    Statistic s = getStatistic(agencyId);
-    return formatStatisticAsCSV(s);
-    
-  }
+		return gs;
+	}
 
-  public static String formatStatisticAsCSV(Statistic s) {
-    StringBuffer buff = new StringBuffer();
-    buff.append(s.getAgencyId());
-    buff.append(",");
-    buff.append(s.getRouteCount());
-    buff.append(",");
-    buff.append(s.getTripCount());
-    buff.append(",");
-    buff.append(s.getStopCount());
-    buff.append(",");
-    buff.append(s.getStopTimeCount());
-    buff.append(",");
-    buff.append(s.getCalendarServiceStart());
-    buff.append(",");
-    buff.append(s.getCalendarServiceEnd());
-    buff.append(",");
-    buff.append(s.getCalendarStartDate());
-    buff.append(",");
-    buff.append(s.getCalendarEndDate());
-    return buff.toString();
-  }
+	public String getStatisticAsCSV(String agencyId) {
+		Statistic s = getStatistic(agencyId);
+		return formatStatisticAsCSV(s);
+
+	}
+
+	public static String formatStatisticAsCSV(Statistic s) {
+		StringBuffer buff = new StringBuffer();
+		buff.append(s.getAgencyId());
+		buff.append(",");
+		buff.append(s.getRouteCount());
+		buff.append(",");
+		buff.append(s.getTripCount());
+		buff.append(",");
+		buff.append(s.getStopCount());
+		buff.append(",");
+		buff.append(s.getStopTimeCount());
+		buff.append(",");
+		buff.append(s.getCalendarServiceStart());
+		buff.append(",");
+		buff.append(s.getCalendarServiceEnd());
+		buff.append(",");
+		buff.append(s.getCalendarStartDate());
+		buff.append(",");
+		buff.append(s.getCalendarEndDate());
+		return buff.toString();
+	}
+
 }

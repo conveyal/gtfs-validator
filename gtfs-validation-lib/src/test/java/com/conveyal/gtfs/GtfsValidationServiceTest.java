@@ -18,6 +18,7 @@ import org.onebusaway.gtfs.model.Trip;
 import org.onebusaway.gtfs.serialization.GtfsReader;
 
 import com.conveyal.gtfs.model.DuplicateStops;
+import com.conveyal.gtfs.model.InvalidValue;
 import com.conveyal.gtfs.model.ValidationResult;
 import com.conveyal.gtfs.service.GtfsValidationService;
 import com.conveyal.gtfs.service.InputOutOfRange;
@@ -82,13 +83,11 @@ public class GtfsValidationServiceTest {
 		Assert.assertEquals(result.invalidValues.size(), 6);
 		
 	}
-	
+	// Test originally did not pass as some trips got included twice. 
 	@Test
 	public void validateTrips() {
 		ValidationResult result = gtfsValidation2.validateTrips();
-
 		Assert.assertEquals(result.invalidValues.size(), 9);
-		
 	}
 	
 	@Test

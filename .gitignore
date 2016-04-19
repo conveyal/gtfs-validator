@@ -1,3 +1,6 @@
 **/.project
 **/.settings
 **/.classpath
+.project
+.settings/org.eclipse.m2e.core.prefs
+gtfs-validation-lib/src/main/java/com/conveyal/gtfs/service/impl/testing.java
