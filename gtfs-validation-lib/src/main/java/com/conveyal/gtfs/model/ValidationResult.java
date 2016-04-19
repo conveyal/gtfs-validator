@@ -22,9 +22,12 @@ public class ValidationResult implements Serializable {
 		invalidValues.addAll(vr.invalidValues);
 	}
 	
-	public boolean containsBoth(String one, String two){
+		
+	public boolean containsBoth(String one, String two, String type){
 		for (InvalidValue iv: invalidValues){
-			if (iv.toString().contains(one) && iv.toString().contains(two)){
+			if (iv.problemDescription.contains(one) 
+					&& iv.problemDescription.contains(two)
+					&& iv.affectedEntity == type)	{
 				return true;
 			}
 		}

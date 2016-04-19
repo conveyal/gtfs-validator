@@ -372,8 +372,8 @@ public class GtfsValidationService {
 
 						// if trips have same service id they overlap
 						if(i1.trip.getServiceId().getId().equals(i2.trip.getServiceId().getId())) {
-							// but if they are already in the result set, remove them
-							if (!result.containsBoth(tripId1, tripId2)){
+							// but if they are already in the result set, ignore
+							if (!result.containsBoth(tripId1, tripId2, "trip")){
 								InvalidValue iv =
 										new InvalidValue("trip", "block_id", blockId, "OverlappingTripsInBlock", "Trip Ids " + tripId1 + " & " + tripId2 + " overlap and share block Id " + blockId , null, Priority.HIGH);
 								// not strictly correct; they could be on different routes

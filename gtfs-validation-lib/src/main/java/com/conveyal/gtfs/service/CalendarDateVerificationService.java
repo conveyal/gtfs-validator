@@ -120,7 +120,7 @@ public class CalendarDateVerificationService {
 			ServiceDate targetDay = new ServiceDate(start);
 			
 			for (AgencyAndId sid : calendarService.getServiceIdsOnDate(targetDay)){
-				System.out.println(targetDay.getAsCalendar(tz).getTime().toString() + " " +sid.toString());
+				//System.out.println(targetDay.getAsCalendar(tz).getTime().toString() + " " +sid.toString());
 				if (tripsPerDateHash.containsKey(targetDay)){
 					tripCount = tripsPerDateHash.get(targetDay);
 				}
@@ -158,7 +158,7 @@ public class CalendarDateVerificationService {
 				//System.out.println("cal: " + serviceCalendar + " ex " + serviceCalendar.getExceptionType());
 				if (serviceCalendar.getDate() == targetDay && serviceCalendar.getExceptionType() == 1){
 					AgencyAndId sid = serviceCalendar.getServiceId();
-					System.out.println(serviceCalendar + sid.toString());
+					//System.out.println(serviceCalendar + sid.toString());
 					serviceIdsForTargetDay.add(sid);
 				}
 				if (serviceCalendar.getDate() == targetDay && serviceCalendar.getExceptionType() == 2){
