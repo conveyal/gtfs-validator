@@ -12,6 +12,7 @@ import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Set;
 import java.util.TimeZone;
+import java.util.TreeMap;
 
 import junit.framework.Assert;
 
@@ -100,7 +101,7 @@ public class CalendarDateVerificationServiceTest {
 		d.setTime(day);
 		d.setTimeZone(cdvs.getTz());
 		
-		HashMap<Calendar, Integer> serviceMap = cdvs.getTripCountForDates();
+		TreeMap<Calendar, Integer> serviceMap = cdvs.getTripCountForDates();
 		assert(serviceMap.size() > 0);
 		
 		assertTrue(serviceMap.containsKey(d));

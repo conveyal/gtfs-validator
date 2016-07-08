@@ -151,6 +151,9 @@ public class ValidatorMain {
 		
 		System.out.println("\n### Dates");
 		System.out.println(getValidationReport(dates));
+		
+		System.out.println("\n### Active Calendars");
+		System.out.println(calendarDateVerService.getTripDataForEveryDay());
 	}
 	
 	/**

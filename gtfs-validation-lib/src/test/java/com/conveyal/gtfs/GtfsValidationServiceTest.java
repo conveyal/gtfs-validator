@@ -23,6 +23,7 @@ import com.conveyal.gtfs.model.ValidationResult;
 import com.conveyal.gtfs.service.GtfsValidationService;
 import com.conveyal.gtfs.service.InputOutOfRange;
 import com.conveyal.gtfs.service.impl.GtfsStatisticsService;
+import com.conveyal.gtfs.validator.ValidatorMain;
  
 public class GtfsValidationServiceTest {
  
@@ -79,15 +80,16 @@ public class GtfsValidationServiceTest {
 	@Test
 	public void validateRoutes() {
 		ValidationResult result = gtfsValidation2.validateRoutes();
-
-		Assert.assertEquals(result.invalidValues.size(), 6);
+		
+		Assert.assertEquals(5, result.invalidValues.size());
 		
 	}
 	// Test originally did not pass as some trips got included twice. 
 	@Test
 	public void validateTrips() {
 		ValidationResult result = gtfsValidation2.validateTrips();
-		Assert.assertEquals(result.invalidValues.size(), 9);
+		System.out.println(ValidatorMain.getValidationReport(result));
+		Assert.assertEquals(8,result.invalidValues.size());
 	}
 	
 	@Test

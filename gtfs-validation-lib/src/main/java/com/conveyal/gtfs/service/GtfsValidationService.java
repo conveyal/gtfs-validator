@@ -72,7 +72,7 @@ public class GtfsValidationService {
 				result.add(new InvalidValue("route", "route_short_name,route_long_name", routeId , "RouteShortAndLongNamesAreBlank", "", null, Priority.HIGH));
 
 			//ValidateRouteShortNameIsTooLong
-			if(shortName.length() > 6)
+			if(shortName.length() > 9)
 				result.add(new InvalidValue("route", "route_short_name", routeId, "ValidateRouteShortNameIsTooLong", "route_short_name is " +  shortName.length() + " chars ('" +  shortName + "')" , null, Priority.MEDIUM));
 
 			//ValidateRouteLongNameContainShortName
