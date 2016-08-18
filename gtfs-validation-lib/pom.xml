@@ -5,11 +5,11 @@
 	<parent>
 		<artifactId>gtfs-validator</artifactId>
 		<groupId>com.conveyal</groupId>
-		<version>0.0.1-SNAPSHOT</version>
+		<version>0.0.2-SNAPSHOT</version>
 	</parent>
 	<groupId>com.conveyal</groupId>
 	<artifactId>gtfs-validation-lib</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>0.0.2-SNAPSHOT</version>
 	<description>A Java framework for GTFS validation and statistics</description>
 
 	<properties>
