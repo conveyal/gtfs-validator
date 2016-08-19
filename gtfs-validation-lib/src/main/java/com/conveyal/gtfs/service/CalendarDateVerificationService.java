@@ -192,10 +192,13 @@ public class CalendarDateVerificationService {
 
 	//I got 99 problems, and a calendar is one
 	public ValidationResult getCalendarProblems(){
+		SimpleDateFormat fmt = new SimpleDateFormat("yyyy-MM-dd");
+		
 		ValidationResult vr = new ValidationResult();
 		ArrayList<Calendar> datesWithNoTrips = getDatesWithNoTrips();
 		for (Calendar d: datesWithNoTrips){
-			InvalidValue iv = new InvalidValue("calendar", "service_id", d.toString(), "NoServiceOnThisDate", "There is no service on " + d.toString(), null, Priority.HIGH);
+			String dateFormatted = fmt.format(d.getTime());
+			InvalidValue iv = new InvalidValue("calendar", "service_id", dateFormatted, "NoServiceOnThisDate", "There is no service on " + dateFormatted, null, Priority.HIGH);
 			vr.add(iv);
 		}
 

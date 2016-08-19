@@ -10,42 +10,46 @@ public class ServiceIdHelper {
 	public HumanReadableServiceID getHumanReadableCalendarFromServiceId(String id) {
 		HumanReadableServiceID sid=  new HumanReadableServiceID();
 
-		String[] serviceIdParts = id.split("_");
+		try {
+			String[] serviceIdParts = id.split("_");
 
-		if(serviceIdParts.length != 3){
-			serviceIdParts = id.split("-");
-			if (serviceIdParts.length > 1){
-				sid.setServiceId(id);
-			}
-		}
-		String[] serviceIdSubparts = serviceIdParts[2].split("-");
-
-		String[] depotParts = serviceIdParts[1].split("-");
-		
-		sid.setDepot(depotParts[depotParts.length -1]);
-		
-		String pickCode = serviceIdSubparts[0].toUpperCase();
-
-		char pickCodeWithoutYear = pickCode.toCharArray()[0];
-		if(pickCodeWithoutYear <= 'G') {
-			if (id.contains("Weekday")) {
-				if (id.contains("SDon")) {
-					sid.setServiceId("WEEKDAY_SCHOOL_OPEN");
-				} else {
-					sid.setServiceId("WEEKDAY_SCHOOL_CLOSED");
+			if(serviceIdParts.length != 3){
+				serviceIdParts = id.split("-");
+				if (serviceIdParts.length > 1){
+					sid.setServiceId(id);
 				}
-			} else if (id.contains("Saturday")) {
-				sid.setServiceId("SATURDAY");
-			} else if (id.contains("Sunday")) {
-				sid.setServiceId("SUNDAY");
-			} else
-				sid.setServiceId(null);
-		} else {
-			// holiday code
-			sid.setServiceId(ServiceCode.serviceCodeForGtfsId.get(Character.toString(pickCodeWithoutYear)).name());
-		}
-		if (id.contains("BM") || id.contains("b4")){
-			sid.appendToServiceId(" Trips Starting Before Midnight");;
+			}
+			String[] serviceIdSubparts = serviceIdParts[2].split("-");
+
+			String[] depotParts = serviceIdParts[1].split("-");
+			
+			sid.setDepot(depotParts[depotParts.length -1]);
+			
+			String pickCode = serviceIdSubparts[0].toUpperCase();
+
+			char pickCodeWithoutYear = pickCode.toCharArray()[0];
+			if(pickCodeWithoutYear <= 'G') {
+				if (id.contains("Weekday")) {
+					if (id.contains("SDon")) {
+						sid.setServiceId("WEEKDAY_SCHOOL_OPEN");
+					} else {
+						sid.setServiceId("WEEKDAY_SCHOOL_CLOSED");
+					}
+				} else if (id.contains("Saturday")) {
+					sid.setServiceId("SATURDAY");
+				} else if (id.contains("Sunday")) {
+					sid.setServiceId("SUNDAY");
+				} else
+					sid.setServiceId(null);
+			} else {
+				// holiday code
+				sid.setServiceId(ServiceCode.serviceCodeForGtfsId.get(Character.toString(pickCodeWithoutYear)).name());
+			}
+			if (id.contains("BM") || id.contains("b4")){
+				sid.appendToServiceId(" Trips Starting Before Midnight");;
+			}
+		} catch (Exception e) {
+			sid.setServiceId(id);
 		}
 
 		return sid;

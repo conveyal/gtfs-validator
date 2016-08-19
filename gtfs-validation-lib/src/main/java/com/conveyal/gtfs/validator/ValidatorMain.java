@@ -122,12 +122,14 @@ public class ValidatorMain {
 		Optional<Date> calDateEnd = stats.getCalendarDateEnd();
 		Date calSvcEnd = stats.getCalendarServiceRangeEnd();
 		
+		Date feedSvcStart = getEarliestDate(calDateStart, calSvcStart);
+		Date feedSvcEnd = getLatestDate(calDateEnd, calSvcEnd);
+		
+		
+		
 		// need an extra newline at the start so it doesn't get appended to the last list item if we let
 		// a markdown processor loose on the output.
-		System.out.println("\nFeed has service from " +
-								(calDateStart.get().before(calSvcStart) ? calDateStart : calSvcStart) +
-								" to " +
-								(calDateEnd.get().after(calSvcEnd) ? calDateEnd : calSvcEnd) + "\n");
+		System.out.println("\nFeed has service from " +	feedSvcStart +" to " + feedSvcEnd);
 								
 		System.out.println("## Validation Results");
 		System.out.println("- Routes: " + getValidationSummary(routes));
@@ -181,6 +183,20 @@ public class ValidatorMain {
 		}
 		
 		return sb.toString();
+	}
+	
+	static Date getEarliestDate(Optional<Date> o, Date d){
+		if (o.isPresent()){
+			d = o.get().before(d) ? o.get() : d;
+		}
+		return d;
+	}
+	
+	static Date getLatestDate(Optional<Date> o, Date d){
+		if(o.isPresent()){
+			d = o.get().after(d) ? o.get(): d;
+		}
+		return d;
 	}
 
 }

@@ -29,6 +29,9 @@ public class ServiceIdHelperTest {
 		
 		s = h.getHumanReadableCalendarFromServiceId("AC Transit_1606SU-D4-Weekday-10");
 		assertTrue(s.getDepot().equals("D4"));
+		
+		s = h.getHumanReadableCalendarFromServiceId("42348");
+		assertTrue(s.getServiceId().equals("42348"));
 	}
 
 }
