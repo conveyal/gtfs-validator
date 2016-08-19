@@ -3,6 +3,8 @@ gtfs-validator
 
 A Java framework for GTFS validation and statistics.
 
+[![Build Status](https://travis-ci.org/laidig/gtfs-validator.svg?branch=master)](https://travis-ci.org/laidig/gtfs-validator) [![Coverage Status](https://coveralls.io/repos/github/laidig/gtfs-validator/badge.svg?branch=master)](https://coveralls.io/github/laidig/gtfs-validator?branch=master)
+
 Using this framework
 ==============
 Check out this repository and import using Maven.
