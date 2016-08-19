@@ -6,6 +6,11 @@ import org.onebusaway.gtfs.model.Route;
 
 public class InvalidValue implements Serializable {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	public String affectedEntity;
 	
 	public String affectedField;

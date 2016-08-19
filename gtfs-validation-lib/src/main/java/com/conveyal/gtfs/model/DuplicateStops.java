@@ -6,6 +6,10 @@ import org.onebusaway.gtfs.model.Stop;
 
 public class DuplicateStops implements Serializable {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	public Stop stop1;
 	public Stop stop2;
 	

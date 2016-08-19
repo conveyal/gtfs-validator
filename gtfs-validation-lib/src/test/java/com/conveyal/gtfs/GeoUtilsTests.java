@@ -1,29 +1,10 @@
 package com.conveyal.gtfs;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Set;
-
 import junit.framework.Assert;
 
-import org.junit.BeforeClass;
 import org.junit.Test;
-import org.onebusaway.csv_entities.exceptions.CsvEntityIOException;
-import org.onebusaway.csv_entities.exceptions.MissingRequiredFieldException;
-import org.onebusaway.gtfs.impl.GtfsDaoImpl;
-import org.onebusaway.gtfs.model.Trip;
-import org.onebusaway.gtfs.serialization.GtfsReader;
-
-import com.conveyal.gtfs.model.DuplicateStops;
-import com.conveyal.gtfs.model.ValidationResult;
 import com.conveyal.gtfs.service.GeoUtils;
-import com.conveyal.gtfs.service.GtfsValidationService;
-import com.conveyal.gtfs.service.InputOutOfRange;
 import com.conveyal.gtfs.service.ProjectedCoordinate;
-import com.conveyal.gtfs.service.impl.GtfsStatisticsService;
 import com.vividsolutions.jts.geom.Coordinate;
  
 public class GeoUtilsTests {

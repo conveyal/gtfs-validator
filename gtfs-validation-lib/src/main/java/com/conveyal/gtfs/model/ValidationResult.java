@@ -9,6 +9,11 @@ import java.util.logging.Logger;
 
 public class ValidationResult implements Serializable {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	private static Logger _log = Logger.getLogger(ValidationResult.class.getName());
 			
 	public List<InvalidValue> invalidValues = new ArrayList<InvalidValue>();

@@ -102,10 +102,6 @@ public class ServiceIdHelper {
 			mapServiceCode("Z", NEW_YEARS_DAY_OBSERVED);
 		}
 
-		private static ServiceCode getServiceCodeForId(String id) {
-			return serviceCodeForGtfsId.get(id);
-		}
-
 		private static void mapServiceCode(String string, ServiceCode serviceCode) {
 			serviceCodeForGtfsId.put(string, serviceCode);
 			if (Character.isLetter(string.charAt(0))) {
@@ -113,12 +109,9 @@ public class ServiceIdHelper {
 			}
 		}
 		
-		private String getLetterCode() {
-			return letterCodeForServiceCode.get(this);
-		}
 
-		private boolean isHoliday() {
-			return !(this == WEEKDAY_SCHOOL_OPEN || this == WEEKDAY_SCHOOL_CLOSED
-					|| this == SATURDAY || this == SUNDAY);
-		}
+//		private boolean isHoliday() {
+//			return !(this == WEEKDAY_SCHOOL_OPEN || this == WEEKDAY_SCHOOL_CLOSED
+//					|| this == SATURDAY || this == SUNDAY);
+//		}
 	}}

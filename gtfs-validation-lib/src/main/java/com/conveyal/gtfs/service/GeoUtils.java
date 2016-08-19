@@ -158,10 +158,8 @@ import com.vividsolutions.jts.geom.LineString;
        
        return transform;
      } catch (final NoSuchIdentifierException e) {
-       // TODO Auto-generated catch block
        e.printStackTrace();
      } catch (final FactoryException e) {
-       // TODO Auto-generated catch block
        e.printStackTrace();
      }
 
