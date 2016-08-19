@@ -281,9 +281,11 @@ public class GtfsValidationService {
 					result.add(iv);
 				}
 
-				if(previousStopTime != null) {					
+				// check for null previous stop time and negative arrival time (int value is -999 if arrival time is empty, e.g. non-timepoint)
+				if(previousStopTime != null && stopTime.getArrivalTime() > 0) {
 
 					if(stopTime.getArrivalTime() < previousStopTime.getDepartureTime()) {
+						System.out.println(stopTime.getArrivalTime());
 						InvalidValue iv =
 								new InvalidValue("stop_time", "trip_id", tripId, "StopTimesOutOfSequence", "Trip Id " + tripId + " stop sequence " + stopTime.getStopSequence() + " arrives before departing " + previousStopTime.getStopSequence(), null, Priority.HIGH);
 						iv.route = trip.getRoute();
