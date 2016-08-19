@@ -3,6 +3,7 @@ package com.conveyal.gtfs;
 import java.io.File;
 import java.io.IOException;
 import java.util.Date;
+import java.util.TimeZone;
 
 import junit.framework.Assert;
 
@@ -21,7 +22,7 @@ public class GtfsStatisticsServiceTest {
 	
 	@BeforeClass 
     public static void setUpClass() {      
-        System.out.println("GtfsStatisticsTest setup");
+        TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
         
         store = new GtfsDaoImpl();
         GtfsReader reader = new GtfsReader();
@@ -84,13 +85,13 @@ public class GtfsStatisticsServiceTest {
 	@Test
 	public void calendarDateRangeStart() {
 		System.out.println("Calendar date start: " + gtfsStats.getCalendarDateStart().get().getTime());
-		Assert.assertEquals(gtfsStats.getCalendarDateStart().get(), new Date(1401076800000l));
+		Assert.assertEquals(gtfsStats.getCalendarDateStart().get(), new Date(1401062400000l));
 	}
 	
 	@Test
 	public void calendarDateRangeEnd() {
 		System.out.println("Calendar date end: " + gtfsStats.getCalendarDateEnd().get().getTime());
-		Assert.assertEquals(gtfsStats.getCalendarDateEnd().get(), new Date(1401076800000l));
+		Assert.assertEquals(gtfsStats.getCalendarDateEnd().get(), new Date(1401062400000l));
 	}
 	
 
