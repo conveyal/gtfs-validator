@@ -83,14 +83,14 @@ public class GtfsStatisticsServiceTest {
 	
 	@Test
 	public void calendarDateRangeStart() {
-		System.out.println("Calendar date start: " + gtfsStats.getCalendarDateStart().getTime());
-		Assert.assertEquals(gtfsStats.getCalendarDateStart(), new Date(1401076800000l));
+		System.out.println("Calendar date start: " + gtfsStats.getCalendarDateStart().get().getTime());
+		Assert.assertEquals(gtfsStats.getCalendarDateStart().get(), new Date(1401076800000l));
 	}
 	
 	@Test
 	public void calendarDateRangeEnd() {
-		System.out.println("Calendar date end: " + gtfsStats.getCalendarDateEnd().getTime());
-		Assert.assertEquals(gtfsStats.getCalendarDateEnd(), new Date(1401076800000l));
+		System.out.println("Calendar date end: " + gtfsStats.getCalendarDateEnd().get().getTime());
+		Assert.assertEquals(gtfsStats.getCalendarDateEnd().get(), new Date(1401076800000l));
 	}
 	
 

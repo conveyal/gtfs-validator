@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -116,17 +117,17 @@ public class ValidatorMain {
 		System.out.println("- " + stats.getStopCount() + " stops");
 		System.out.println("- " + stats.getStopTimesCount() + " stop times");
 		
-		Date calDateStart = stats.getCalendarDateStart();
+		Optional<Date> calDateStart = stats.getCalendarDateStart();
 		Date calSvcStart = stats.getCalendarServiceRangeStart();
-		Date calDateEnd = stats.getCalendarDateEnd();
+		Optional<Date> calDateEnd = stats.getCalendarDateEnd();
 		Date calSvcEnd = stats.getCalendarServiceRangeEnd();
 		
 		// need an extra newline at the start so it doesn't get appended to the last list item if we let
 		// a markdown processor loose on the output.
 		System.out.println("\nFeed has service from " +
-								(calDateStart.before(calSvcStart) ? calDateStart : calSvcStart) +
+								(calDateStart.get().before(calSvcStart) ? calDateStart : calSvcStart) +
 								" to " +
-								(calDateEnd.after(calSvcEnd) ? calDateEnd : calSvcEnd) + "\n");
+								(calDateEnd.get().after(calSvcEnd) ? calDateEnd : calSvcEnd) + "\n");
 								
 		System.out.println("## Validation Results");
 		System.out.println("- Routes: " + getValidationSummary(routes));

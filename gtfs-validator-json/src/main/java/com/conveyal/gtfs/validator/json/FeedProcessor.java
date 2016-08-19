@@ -144,9 +144,9 @@ public class FeedProcessor {
 		output.stopTimesCount = stats.getStopTimesCount();
 		output.bounds = stats.getBounds();
 		
-		Date calDateStart = stats.getCalendarDateStart();
+		Date calDateStart = stats.getCalendarDateStart().get();
 		Date calSvcStart = stats.getCalendarServiceRangeStart();
-		Date calDateEnd = stats.getCalendarDateEnd();
+		Date calDateEnd = stats.getCalendarDateEnd().get();
 		Date calSvcEnd = stats.getCalendarServiceRangeEnd();
 		
 		if (calDateStart == null && calSvcStart == null)

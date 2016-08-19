@@ -2,12 +2,10 @@ package com.conveyal.gtfs.service.impl;
 
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
-import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
-import java.util.HashMap;
+import java.util.Optional;
 
-import org.onebusaway.gtfs.impl.calendar.CalendarServiceDataFactoryImpl;
 import org.onebusaway.gtfs.model.Agency;
 import org.onebusaway.gtfs.model.AgencyAndId;
 import org.onebusaway.gtfs.model.Route;
@@ -16,12 +14,7 @@ import org.onebusaway.gtfs.model.ServiceCalendarDate;
 import org.onebusaway.gtfs.model.Stop;
 import org.onebusaway.gtfs.model.StopTime;
 import org.onebusaway.gtfs.model.Trip;
-import org.onebusaway.gtfs.model.calendar.ServiceDate;
 import org.onebusaway.gtfs.services.GtfsDao;
-import org.onebusaway.gtfs.services.GtfsMutableRelationalDao;
-import org.onebusaway.gtfs.services.GtfsRelationalDao;
-import org.onebusaway.gtfs.services.calendar.CalendarService;
-
 import com.conveyal.gtfs.model.Statistic;
 import com.conveyal.gtfs.service.StatisticsService;
 
@@ -87,30 +80,30 @@ public class GtfsStatisticsService implements StatisticsService {
 		return endDate;
 	}
 
-	public Date getCalendarDateStart() {
+	public Optional<Date> getCalendarDateStart() {
 
-		Date startDate = null;
+		Optional<Date> startDate = Optional.empty();
 
 		for (ServiceCalendarDate serviceCalendarDate : gtfsDao.getAllCalendarDates()) {
 
-			if (startDate == null
-					|| serviceCalendarDate.getDate().getAsDate().before(startDate))
-				startDate = serviceCalendarDate.getDate().getAsDate();
+			if (!startDate.isPresent()
+					|| serviceCalendarDate.getDate().getAsDate().before(startDate.get()))
+				startDate = Optional.of(serviceCalendarDate.getDate().getAsDate());
 		}
 
 		return startDate;
 
 	}
 
-	public Date getCalendarDateEnd() {
+	public Optional<Date> getCalendarDateEnd() {
 
-		Date endDate = null;
+		Optional<Date> endDate = Optional.empty();
 
 		for (ServiceCalendarDate serviceCalendarDate : gtfsDao.getAllCalendarDates()) {
 
-			if (endDate == null
-					|| serviceCalendarDate.getDate().getAsDate().after(endDate))
-				endDate = serviceCalendarDate.getDate().getAsDate();
+			if (!endDate.isPresent()
+					|| serviceCalendarDate.getDate().getAsDate().after(endDate.get()))
+				endDate = Optional.of(serviceCalendarDate.getDate().getAsDate());
 		}
 
 		return endDate;
