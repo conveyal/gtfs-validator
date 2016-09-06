@@ -20,7 +20,7 @@
 		<dependency>
 			<groupId>org.onebusaway</groupId>
 			<artifactId>onebusaway-gtfs</artifactId>
-			<version>1.3.7</version>
+			<version>1.3.9</version>
 		</dependency>
 		<dependency>
 			<groupId>junit</groupId>
@@ -37,13 +37,13 @@
 		<dependency>
 			<groupId>org.geotools</groupId>
 			<artifactId>gt-api</artifactId>
-			<version>11-beta</version>
+			<version>11.5</version>
 		</dependency>
 
 		<dependency>
 			<groupId>org.geotools</groupId>
 			<artifactId>gt-epsg-hsql</artifactId>
-			<version>11-beta</version>
+			<version>11.5</version>
 		</dependency>
 	</dependencies>
 
