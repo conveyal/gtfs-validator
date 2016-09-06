@@ -1,3 +1,4 @@
+
 package com.conveyal.gtfs.service;
 
 import java.util.ArrayList;
@@ -22,8 +23,10 @@ import org.onebusaway.gtfs.services.GtfsDao;
 import org.opengis.referencing.operation.TransformException;
 
 import com.conveyal.gtfs.model.DuplicateStops;
+import com.conveyal.gtfs.model.InputOutOfRange;
 import com.conveyal.gtfs.model.InvalidValue;
 import com.conveyal.gtfs.model.Priority;
+import com.conveyal.gtfs.model.ProjectedCoordinate;
 import com.conveyal.gtfs.model.ValidationResult;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
@@ -514,6 +517,8 @@ public class GtfsValidationService {
 	public ValidationResult listReversedTripShapes() {
 		return listReversedTripShapes(1.0);
 	}
+	
+
 
 	public ValidationResult listReversedTripShapes(Double distanceMultiplier) {
 

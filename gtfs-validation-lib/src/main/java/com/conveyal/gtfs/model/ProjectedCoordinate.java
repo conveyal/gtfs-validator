@@ -1,7 +1,8 @@
-package com.conveyal.gtfs.service;
+package com.conveyal.gtfs.model;
 
 import org.opengis.referencing.operation.MathTransform;
 
+import com.conveyal.gtfs.service.GeoUtils;
 import com.vividsolutions.jts.geom.Coordinate;
 
 public class ProjectedCoordinate extends Coordinate {

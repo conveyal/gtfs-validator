@@ -1,4 +1,4 @@
-package com.conveyal.gtfs.service;
+package com.conveyal.gtfs.model;
 
 public class InputOutOfRange extends Exception {
 

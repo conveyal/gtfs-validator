@@ -3,8 +3,9 @@ package com.conveyal.gtfs;
 import junit.framework.Assert;
 
 import org.junit.Test;
+
+import com.conveyal.gtfs.model.ProjectedCoordinate;
 import com.conveyal.gtfs.service.GeoUtils;
-import com.conveyal.gtfs.service.ProjectedCoordinate;
 import com.vividsolutions.jts.geom.Coordinate;
  
 public class GeoUtilsTests {
