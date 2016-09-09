@@ -8,6 +8,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.onebusaway.csv_entities.exceptions.MissingRequiredFieldException;
 import org.onebusaway.gtfs.impl.GtfsDaoImpl;
+import org.onebusaway.gtfs.impl.GtfsRelationalDaoImpl;
 import org.onebusaway.gtfs.serialization.GtfsReader;
 
 import com.conveyal.gtfs.model.ValidationResult;
@@ -16,8 +17,8 @@ import com.conveyal.gtfs.validator.ValidatorMain;
  
 public class GtfsValidationServiceTest {
  
-	static GtfsDaoImpl gtfsStore1 = null;
-	static GtfsDaoImpl gtfsStore2 = null;
+	static GtfsRelationalDaoImpl gtfsStore1 = null;
+	static GtfsRelationalDaoImpl gtfsStore2 = null;
 	
 	static GtfsValidationService gtfsValidation1 = null;
 	static GtfsValidationService gtfsValidation2 = null;
@@ -28,8 +29,8 @@ public class GtfsValidationServiceTest {
     public static void setUpClass() {      
         System.out.println("GtfsStatisticsTest setup");
         
-        gtfsStore1 = new GtfsDaoImpl();
-        gtfsStore2 = new GtfsDaoImpl();
+        gtfsStore1 = new GtfsRelationalDaoImpl();
+        gtfsStore2 = new GtfsRelationalDaoImpl();
         
         GtfsReader gtfsReader1 = new GtfsReader();
         GtfsReader gtfsReader2 = new GtfsReader();
@@ -77,7 +78,6 @@ public class GtfsValidationServiceTest {
 	@Test
 	public void validateTrips() {
 		ValidationResult result = gtfsValidation2.validateTrips();
-		System.out.println(ValidatorMain.getValidationReport(result));
 		Assert.assertEquals(8,result.invalidValues.size());
 	}
 	
@@ -116,7 +116,7 @@ public class GtfsValidationServiceTest {
 	@Test
 	public void completeBadGtfsTest() {
 		
-		GtfsDaoImpl gtfsStore = new GtfsDaoImpl();
+		GtfsRelationalDaoImpl gtfsStore = new GtfsRelationalDaoImpl();
       
         GtfsReader gtfsReader = new GtfsReader();
         
@@ -143,11 +143,9 @@ public class GtfsValidationServiceTest {
     		GtfsValidationService gtfsValidation = new GtfsValidationService(gtfsStore);
     		
     		ValidationResult results = gtfsValidation.validateRoutes();
-    		results.add(gtfsValidation.validateTrips());
+    		results.append(gtfsValidation.validateTrips());
     		
     		Assert.assertEquals(results.invalidValues.size(), 5);
-    		
-    		System.out.println(results.invalidValues.size());
     		
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -158,8 +156,7 @@ public class GtfsValidationServiceTest {
 	@Test
 	public void completeGoodGtfsTest() {
 		
-		GtfsDaoImpl gtfsStore = new GtfsDaoImpl();
-      
+		GtfsRelationalDaoImpl gtfsStore = new GtfsRelationalDaoImpl();
         GtfsReader gtfsReader = new GtfsReader();
         
         File gtfsFile = new File("src/test/resources/st_gtfs_good.zip");
@@ -185,11 +182,9 @@ public class GtfsValidationServiceTest {
     		GtfsValidationService gtfsValidation = new GtfsValidationService(gtfsStore);
     		
     		ValidationResult results = gtfsValidation.validateRoutes();
-    		results.add(gtfsValidation.validateTrips());
+    		results.append(gtfsValidation.validateTrips());
     		
     		Assert.assertEquals(results.invalidValues.size(), 0);
-    		
-    		System.out.println(results.invalidValues.size());
     		
 		} catch (Exception e) {
 			e.printStackTrace();

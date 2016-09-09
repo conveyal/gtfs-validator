@@ -20,8 +20,7 @@ public class GtfsStatisticsServiceCalendarDatesTest {
 
 	@BeforeClass
 	public static void setUp() throws Exception {
-        System.out.println("GtfsStatisticsTest setup");
-        
+       
         store = new GtfsDaoImpl();
         GtfsReader reader = new GtfsReader();
         

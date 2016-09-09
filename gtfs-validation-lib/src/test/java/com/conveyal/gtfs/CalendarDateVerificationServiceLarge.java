@@ -40,8 +40,6 @@ public class CalendarDateVerificationServiceLarge {
 
 	@BeforeClass 
 	public static void setUpClass() {      
-		System.out.println("GtfsStatisticsTest setup");
-
 		GtfsReader reader = new GtfsReader();
 		gtfsMDao = new GtfsRelationalDaoImpl();
 

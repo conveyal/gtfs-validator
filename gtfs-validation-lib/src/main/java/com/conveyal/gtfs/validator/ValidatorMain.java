@@ -74,8 +74,9 @@ public class ValidatorMain {
 		System.err.println("Checking for duplicate stops");
 		ValidationResult stops = validationService.duplicateStops();
 		
-		System.err.println("Checking for reversed trip shapes");
+		System.err.println("Checking for problems with shapes");
 		ValidationResult shapes = validationService.listReversedTripShapes();
+		shapes.append(validationService.listStopsAwayFromShape(130.0));
 		
 		System.err.println("Checking for dates with no trips");
 		ValidationResult dates = calendarDateVerService.getCalendarProblems(); 

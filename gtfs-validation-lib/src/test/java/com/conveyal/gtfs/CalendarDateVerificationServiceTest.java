@@ -70,7 +70,6 @@ public class CalendarDateVerificationServiceTest {
 
 	@Test
 	public void tripCountForServiceId(){
-		System.out.println("Trips per Service ID: " + cdvs.getTripCountsForAllServiceIDs().toString());
 		int sundayTrips = tripCounts.get(AgencyAndId.convertFromString("MTA NYCT_YU_A5-Sunday"));
 		Assert.assertEquals(sundayTrips,110);
 	}
@@ -82,20 +81,17 @@ public class CalendarDateVerificationServiceTest {
 	
 	@Test
 	public void tripCountForDateWithMultipleServiceIDs(){
-		System.out.println("Trips per Service Date on date with Multiple Calendar Entries");
 		Date d = new Date(1427947200000L);
 		Calendar c = new GregorianCalendar();
 		c.setTime(d);
 		
-		
-		System.out.println(cdvs.getServiceIdsForDates().get(c));
 		int regWeekday = cdvs.getTripCountForDates().get(c);
 		Assert.assertEquals(regWeekday, 191);
 		}
 	
 	@Test
 	public void tripCountOnHoliday(){
-		System.out.println("Trips per Service Date on a holiday (only using calendar_dates)");
+		
 		Date day = new Date(1428033600000L);
 		Calendar d = new GregorianCalendar();
 		d.setTime(day);
@@ -112,7 +108,6 @@ public class CalendarDateVerificationServiceTest {
 
 	@Test
 	public void serviceIdsForDateWithMultipleServiceIDs(){
-		System.out.println("Testing for multiple calendar dates entries");
 		Date day = new Date(1427947200000L);
 		Calendar d = new GregorianCalendar();
 		d.setTime(day);

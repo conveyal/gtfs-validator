@@ -1,8 +1,7 @@
 package com.conveyal.gtfs.model;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -16,15 +15,23 @@ public class ValidationResult implements Serializable {
 
 	private static Logger _log = Logger.getLogger(ValidationResult.class.getName());
 			
-	public List<InvalidValue> invalidValues = new ArrayList<InvalidValue>();
+	public List<InvalidValue> invalidValues = new LinkedList<InvalidValue>();
 	
 	public void add(InvalidValue iv) {
 		_log.info(iv.toString());
 		invalidValues.add(iv);
 	}
 	
-	public void add(ValidationResult vr) {
+	public void append(ValidationResult vr) {
 		invalidValues.addAll(vr.invalidValues);
+	}
+	
+	public String toString(){
+		StringBuilder sb = new StringBuilder();
+		for (InvalidValue iv: invalidValues){
+			sb.append(iv);
+		}
+		return sb.toString();
 	}
 	
 		

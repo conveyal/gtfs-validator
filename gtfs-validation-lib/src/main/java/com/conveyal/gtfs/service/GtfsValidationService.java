@@ -10,8 +10,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-
-import org.geotools.geometry.jts.JTS;
+import org.onebusaway.gtfs.impl.GtfsRelationalDaoImpl;
+import org.onebusaway.gtfs.model.AgencyAndId;
 import org.onebusaway.gtfs.model.Route;
 import org.onebusaway.gtfs.model.ServiceCalendar;
 import org.onebusaway.gtfs.model.ServiceCalendarDate;
@@ -19,14 +19,11 @@ import org.onebusaway.gtfs.model.ShapePoint;
 import org.onebusaway.gtfs.model.Stop;
 import org.onebusaway.gtfs.model.StopTime;
 import org.onebusaway.gtfs.model.Trip;
-import org.onebusaway.gtfs.services.GtfsDao;
-import org.opengis.referencing.operation.TransformException;
-
 import com.conveyal.gtfs.model.DuplicateStops;
 import com.conveyal.gtfs.model.InputOutOfRange;
 import com.conveyal.gtfs.model.InvalidValue;
 import com.conveyal.gtfs.model.Priority;
-import com.conveyal.gtfs.model.ProjectedCoordinate;
+import com.conveyal.gtfs.model.TripPatternCollection;
 import com.conveyal.gtfs.model.ValidationResult;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
@@ -37,9 +34,9 @@ public class GtfsValidationService {
 
 	static GeometryFactory geometryFactory = new GeometryFactory();
 
-	private GtfsDao gtfsDao = null;
+	private GtfsRelationalDaoImpl gtfsDao = null;
 
-	public GtfsValidationService(GtfsDao dao)  {
+	public GtfsValidationService(GtfsRelationalDaoImpl dao)  {
 
 		gtfsDao = dao;		
 	}
@@ -126,56 +123,41 @@ public class GtfsValidationService {
 
 		}
 
-		// map shape geometries to shape id
-
-		HashMap<String, Geometry> shapes = new HashMap<String, Geometry>();
-		HashMap<String, ArrayList<ShapePoint>> shapePointMap = new HashMap<String, ArrayList<ShapePoint>>(); 
-
-		for(ShapePoint shapePoint : gtfsDao.getAllShapePoints()) {
-
-			String shapeId = shapePoint.getShapeId().getId();
-
-			if(!shapePointMap.containsKey(shapeId))
-				shapePointMap.put(shapeId, new ArrayList<ShapePoint>());
-
-			shapePointMap.get(shapeId).add(shapePoint);
-
-		}
-
-		// create geometries from shapePoints
-
-		for(String shapeId : shapePointMap.keySet()) {
-
-			ArrayList<Coordinate> shapeCoords = new ArrayList<Coordinate>();
-
-			ArrayList<ShapePoint> shapePoints = shapePointMap.get(shapeId);
-
-			Collections.sort(shapePoints, new ShapePointComparator());
-
-			for(ShapePoint shapePoint : shapePoints) {
-
-				Coordinate stopCoord = new Coordinate(shapePoint.getLat(), shapePoint.getLon());
-
-				try {
-					ProjectedCoordinate projectedStopCoord = GeoUtils.convertLatLonToEuclidean(stopCoord);
-
-					shapeCoords.add(projectedStopCoord);
-				} catch (Exception e) {
-					result.add(new InvalidValue("stop", "shapeId", shapeId , "Illegal stopCoord for shape", "", null, Priority.MEDIUM));
-				}
-			}
-
-			Geometry geom = geometryFactory.createLineString(shapeCoords.toArray(new Coordinate[shapePoints.size()]));
-
-			shapes.put(shapeId, geom);
-
-		}
+//		// map shape geometries to shape id
+//
+//		HashMap<String, Geometry> shapes = new HashMap<String, Geometry>();
+//		HashMap<String, ArrayList<ShapePoint>> shapePointMap = new HashMap<String, ArrayList<ShapePoint>>(); 
+//
+//		for(ShapePoint shapePoint : gtfsDao.getAllShapePoints()) {
+//
+//			String shapeId = shapePoint.getShapeId().getId();
+//
+//			if(!shapePointMap.containsKey(shapeId))
+//				shapePointMap.put(shapeId, new ArrayList<ShapePoint>());
+//
+//			shapePointMap.get(shapeId).add(shapePoint);
+//
+//		}
+//
+//		// create geometries from shapePoints
+//
+//		for(String shapeId : shapePointMap.keySet()) {
+//			ArrayList<ShapePoint> shapePoints = shapePointMap.get(shapeId);
+//			try {
+//				Geometry geom = GeoUtils.getGeomFromShapePoints(shapePoints);
+//				shapes.put(shapeId, geom);
+//			}
+//			catch (Exception e){ 
+//				result.add(new InvalidValue("stop", "shapeId", shapeId , "Illegal stopCoord for shape", "", null, Priority.MEDIUM));
+//			}
+//
+//		}
 
 
 		// create service calendar date map
 
 		HashMap<String, HashSet<Date>> serviceCalendarDates = new HashMap<String, HashSet<Date>>();
-
+//TODO: factor out.
 		for(ServiceCalendar calendar : gtfsDao.getAllCalendars()) {
 
 			Date startDate = calendar.getStartDate().getAsDate();
@@ -406,7 +388,7 @@ public class GtfsValidationService {
 		}
 
 		// check for reversed trip shapes and add to result list 
-		result.add(this.listReversedTripShapes());
+		result.append(this.listReversedTripShapes());
 
 		return result;
 
@@ -441,21 +423,16 @@ public class GtfsValidationService {
 
 		for(Stop stop : stops) {
 
-			Coordinate stopCoord = new Coordinate(stop.getLat(), stop.getLon());
+			try{
+				Geometry geom = GeoUtils.getGeometryFromCoordinate(stop.getLat(), stop.getLon());
 
-			ProjectedCoordinate projectedStopCoord = null;
+				stopIndex.insert(geom.getEnvelopeInternal(), stop);
 
-			try {
-				projectedStopCoord = GeoUtils.convertLatLonToEuclidean(stopCoord);
+				stopProjectedGeomMap.put(stop.getId().toString(), geom);
+
 			} catch (IllegalArgumentException iae) {
 				result.add(new InvalidValue("stop", "duplicateStops", stop.toString(), "MissingCoordinates", "stop " + stop + " is missing coordinates", null, Priority.MEDIUM));
 			}
-
-			Geometry geom = geometryFactory.createPoint(projectedStopCoord);
-
-			stopIndex.insert(geom.getEnvelopeInternal(), stop);
-
-			stopProjectedGeomMap.put(stop.getId().toString(), geom);
 
 		}
 
@@ -517,8 +494,58 @@ public class GtfsValidationService {
 	public ValidationResult listReversedTripShapes() {
 		return listReversedTripShapes(1.0);
 	}
-	
 
+	public ValidationResult listStopsAwayFromShape(Double minDistance){
+
+		List<AgencyAndId> shapeIds = gtfsDao.getAllShapeIds();
+		TripPatternCollection tripPatterns = new TripPatternCollection(shapeIds.size() *2);
+		String problemDescription = "Stop is more than " + minDistance + "m from shape";
+
+		ValidationResult result = new ValidationResult();			
+
+		for (AgencyAndId shapeId : shapeIds){
+			//get trip ids for that shape
+			List<ShapePoint> points = gtfsDao.getShapePointsForShapeId(shapeId);
+			Geometry shapeLine = GeoUtils.getGeomFromShapePoints(points);
+			List<Trip> tripsForShape = gtfsDao.getTripsForShapeId(shapeId);
+
+			for (Trip trip: tripsForShape){
+				//filter that list by trip patterns, 
+				//where a pattern is a distinct combo of route, shape, and stopTimes
+				Route routeId = trip.getRoute();
+				List<StopTime> stopTimes = gtfsDao.getStopTimesForTrip(trip);
+
+				if (!tripPatterns.addIfNotPresent(routeId, shapeId, stopTimes)){
+
+					// if any stop is more than minDistance, add to ValidationResult 
+					for (StopTime stopTime : stopTimes){
+						Stop stop = stopTime.getStop();
+						Geometry stopGeom = GeoUtils.getGeometryFromCoordinate(
+								stop.getLat(), stop.getLon());
+//						System.out.println("on stop " + stop.getId() +
+//								" at " + stopGeom.getCoordinate().x + "," + stopGeom.getCoordinate().y +
+//								" shape" + shapeLine.getCoordinates()[0]  +" dist " 
+//								+ shapeLine.distance(stopGeom)
+//								);
+
+						if (shapeLine.distance(stopGeom) > minDistance){
+							InvalidValue iv = new InvalidValue(
+									"shape", "shape_lat,shape_lon", shapeId.getId(), "StopOffShape", 
+									problemDescription, stop.getId(), Priority.MEDIUM);
+							result.add(iv);
+						}
+					}
+
+				}
+			}
+
+
+
+			//
+
+		}
+		return result;
+	}
 
 	public ValidationResult listReversedTripShapes(Double distanceMultiplier) {
 
@@ -668,12 +695,7 @@ public class GtfsValidationService {
 		}
 	}
 
-	private class ShapePointComparator implements Comparator<ShapePoint> {
 
-		public int compare(ShapePoint a, ShapePoint b) {
-			return new Integer(a.getSequence()).compareTo(new Integer(b.getSequence()));
-		}
-	}
 }
 
 
