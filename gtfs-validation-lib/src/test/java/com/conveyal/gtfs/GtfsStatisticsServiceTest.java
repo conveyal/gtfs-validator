@@ -5,15 +5,14 @@ import java.io.IOException;
 import java.util.Date;
 import java.util.TimeZone;
 
-import junit.framework.Assert;
-
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.onebusaway.gtfs.impl.GtfsDaoImpl;
-import org.onebusaway.gtfs.model.AgencyAndId;
 import org.onebusaway.gtfs.serialization.GtfsReader;
 
 import com.conveyal.gtfs.service.impl.GtfsStatisticsService;
+
+import junit.framework.Assert;
  
 public class GtfsStatisticsServiceTest {
  

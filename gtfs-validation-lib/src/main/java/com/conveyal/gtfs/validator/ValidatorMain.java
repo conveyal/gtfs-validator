@@ -13,8 +13,6 @@ import java.util.logging.Logger;
 import org.onebusaway.gtfs.impl.GtfsRelationalDaoImpl;
 import org.onebusaway.gtfs.model.Agency;
 import org.onebusaway.gtfs.serialization.GtfsReader;
-import org.onebusaway.gtfs.services.GtfsMutableDao;
-import org.onebusaway.gtfs.services.GtfsMutableRelationalDao;
 
 import com.conveyal.gtfs.model.InvalidValue;
 import com.conveyal.gtfs.model.ValidationResult;

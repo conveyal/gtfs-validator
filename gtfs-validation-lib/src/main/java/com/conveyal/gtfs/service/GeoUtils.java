@@ -1,5 +1,10 @@
 package com.conveyal.gtfs.service;
 
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.TreeSet;
+
 import org.geotools.geometry.GeometryBuilder;
 import org.geotools.geometry.jts.JTS;
 //import org.geotools.feature.*;
@@ -18,15 +23,7 @@ import com.conveyal.gtfs.model.ProjectedCoordinate;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
-
 import com.vividsolutions.jts.geom.PrecisionModel;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.TreeMap;
-import java.util.TreeSet;
 
 public class GeoUtils {
 	public static double RADIANS = 2 * Math.PI;
@@ -232,7 +229,8 @@ public class GeoUtils {
 		return lonZone + 1;
 	}
 
-
+	// used in the TreeMap of ShapePoints 
+	@SuppressWarnings("unused")
 	private static class ShapePointComparator implements Comparator<ShapePoint> {
 
 		public int compare(ShapePoint a, ShapePoint b) {

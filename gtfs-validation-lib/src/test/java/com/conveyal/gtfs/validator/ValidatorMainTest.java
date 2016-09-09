@@ -1,6 +1,6 @@
 package com.conveyal.gtfs.validator;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertSame;
 
 import java.util.Date;
 import java.util.Optional;

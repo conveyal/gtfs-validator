@@ -1,19 +1,14 @@
 package com.conveyal.gtfs;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Date;
-import java.util.HashMap;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.onebusaway.gtfs.impl.GtfsDaoImpl;
 import org.onebusaway.gtfs.impl.GtfsRelationalDaoImpl;
-import org.onebusaway.gtfs.model.AgencyAndId;
 import org.onebusaway.gtfs.serialization.GtfsReader;
-import org.onebusaway.gtfs.services.GtfsMutableRelationalDao;
 
 import com.conveyal.gtfs.model.ValidationResult;
 import com.conveyal.gtfs.service.GtfsValidationService;

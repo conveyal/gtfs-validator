@@ -1,7 +1,8 @@
 package com.conveyal.gtfs;
 
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
@@ -11,25 +12,21 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Set;
-import java.util.TimeZone;
 import java.util.TreeMap;
-
-import junit.framework.Assert;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.onebusaway.gtfs.impl.GtfsDaoImpl;
 import org.onebusaway.gtfs.impl.GtfsRelationalDaoImpl;
 import org.onebusaway.gtfs.model.AgencyAndId;
-import org.onebusaway.gtfs.model.ServiceCalendarDate;
 import org.onebusaway.gtfs.model.calendar.ServiceDate;
 import org.onebusaway.gtfs.serialization.GtfsReader;
-import org.onebusaway.gtfs.services.GtfsDao;
 import org.onebusaway.gtfs.services.GtfsMutableRelationalDao;
-import org.onebusaway.gtfs.services.GtfsRelationalDao;
 
 import com.conveyal.gtfs.service.CalendarDateVerificationService;
 import com.conveyal.gtfs.service.impl.GtfsStatisticsService;
+
+import junit.framework.Assert;
 
 public class CalendarDateVerificationServiceTest {
 	static GtfsMutableRelationalDao gtfsMDao = null;
