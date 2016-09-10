@@ -151,7 +151,7 @@ public class GtfsValidationService {
 			
 			for(ShapePoint shapePoint : shapePoints) {
 				
-				Coordinate stopCoord = new Coordinate(shapePoint.getLat(), shapePoint.getLon());
+				Coordinate stopCoord = new Coordinate(shapePoint.getLon(), shapePoint.getLat());
 				
 				try {
 				ProjectedCoordinate projectedStopCoord = GeoUtils.convertLatLonToEuclidean(stopCoord);
