@@ -77,9 +77,8 @@ public class CalendarDateVerificationService {
 		if (aid != null ){
 			tz = calendarService.getTimeZoneForAgencyId(aid);
 		}
-		else { // fall back to UTC
-			System.err.println("DANGER! unsafe use of UTC timezone");
-			tz = TimeZone.getTimeZone("UTC");
+		else { 
+			throw new IllegalArgumentException("File contains two time zones, which is not allowed by the GTFS spec");
 		}
 		
 		start.setTimeZone(tz);
@@ -113,10 +112,15 @@ public class CalendarDateVerificationService {
 
 		HashMap<AgencyAndId, Integer> tripsPerServHash = getTripCountsForAllServiceIDs();
 		TreeMap<Calendar, Integer> tripsPerDateHash = new TreeMap<Calendar, Integer>();
-
+		System.out.println(from.getAsDate(tz).toString());
+		System.out.println(tz.getID());
 		start.setTime(from.getAsDate(tz));
 		
 		end.setTime(to.getAsDate(tz));
+		
+		if (start == null){
+			throw new IllegalArgumentException("Calendar Date Range Improperly Set");
+		}
 
 		while(!start.after(end)){
 			Integer tripCount =0;

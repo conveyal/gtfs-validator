@@ -1,6 +1,7 @@
 package com.conveyal.gtfs;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
@@ -51,17 +52,11 @@ public class MultipleTimeZoneTests {
 		}
 
 		gtfsStats = new GtfsStatisticsService(gtfsMDao);
+				
+	}
+
+	@Test(expected=IllegalArgumentException.class)
+	public void shouldThrowOnMultipleTimeZones() {
 		cdvs = new CalendarDateVerificationService(gtfsMDao);
-
-		tripCounts = cdvs.getTripCountsForAllServiceIDs();
-		calStart = gtfsStats.getCalendarServiceRangeStart();
-		calEnd = gtfsStats.getCalendarServiceRangeEnd();
 	}
-
-	@Test
-	public void timeZoneShouldBeUTCWhenMultiples() {
-		String tz = cdvs.getTz().getID();
-		assertEquals("timezone is not UTC", tz, "UTC");
-	}
-
 }

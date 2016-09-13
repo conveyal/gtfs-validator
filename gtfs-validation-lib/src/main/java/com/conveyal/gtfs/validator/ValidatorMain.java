@@ -173,12 +173,20 @@ public class ValidatorMain {
 			return "Hooray! No errors here (at least, none that we could find).\n";
 		
 		StringBuilder sb = new StringBuilder(1024);
+		int i =0;
+		int MAX_PRINT = 128;
 		
 		// loop over each invalid value, and take advantage of InvalidValue.toString to create a line about the error
 		for (InvalidValue v : result.invalidValues) {
+			i++;
+			if (i > MAX_PRINT){
+				sb.append("And Many More...");
+				break;
+			}
 			sb.append("- ");
 			sb.append(v.toString());
 			sb.append('\n');
+			
 		}
 		
 		return sb.toString();
