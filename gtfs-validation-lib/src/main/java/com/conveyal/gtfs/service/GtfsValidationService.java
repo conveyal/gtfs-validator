@@ -426,7 +426,7 @@ public class GtfsValidationService {
 		for(Stop stop : stops) {
 
 			try{
-				Geometry geom = GeoUtils.getGeometryFromCoordinate(stop.getLon(), stop.getLat());
+				Geometry geom = GeoUtils.getGeometryFromCoordinate(stop.getLat(), stop.getLon());
 
 				stopIndex.insert(geom.getEnvelopeInternal(), stop);
 
