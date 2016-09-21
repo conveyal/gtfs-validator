@@ -30,7 +30,16 @@ public class ValidatorMainIntegrationTest {
 		Path thisDir = Paths.get("src/test/resources");
 		
 		return Files.list(thisDir).filter(p -> p.getFileName().toString().endsWith(".zip"));
-	
+	}
+
+//	@Test
+	public void testProblem(){
+		
+		setDummyPrintStream();
+		
+		ValidatorMain.main(new String[] {"src/test/resources/"
+				+ "st_gtfs_good"
+				+ ".zip"});
 	}
 
 	@Test
@@ -38,13 +47,8 @@ public class ValidatorMainIntegrationTest {
 		System.out.println("Starting Integration Level Test on ValidatorMain (output suppressed)");
 		
 		PrintStream originalStream = System.out;
-		
-		PrintStream dummyStream = new  PrintStream(new OutputStream() {
-			@Override
-			public void write(int b) throws IOException {}
-		});
-		
-		System.setOut(dummyStream);
+
+		setDummyPrintStream();
 		
 		try (Stream<Path> paths = getZipFiles()) {
 			paths
@@ -61,5 +65,14 @@ public class ValidatorMainIntegrationTest {
 			System.setOut(originalStream);
 		}
 	}
+	
+	private void setDummyPrintStream() {
+		PrintStream dummyStream = new  PrintStream(new OutputStream() {
+			@Override
+			public void write(int b) throws IOException {}
+		});
+		System.setOut(dummyStream);
+	}
+	
 }
 
