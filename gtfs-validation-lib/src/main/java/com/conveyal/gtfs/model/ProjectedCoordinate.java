@@ -34,13 +34,11 @@ public class ProjectedCoordinate extends Coordinate {
     return transform;
   }
   
-  public double getX()
-  {
+  public double getX()  {
 	  return this.x;
   }
   
-  public double getY()
-  {
+  public double getY()  {
 	  return this.y;
   }
 

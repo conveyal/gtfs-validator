@@ -24,6 +24,7 @@ import com.conveyal.gtfs.service.impl.GtfsStatisticsService;
 /**
  * Provides a main class for running the GTFS validator.
  * @author mattwigway
+ * @author laidig
  */
 public class ValidatorMain {
 	public static void main(String[] args) {
@@ -58,6 +59,11 @@ public class ValidatorMain {
 		}
 
 		System.err.println("Read GTFS");
+		
+		if (dao.getAllTrips().size() == 0){
+			System.err.println("No Trips Found in GTFS, exiting");
+			System.exit(0);
+		}
 				
 		GtfsValidationService validationService = new GtfsValidationService(dao);
 			
@@ -79,7 +85,6 @@ public class ValidatorMain {
 		System.err.println("Checking for dates with no trips");
 		ValidationResult dates = calendarDateVerService.getCalendarProblems(); 
 		
-		System.err.println("Validation complete");
 		System.err.println("Calculating statistics");
 		
 		// Make the report
@@ -123,8 +128,6 @@ public class ValidatorMain {
 		
 		Date feedSvcStart = getEarliestDate(calDateStart, calSvcStart);
 		Date feedSvcEnd = getLatestDate(calDateEnd, calSvcEnd);
-		
-		
 		
 		// need an extra newline at the start so it doesn't get appended to the last list item if we let
 		// a markdown processor loose on the output.
@@ -172,13 +175,21 @@ public class ValidatorMain {
 		if (result.invalidValues.size() == 0)
 			return "Hooray! No errors here (at least, none that we could find).\n";
 		
-		StringBuilder sb = new StringBuilder(1024);
+		StringBuilder sb = new StringBuilder(256);
+		int i =0;
+		int MAX_PRINT = 128;
 		
 		// loop over each invalid value, and take advantage of InvalidValue.toString to create a line about the error
 		for (InvalidValue v : result.invalidValues) {
+			i++;
+			if (i > MAX_PRINT){
+				sb.append("And Many More...");
+				break;
+			}
 			sb.append("- ");
 			sb.append(v.toString());
 			sb.append('\n');
+			
 		}
 		
 		return sb.toString();

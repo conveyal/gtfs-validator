@@ -25,15 +25,20 @@ import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.PrecisionModel;
 
-public class GeoUtils {
+ public class GeoUtils {
 	public static double RADIANS = 2 * Math.PI;
-
 
 	public static MathTransform recentMathTransform = null;
 	public static GeometryFactory geometryFactory = new GeometryFactory(new PrecisionModel(),4326);
 	public static GeometryFactory projectedGeometryFactory = new GeometryFactory(new PrecisionModel());
 	public static GeometryBuilder builder = new GeometryBuilder(DefaultGeographicCRS.WGS84);
 
+	/**
+	 * Converts from a coordinate to The appropriate UTM zone. 
+	 * 
+	 * @param latlon THE ORDER OF THE COORDINATE MUST BE LAT, LON!
+	 * @return
+	 */
 	public static ProjectedCoordinate convertLatLonToEuclidean(
 			Coordinate latlon) {
 
@@ -42,7 +47,7 @@ public class GeoUtils {
 		return convertLonLatToEuclidean(lonlat);
 	}
 
-	public static ProjectedCoordinate convertLonLatToEuclidean(
+	private static ProjectedCoordinate convertLonLatToEuclidean(
 			Coordinate lonlat) {
 
 		final MathTransform transform = getTransform(lonlat);
@@ -52,8 +57,7 @@ public class GeoUtils {
 		Coordinate latlon = new Coordinate(lonlat.y, lonlat.x);
 
 		try {
-			JTS.transform(latlon, to,
-					transform);
+			JTS.transform(latlon, to, transform);
 		} catch (final TransformException e) {
 			e.printStackTrace();
 		}
@@ -92,13 +96,12 @@ public class GeoUtils {
 
 	public static Coordinate convertToLonLat(ProjectedCoordinate pc) {
 
-		final Coordinate point =
-				new Coordinate(pc.getX(), pc.getY());
+		final Coordinate point = new Coordinate(pc.getX(), pc.getY());
 		return convertToLonLat(pc.getTransform(), point);
 	}
 
 	public static Geometry getGeometryFromCoordinate(double lat, double lon) throws IllegalArgumentException{
-		Coordinate stopCoord = new Coordinate(lon, lat);
+		Coordinate stopCoord = new Coordinate(lat, lon);
 		ProjectedCoordinate projectedStopCoord = null;
 		projectedStopCoord = GeoUtils.convertLatLonToEuclidean(stopCoord);
 		return geometryFactory.createPoint(projectedStopCoord);
@@ -116,7 +119,7 @@ public class GeoUtils {
 		}
 
 		for(ShapePoint shapePoint : linkedShapePoints) {
-			Coordinate coord = new Coordinate(shapePoint.getLon(), shapePoint.getLat());
+			Coordinate coord = new Coordinate(shapePoint.getLat(), shapePoint.getLon());
 
 			ProjectedCoordinate projectedCoord = GeoUtils.convertLatLonToEuclidean(coord);
 			if ( projectedCoord.getX() == Coordinate.NULL_ORDINATE || 
