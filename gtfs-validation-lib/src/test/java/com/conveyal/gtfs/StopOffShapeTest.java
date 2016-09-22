@@ -5,6 +5,7 @@ import static org.junit.Assert.assertTrue;
 import java.io.File;
 import java.io.IOException;
 
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.onebusaway.gtfs.impl.GtfsRelationalDaoImpl;
@@ -14,7 +15,7 @@ import com.conveyal.gtfs.model.ValidationResult;
 import com.conveyal.gtfs.service.GtfsValidationService;
 
 
-public class StopOffShapeTest {
+public class StopOffShapeTest extends UnitTestBaseUtil{
 	
 	static GtfsRelationalDaoImpl gtfsMDao = null;
 
@@ -39,6 +40,10 @@ public class StopOffShapeTest {
 			e.printStackTrace();
 		}
 
+	}
+	@Before
+	public void SetUp(){
+		setDummyPrintStream();
 	}
 
 	@Test

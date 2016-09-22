@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.Date;
 import java.util.TimeZone;
 
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.onebusaway.gtfs.impl.GtfsDaoImpl;
@@ -14,7 +15,7 @@ import com.conveyal.gtfs.service.impl.GtfsStatisticsService;
 
 import junit.framework.Assert;
  
-public class GtfsStatisticsServiceTest {
+public class GtfsStatisticsServiceTest extends UnitTestBaseUtil {
  
 	static GtfsDaoImpl store = null;
 	static GtfsStatisticsService gtfsStats = null;
@@ -49,10 +50,17 @@ public class GtfsStatisticsServiceTest {
 		}
     	
     	gtfsStats = new GtfsStatisticsService(store);
+    	
     }
+	
+	@Before
+	public void SetUp(){
+		setDummyPrintStream();
+	}
 	
 	@Test
 	public void agencyCount() {
+		
 		Assert.assertEquals(gtfsStats.getAgencyCount(), new Integer(1));
 	}
  

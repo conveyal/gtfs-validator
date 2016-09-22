@@ -221,9 +221,13 @@ public class CalendarDateVerificationService {
 		StringBuilder s = new StringBuilder();
 		ServiceIdHelper helper = new ServiceIdHelper();
 		SimpleDateFormat df = new SimpleDateFormat("E, yyyy-MM-dd");
+		Calendar today = Calendar.getInstance();
 		
 		TreeMap<Calendar, Integer> tc = getTripCountForDates();
 		for(Calendar d: tc.keySet()){
+			if (d.before(today)){
+				continue;
+			}
 			s.append("\n#### " + df.format(d.getTime()));
 			s.append("\n number of trips on this day: " + tc.get(d));
 			s.append("\n has the following Services active");

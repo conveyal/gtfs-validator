@@ -3,24 +3,19 @@ package com.conveyal.gtfs.validator;
 import static org.junit.Assert.*;
 
 import java.io.IOException;
-import java.io.OutputStream;
 import java.io.PrintStream;
-import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
 import java.util.TimeZone;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-public class ValidatorMainIntegrationTest {
+import com.conveyal.gtfs.UnitTestBaseUtil;
+
+public class ValidatorMainIntegrationTest extends UnitTestBaseUtil {
 	@BeforeClass
 	public static void setUpClass(){
 		TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
@@ -35,7 +30,7 @@ public class ValidatorMainIntegrationTest {
 //	@Test
 	public void testProblem(){
 		
-		setDummyPrintStream();
+//		setDummyPrintStream();
 		
 		ValidatorMain.main(new String[] {"src/test/resources/"
 				+ "st_gtfs_good"
@@ -64,14 +59,6 @@ public class ValidatorMainIntegrationTest {
 		} finally {
 			System.setOut(originalStream);
 		}
-	}
-	
-	private void setDummyPrintStream() {
-		PrintStream dummyStream = new  PrintStream(new OutputStream() {
-			@Override
-			public void write(int b) throws IOException {}
-		});
-		System.setOut(dummyStream);
 	}
 	
 }

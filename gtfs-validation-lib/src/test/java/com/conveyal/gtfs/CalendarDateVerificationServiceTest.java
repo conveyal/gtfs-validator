@@ -14,6 +14,7 @@ import java.util.HashMap;
 import java.util.Set;
 import java.util.TreeMap;
 
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.onebusaway.gtfs.impl.GtfsDaoImpl;
@@ -28,7 +29,7 @@ import com.conveyal.gtfs.service.impl.GtfsStatisticsService;
 
 import junit.framework.Assert;
 
-public class CalendarDateVerificationServiceTest {
+public class CalendarDateVerificationServiceTest extends UnitTestBaseUtil {
 	static GtfsMutableRelationalDao gtfsMDao = null;
 	static GtfsDaoImpl gtfsDao = null;
 	static GtfsStatisticsService gtfsStats = null;
@@ -64,6 +65,10 @@ public class CalendarDateVerificationServiceTest {
     	
     	tripCounts = cdvs.getTripCountsForAllServiceIDs();
     }
+	@Before
+	public void SetUp(){
+		setDummyPrintStream();
+	}
 
 	@Test
 	public void tripCountForServiceId(){
