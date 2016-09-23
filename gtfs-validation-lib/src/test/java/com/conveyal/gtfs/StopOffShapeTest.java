@@ -51,7 +51,7 @@ public class StopOffShapeTest extends UnitTestBaseUtil{
 		GtfsValidationService valService = new GtfsValidationService(gtfsMDao);
 		ValidationResult r = valService.listStopsAwayFromShape(130.0);
 		assertTrue(r.invalidValues.size() > 0);
-		assertTrue(r.toString().contains("BX100109"));
+		assertTrue(r.toString().contains("103671"));
 	}
 
 }

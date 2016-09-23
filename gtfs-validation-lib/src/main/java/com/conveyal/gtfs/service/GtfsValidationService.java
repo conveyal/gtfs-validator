@@ -10,6 +10,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map.Entry;
 
 import org.onebusaway.gtfs.impl.GtfsRelationalDaoImpl;
 import org.onebusaway.gtfs.model.AgencyAndId;
@@ -21,12 +22,15 @@ import org.onebusaway.gtfs.model.Stop;
 import org.onebusaway.gtfs.model.StopTime;
 import org.onebusaway.gtfs.model.Trip;
 
+import com.conveyal.gtfs.model.BlockInterval;
 import com.conveyal.gtfs.model.DuplicateStops;
 import com.conveyal.gtfs.model.InputOutOfRange;
 import com.conveyal.gtfs.model.InvalidValue;
 import com.conveyal.gtfs.model.Priority;
 import com.conveyal.gtfs.model.TripPatternCollection;
 import com.conveyal.gtfs.model.ValidationResult;
+import com.conveyal.gtfs.model.comparators.BlockIntervalComparator;
+import com.conveyal.gtfs.model.comparators.StopTimeComparator;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
@@ -102,17 +106,20 @@ public class GtfsValidationService {
 	public ValidationResult validateTrips() {
 
 		ValidationResult result = new ValidationResult();
-
+		int numTrips = gtfsDao.getAllTrips().size();
+		int numStops = gtfsDao.getAllStops().size();
 
 		// map stop time sequences to trip id
 
-		HashMap<String, ArrayList<StopTime>> tripStopTimes = new HashMap<String, ArrayList<StopTime>>();
+		HashMap<String, ArrayList<StopTime>> tripStopTimes = new HashMap<String, ArrayList<StopTime>>(numTrips *2);
 
-		HashSet<String> usedStopIds = new HashSet<String>();
+		HashSet<String> usedStopIds = new HashSet<String>(numStops *2);
+		
+		String tripId;
 
 		for(StopTime stopTime : gtfsDao.getAllStopTimes()) {
 
-			String tripId = stopTime.getTrip().getId().toString();
+			tripId = stopTime.getTrip().getId().toString();
 
 			if(!tripStopTimes.containsKey(tripId))
 				tripStopTimes.put(tripId, new ArrayList<StopTime>());
@@ -245,7 +252,7 @@ public class GtfsValidationService {
 
 		for(Trip trip : gtfsDao.getAllTrips()) {
 
-			String tripId = trip.getId().toString();
+			tripId = trip.getId().toString();
 
 			ArrayList<StopTime> stopTimes = tripStopTimes.get(tripId);
 
@@ -298,10 +305,10 @@ public class GtfsValidationService {
 			if(!blockId.isEmpty()) {
 
 				BlockInterval blockInterval = new BlockInterval();
-				blockInterval.trip = trip;
-				blockInterval.startTime = stopTimes.get(0).getDepartureTime();
-				blockInterval.firstStop = stopTimes.get(0);
-				blockInterval.lastStop = stopTimes.get(stopTimes.size() -1);
+				blockInterval.setTrip(trip);
+				blockInterval.setStartTime( stopTimes.get(0).getDepartureTime());
+				blockInterval.setFirstStop(stopTimes.get(0));
+				blockInterval.setLastStop(stopTimes.get(stopTimes.size() -1));
 
 				if(!blockIntervals.containsKey(blockId))
 					blockIntervals.put(blockId, new ArrayList<BlockInterval>());
@@ -325,7 +332,7 @@ public class GtfsValidationService {
 			if(duplicateTripHash.containsKey(tripKey)) {
 				String duplicateTripId = duplicateTripHash.get(tripKey);
 				InvalidValue iv =
-						new InvalidValue("trip", "trip_id", tripId, "DuplicateTrip", "Trip Ids " + duplicateTripId + " & " + tripId + " are duplicates (" + tripKey + ")" , null, Priority.LOW);
+						new InvalidValue("trip", "trip_id", tripId, "DuplicateTrip", "Trip Ids " + duplicateTripId + " & " + tripId + " are duplicates" , null, Priority.LOW);
 				iv.route = trip.getRoute();
 				result.add(iv);
 
@@ -338,35 +345,37 @@ public class GtfsValidationService {
 
 		// check for overlapping trips within block
 
+		String blockId;
+		for(Entry<String, ArrayList<BlockInterval>> blockIdset : blockIntervals.entrySet()) {
 
-		for(String blockId : blockIntervals.keySet()) {
+			blockId = blockIdset.getKey();
+			ArrayList<BlockInterval> intervals = blockIntervals.get(blockId);
 
-			ArrayList<BlockInterval> invtervals = blockIntervals.get(blockId);
-
-			Collections.sort(invtervals, new BlockIntervalComparator());
+			Collections.sort(intervals, new BlockIntervalComparator());
 
 			int iOffset = 0;
-			for(BlockInterval i1 : invtervals) { 
-				for(BlockInterval i2 : invtervals.subList(iOffset, invtervals.size() - 1)) {
+			for(BlockInterval i1 : intervals) { 
+				for(BlockInterval i2 : intervals.subList(iOffset, intervals.size() - 1)) {
 
 
-					String tripId1 = i1.trip.getId().toString();
-					String tripId2 = i2.trip.getId().toString();
+					String tripId1 = i1.getTrip().getId().toString();
+					String tripId2 = i2.getTrip().getId().toString();
 
 
 					if(!tripId1.equals(tripId2)) {
 						// if trips don't overlap, skip 
-						if(i1.lastStop.getDepartureTime() <= i2.firstStop.getArrivalTime() || i2.lastStop.getDepartureTime() <= i1.firstStop.getArrivalTime())
+						if(i1.getLastStop().getDepartureTime() <= i2.getFirstStop().getArrivalTime() 
+								|| i2.getLastStop().getDepartureTime() <= i1.getFirstStop().getArrivalTime())
 							continue;
 
 						// if trips have same service id they overlap
-						if(i1.trip.getServiceId().getId().equals(i2.trip.getServiceId().getId())) {
+						if(i1.getTrip().getServiceId().getId().equals(i2.getTrip().getServiceId().getId())) {
 							// but if they are already in the result set, ignore
 							if (!result.containsBoth(tripId1, tripId2, "trip")){
 								InvalidValue iv =
 										new InvalidValue("trip", "block_id", blockId, "OverlappingTripsInBlock", "Trip Ids " + tripId1 + " & " + tripId2 + " overlap and share block Id " + blockId , null, Priority.HIGH);
 								// not strictly correct; they could be on different routes
-								iv.route = i1.trip.getRoute();
+								iv.route = i1.getTrip().getRoute();
 								result.add(iv);
 							}
 						}
@@ -374,11 +383,11 @@ public class GtfsValidationService {
 						else {
 							// if trips don't share service id check to see if service dates fall on the same days/day of week
 
-							for(Date d1 : serviceCalendarDates.get(i1.trip.getServiceId().getId())) {
+							for(Date d1 : serviceCalendarDates.get(i1.getTrip().getServiceId().getId())) {
 
-								if(serviceCalendarDates.get(i2.trip.getServiceId().getId()).contains(d1)) {
+								if(serviceCalendarDates.get(i2.getTrip().getServiceId().getId()).contains(d1)) {
 									InvalidValue iv = new InvalidValue("trip", "block_id", blockId, "OverlappingTripsInBlock", "Trip Ids " + tripId1 + " & " + tripId2 + " overlap and share block Id " + blockId , null, Priority.HIGH);
-									iv.route = i1.trip.getRoute();
+									iv.route = i1.getTrip().getRoute();
 									result.add(iv);
 									break;
 								}
@@ -420,8 +429,10 @@ public class GtfsValidationService {
 		Collection<Stop> stops = gtfsDao.getAllStops();
 
 		STRtree stopIndex = new STRtree();
+		
+		int numStops = gtfsDao.getAllStops().size();
 
-		HashMap<String, Geometry> stopProjectedGeomMap = new HashMap<String, Geometry>();
+		HashMap<String, Geometry> stopProjectedGeomMap = new HashMap<String, Geometry>(numStops * 2);
 
 		for(Stop stop : stops) {
 
@@ -446,6 +457,7 @@ public class GtfsValidationService {
 
 			Geometry bufferedStopGeom = stopGeom.buffer(bufferDistance);
 
+			@SuppressWarnings("unchecked")
 			List<Stop> stopCandidates = (List<Stop>)stopIndex.query(bufferedStopGeom.getEnvelopeInternal());
 
 			if(stopCandidates.size() > 1) {
@@ -496,7 +508,11 @@ public class GtfsValidationService {
 	public ValidationResult listReversedTripShapes() {
 		return listReversedTripShapes(1.0);
 	}
-
+/**
+ * Check for stops that are further away from a shape than expected
+ * @param minDistance expected max distance from shape to not be included in 
+ * @return
+ */
 	public ValidationResult listStopsAwayFromShape(Double minDistance){
 
 		List<AgencyAndId> shapeIds = gtfsDao.getAllShapeIds();
@@ -506,9 +522,9 @@ public class GtfsValidationService {
 		ValidationResult result = new ValidationResult();			
 
 		for (AgencyAndId shapeId : shapeIds){
-			//get trip ids for that shape
-			List<ShapePoint> points = gtfsDao.getShapePointsForShapeId(shapeId);
-			Geometry shapeLine = GeoUtils.getGeomFromShapePoints(points);
+		
+			Geometry shapeLine = GeoUtils.getGeomFromShapePoints(
+					gtfsDao.getShapePointsForShapeId(shapeId));
 			List<Trip> tripsForShape = gtfsDao.getTripsForShapeId(shapeId);
 
 			for (Trip trip: tripsForShape){
@@ -532,8 +548,8 @@ public class GtfsValidationService {
 
 						if (shapeLine.distance(stopGeom) > minDistance){
 							InvalidValue iv = new InvalidValue(
-									"shape", "shape_lat,shape_lon", shapeId.getId(), "StopOffShape", 
-									problemDescription, stop.getId(), Priority.MEDIUM);
+									"shape", "shape_lat,shape_lon", stop.getId().toString(), "StopOffShape", 
+									problemDescription, shapeId.getId(), Priority.MEDIUM);
 							result.add(iv);
 						}
 					}
@@ -557,9 +573,10 @@ public class GtfsValidationService {
 
 		Collection<StopTime> stopTimes = gtfsDao.getAllStopTimes();
 
+		int numTrips = gtfsDao.getAllTrips().size();
 
-		HashMap<String, StopTime> firstStopMap = new HashMap<String, StopTime>();
-		HashMap<String, StopTime> lastStopMap = new HashMap<String, StopTime>();
+		HashMap<String, StopTime> firstStopMap = new HashMap<String, StopTime>(numTrips *2);
+		HashMap<String, StopTime> lastStopMap = new HashMap<String, StopTime>(numTrips *2);
 
 		// map first and last stops for each trip id
 
@@ -583,8 +600,8 @@ public class GtfsValidationService {
 
 		Collection<ShapePoint> shapePoints = gtfsDao.getAllShapePoints();
 
-		HashMap<String, ShapePoint> firstShapePoint = new HashMap<String, ShapePoint>();
-		HashMap<String, ShapePoint> lastShapePoint = new HashMap<String, ShapePoint>();
+		HashMap<String, ShapePoint> firstShapePoint = new HashMap<String, ShapePoint>(numTrips *2);
+		HashMap<String, ShapePoint> lastShapePoint = new HashMap<String, ShapePoint>(numTrips *2);
 
 		// map first and last shape points
 
@@ -608,28 +625,33 @@ public class GtfsValidationService {
 
 		}
 
+		String tripId, shapeId;
+		StopTime firstStop, lastStop;
+		Coordinate firstStopCoord, lastStopCoord, firstShapeCoord, lastShapeCoord;
+		Geometry firstShapeGeom, lastShapeGeom, firstStopGeom, lastStopGeom;
+		
 		for(Trip trip : trips) {
 
-			String tripId = trip.getId().toString();
+			tripId = trip.getId().toString();
 			if (trip.getShapeId() == null) {
 				InvalidValue iv = new InvalidValue("trip", "shape_id", tripId, "MissingShape", "Trip " + tripId + " is missing a shape", null, Priority.MEDIUM);
 				iv.route = trip.getRoute();
 				result.add(iv);
 				continue;
 			}
-			String shapeId = trip.getShapeId().getId();
+			shapeId = trip.getShapeId().getId();
 
-			StopTime firstStop = firstStopMap.get(tripId);
-			StopTime lastStop = lastStopMap.get(tripId);
+			firstStop = firstStopMap.get(tripId);
+			lastStop = lastStopMap.get(tripId);
 
-			Coordinate firstStopCoord = null;
-			Coordinate lastStopCoord = null;
-			Geometry firstShapeGeom = null;
-			Geometry lastShapeGeom = null;
-			Geometry firstStopGeom = null;
-			Geometry lastStopGeom = null;
-			Coordinate firstShapeCoord = null;
-			Coordinate lastShapeCoord = null;
+			firstStopCoord = null;
+			lastStopCoord = null;
+			firstShapeGeom = null;
+			lastShapeGeom = null;
+			firstStopGeom = null;
+			lastStopGeom = null;
+			firstShapeCoord = null;
+			lastShapeCoord = null;
 			try {
 				firstStopCoord = new Coordinate(firstStop.getStop().getLat(), firstStop.getStop().getLon());
 				lastStopCoord = new Coordinate(lastStop.getStop().getLat(), lastStop.getStop().getLon());
@@ -671,32 +693,6 @@ public class GtfsValidationService {
 		return result;
 
 	}
-
-	private class BlockInterval implements Comparable<BlockInterval> {
-		Trip trip;
-		Integer startTime;
-		StopTime firstStop;
-		StopTime lastStop;
-
-		public int compareTo(BlockInterval o) {
-			return new Integer(this.firstStop.getArrivalTime()).compareTo(new Integer(o.firstStop.getArrivalTime()));
-		}
-	}
-
-	private class BlockIntervalComparator implements Comparator<BlockInterval> {
-
-		public int compare(BlockInterval a, BlockInterval b) {
-			return new Integer(a.startTime).compareTo(new Integer(b.startTime));
-		}
-	}
-
-	private class StopTimeComparator implements Comparator<StopTime> {
-
-		public int compare(StopTime a, StopTime b) {
-			return new Integer(a.getStopSequence()).compareTo(new Integer(b.getStopSequence()));
-		}
-	}
-
 
 }
 
