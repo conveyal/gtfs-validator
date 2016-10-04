@@ -1,5 +1,6 @@
 package com.conveyal.gtfs;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 import java.io.File;
@@ -8,19 +9,20 @@ import java.io.IOException;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.onebusaway.gtfs.impl.GtfsDaoImpl;
+import org.onebusaway.gtfs.impl.GtfsRelationalDaoImpl;
 import org.onebusaway.gtfs.serialization.GtfsReader;
 
 import com.conveyal.gtfs.service.impl.GtfsStatisticsService;
 
 public class GtfsStatisticsServiceCalendarDatesTest {
 	
-	static GtfsDaoImpl store = null;
+	static GtfsRelationalDaoImpl store = null;
 	static GtfsStatisticsService gtfsStats = null;
 
 	@BeforeClass
 	public static void setUp() throws Exception {
        
-        store = new GtfsDaoImpl();
+        store = new GtfsRelationalDaoImpl();
         GtfsReader reader = new GtfsReader();
         
         File gtfsFile = new File("src/test/resources/test_gtfs1.zip");
@@ -51,6 +53,9 @@ public class GtfsStatisticsServiceCalendarDatesTest {
 	@Test
 	public void test() {
 		assertNotNull(gtfsStats.getCalendarDateStart());
+		assertEquals(gtfsStats.getNumberOfDays(), new Integer(28));
 	}
+	
+	
 
 }

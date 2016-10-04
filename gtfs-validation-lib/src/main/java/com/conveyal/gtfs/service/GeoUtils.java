@@ -1,13 +1,11 @@
 package com.conveyal.gtfs.service;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.TreeSet;
 
 import org.geotools.geometry.GeometryBuilder;
 import org.geotools.geometry.jts.JTS;
-//import org.geotools.feature.*;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.onebusaway.gtfs.model.ShapePoint;
@@ -87,8 +85,7 @@ import com.vividsolutions.jts.geom.PrecisionModel;
 
 	public static Coordinate convertToLatLon(ProjectedCoordinate pc) {
 
-		final Coordinate point =
-				new Coordinate(pc.getX(), pc.getY());
+		final Coordinate point = new Coordinate(pc.getX(), pc.getY());
 		return convertToLatLon(pc.getTransform(), point);
 	}
 
@@ -114,7 +111,6 @@ import com.vividsolutions.jts.geom.PrecisionModel;
 		try {
 			linkedShapePoints.addAll(shapePoints);
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
@@ -162,9 +158,6 @@ import com.vividsolutions.jts.geom.PrecisionModel;
 
 	public static MathTransform getTransform(
 			Coordinate refLatLon) {
-		//    MathTransformFactory mtFactory = ReferencingFactoryFinder.getMathTransformFactory(null);
-		//    ReferencingFactoryContainer factories = new ReferencingFactoryContainer(null);
-
 		try {
 			final CRSAuthorityFactory crsAuthorityFactory =
 					CRS.getAuthorityFactory(false);
@@ -172,25 +165,11 @@ import com.vividsolutions.jts.geom.PrecisionModel;
 
 			final GeographicCRS geoCRS =
 					crsAuthorityFactory.createGeographicCRS("EPSG:4326");
-			//         org.geotools.referencing.crs.DefaultGeographicCRS.WGS84;
 
 			final CoordinateReferenceSystem dataCRS = 
 					crsAuthorityFactory
 					.createCoordinateReferenceSystem("EPSG:" 
 							+ getEPSGCodefromUTS(refLatLon)); //EPSG:32618
-
-			//      parameters = mtFactory.getDefaultParameters("Transverse_Mercator");
-			//
-			//      final double zoneNumber = zone;
-			//      final double utmZoneCenterLongitude = (zoneNumber - 1) * 6 - 180 + 3; // +3 puts origin
-			//      parameters.parameter("central_meridian").setValue(utmZoneCenterLongitude);
-			//      parameters.parameter("latitude_of_origin").setValue(0.0);
-			//      parameters.parameter("scale_factor").setValue(0.9996);
-			//      parameters.parameter("false_easting").setValue(500000.0);
-			//      parameters.parameter("false_northing").setValue(0.0);
-			//  
-			//      Map properties = Collections.singletonMap("name", "WGS 84 / UTM Zone " + zoneNumber);
-			//      ProjectedCRS projCRS = factories.createProjectedCRS(properties, geoCRS, null, parameters, cartCS);
 
 			final MathTransform transform =
 					CRS.findMathTransform(geoCRS, dataCRS);
@@ -205,15 +184,6 @@ import com.vividsolutions.jts.geom.PrecisionModel;
 		}
 
 		return null;
-		//    String[] spec = new String[6];
-		//    spec[0] = "+proj=utm";
-		//    spec[1] = "+zone=" + zone;
-		//    spec[2] = "+ellps=clrk66";
-		//    spec[3] = "+units=m";
-		//    spec[4] = "+datum=NAD83";
-		//    spec[5] = "+no_defs";
-		//    Projection projection = ProjectionFactory.fromPROJ4Specification(spec);
-		//    return projection;
 	}
 
 	/*
@@ -232,14 +202,7 @@ import com.vividsolutions.jts.geom.PrecisionModel;
 		return lonZone + 1;
 	}
 
-	// used in the TreeMap of ShapePoints 
-	@SuppressWarnings("unused")
-	private static class ShapePointComparator implements Comparator<ShapePoint> {
 
-		public int compare(ShapePoint a, ShapePoint b) {
-			return new Integer(a.getSequence()).compareTo(new Integer(b.getSequence()));
-		}
-	}
 
 
 }

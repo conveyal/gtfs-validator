@@ -11,13 +11,11 @@ import org.onebusaway.gtfs.impl.GtfsDaoImpl;
 import org.onebusaway.gtfs.impl.GtfsRelationalDaoImpl;
 import org.onebusaway.gtfs.model.AgencyAndId;
 import org.onebusaway.gtfs.serialization.GtfsReader;
-import org.onebusaway.gtfs.services.GtfsMutableRelationalDao;
-
 import com.conveyal.gtfs.service.CalendarDateVerificationService;
 import com.conveyal.gtfs.service.impl.GtfsStatisticsService;
 
 public class MultipleTimeZoneTests {
-	static GtfsMutableRelationalDao gtfsMDao = null;
+	static GtfsRelationalDaoImpl gtfsMDao = null;
 	static GtfsDaoImpl gtfsDao = null;
 	static GtfsStatisticsService gtfsStats = null;
 	static CalendarDateVerificationService cdvs = null;

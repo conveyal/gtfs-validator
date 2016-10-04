@@ -42,6 +42,8 @@ public interface StatisticsService {
 	Date getCalendarServiceRangeStart();
 
 	Date getCalendarServiceRangeEnd();
+	
+	Integer getNumberOfDays();
 
 	Integer getRouteCount(String agencyId);
 

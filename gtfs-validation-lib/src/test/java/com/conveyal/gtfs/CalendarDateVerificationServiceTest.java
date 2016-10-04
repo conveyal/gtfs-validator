@@ -30,7 +30,7 @@ import com.conveyal.gtfs.service.impl.GtfsStatisticsService;
 import junit.framework.Assert;
 
 public class CalendarDateVerificationServiceTest extends UnitTestBaseUtil {
-	static GtfsMutableRelationalDao gtfsMDao = null;
+	static GtfsRelationalDaoImpl gtfsMDao = null;
 	static GtfsDaoImpl gtfsDao = null;
 	static GtfsStatisticsService gtfsStats = null;
 	static CalendarDateVerificationService cdvs = null;

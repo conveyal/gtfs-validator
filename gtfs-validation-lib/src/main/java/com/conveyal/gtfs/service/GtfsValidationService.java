@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -31,6 +30,7 @@ import com.conveyal.gtfs.model.TripPatternCollection;
 import com.conveyal.gtfs.model.ValidationResult;
 import com.conveyal.gtfs.model.comparators.BlockIntervalComparator;
 import com.conveyal.gtfs.model.comparators.StopTimeComparator;
+import com.conveyal.gtfs.service.impl.GtfsStatisticsService;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
@@ -41,10 +41,12 @@ public class GtfsValidationService {
 	static GeometryFactory geometryFactory = new GeometryFactory();
 
 	private GtfsRelationalDaoImpl gtfsDao = null;
+	private GtfsStatisticsService statsService = null;
 
 	public GtfsValidationService(GtfsRelationalDaoImpl dao)  {
 
 		gtfsDao = dao;		
+		statsService = new GtfsStatisticsService(dao);
 	}
 
 	/**
@@ -106,14 +108,13 @@ public class GtfsValidationService {
 	public ValidationResult validateTrips() {
 
 		ValidationResult result = new ValidationResult();
-		int numTrips = gtfsDao.getAllTrips().size();
-		int numStops = gtfsDao.getAllStops().size();
+		
 
 		// map stop time sequences to trip id
 
-		HashMap<String, ArrayList<StopTime>> tripStopTimes = new HashMap<String, ArrayList<StopTime>>(numTrips *2);
+		HashMap<String, ArrayList<StopTime>> tripStopTimes = new HashMap<String, ArrayList<StopTime>>(statsService.getStopTimesCount() *2);
 
-		HashSet<String> usedStopIds = new HashSet<String>(numStops *2);
+		HashSet<String> usedStopIds = new HashSet<String>(statsService.getStopCount() *2);
 		
 		String tripId;
 
@@ -165,14 +166,14 @@ public class GtfsValidationService {
 
 		// create service calendar date map
 
-		HashMap<String, HashSet<Date>> serviceCalendarDates = new HashMap<String, HashSet<Date>>();
+		HashMap<String, HashSet<Date>> serviceCalendarDates = new HashMap<String, HashSet<Date>>(statsService.getNumberOfDays() *2);
 //TODO: factor out.
 		for(ServiceCalendar calendar : gtfsDao.getAllCalendars()) {
 
 			Date startDate = calendar.getStartDate().getAsDate();
 			Date endDate = calendar.getEndDate().getAsDate();
 
-			HashSet<Date> datesActive = new HashSet<Date>();
+			HashSet<Date> datesActive = new HashSet<Date>(statsService.getNumberOfDays() *2);
 
 			Date currentDate = startDate;
 
@@ -249,7 +250,7 @@ public class GtfsValidationService {
 
 		HashMap<String, String> duplicateTripHash = new HashMap<String, String>();
 
-
+		String tripKey, blockId;
 		for(Trip trip : gtfsDao.getAllTrips()) {
 
 			tripId = trip.getId().toString();
@@ -297,7 +298,7 @@ public class GtfsValidationService {
 
 			// store trip intervals by block id
 
-			String blockId = "";
+			blockId = "";
 
 			if(trip.getBlockId() != null)
 				blockId = trip.getBlockId();
@@ -327,7 +328,7 @@ public class GtfsValidationService {
 				}
 			}
 
-			String tripKey = trip.getServiceId().getId() + "_"+ blockId + "_" + stopTimes.get(0).getDepartureTime() +"_" + stopTimes.get(stopTimes.size() -1).getArrivalTime() + "_" + stopIds;
+			tripKey = trip.getServiceId().getId() + "_"+ blockId + "_" + stopTimes.get(0).getDepartureTime() +"_" + stopTimes.get(stopTimes.size() -1).getArrivalTime() + "_" + stopIds;
 
 			if(duplicateTripHash.containsKey(tripKey)) {
 				String duplicateTripId = duplicateTripHash.get(tripKey);
@@ -345,7 +346,6 @@ public class GtfsValidationService {
 
 		// check for overlapping trips within block
 
-		String blockId;
 		for(Entry<String, ArrayList<BlockInterval>> blockIdset : blockIntervals.entrySet()) {
 
 			blockId = blockIdset.getKey();
@@ -429,10 +429,8 @@ public class GtfsValidationService {
 		Collection<Stop> stops = gtfsDao.getAllStops();
 
 		STRtree stopIndex = new STRtree();
-		
-		int numStops = gtfsDao.getAllStops().size();
 
-		HashMap<String, Geometry> stopProjectedGeomMap = new HashMap<String, Geometry>(numStops * 2);
+		HashMap<String, Geometry> stopProjectedGeomMap = new HashMap<String, Geometry>(statsService.getStopCount() * 2);
 
 		for(Stop stop : stops) {
 
@@ -489,9 +487,7 @@ public class GtfsValidationService {
 								// TODO: a good place to check if stops are part of a station grouping
 
 								DuplicateStops duplicateStop = new DuplicateStops(stop1, stop2, distance);
-
 								duplicateStops.add(duplicateStop);
-
 								result.add(new InvalidValue("stop", "stop_lat,stop_lon", duplicateStop.getStopIds(), "DuplicateStops", duplicateStop.toString(), duplicateStop, Priority.LOW));
 
 							}
@@ -521,30 +517,31 @@ public class GtfsValidationService {
 
 		ValidationResult result = new ValidationResult();			
 
+		Geometry shapeLine, stopGeom;
+		Stop stop;
+		Route routeId;
+		List<StopTime> stopTimes;
+		List<Trip> tripsForShape;
+		
 		for (AgencyAndId shapeId : shapeIds){
 		
-			Geometry shapeLine = GeoUtils.getGeomFromShapePoints(
+			 shapeLine = GeoUtils.getGeomFromShapePoints(
 					gtfsDao.getShapePointsForShapeId(shapeId));
-			List<Trip> tripsForShape = gtfsDao.getTripsForShapeId(shapeId);
+			 tripsForShape = gtfsDao.getTripsForShapeId(shapeId);
 
 			for (Trip trip: tripsForShape){
 				//filter that list by trip patterns, 
 				//where a pattern is a distinct combo of route, shape, and stopTimes
-				Route routeId = trip.getRoute();
-				List<StopTime> stopTimes = gtfsDao.getStopTimesForTrip(trip);
+				routeId = trip.getRoute();
+				stopTimes = gtfsDao.getStopTimesForTrip(trip);
 
 				if (!tripPatterns.addIfNotPresent(routeId, shapeId, stopTimes)){
 
 					// if any stop is more than minDistance, add to ValidationResult 
 					for (StopTime stopTime : stopTimes){
-						Stop stop = stopTime.getStop();
-						Geometry stopGeom = GeoUtils.getGeometryFromCoordinate(
+						stop = stopTime.getStop();
+						stopGeom = GeoUtils.getGeometryFromCoordinate(
 								stop.getLat(), stop.getLon());
-//						System.out.println("on stop " + stop.getId() +
-//								" at " + stopGeom.getCoordinate().x + "," + stopGeom.getCoordinate().y +
-//								" shape" + shapeLine.getCoordinates()[0]  +" dist " 
-//								+ shapeLine.distance(stopGeom)
-//								);
 
 						if (shapeLine.distance(stopGeom) > minDistance){
 							InvalidValue iv = new InvalidValue(

@@ -15,6 +15,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicLong;
 
+import org.onebusaway.gtfs.impl.GtfsRelationalDaoImpl;
 import org.onebusaway.gtfs.impl.calendar.CalendarServiceDataFactoryImpl;
 import org.onebusaway.gtfs.model.Agency;
 import org.onebusaway.gtfs.model.AgencyAndId;
@@ -33,7 +34,7 @@ import com.conveyal.gtfs.service.impl.GtfsStatisticsService;
 
 public class CalendarDateVerificationService {
 
-	private static GtfsMutableRelationalDao gtfsMDao = null;
+	private static GtfsRelationalDaoImpl gtfsMDao = null;
 	private static GtfsStatisticsService stats = null;
 	private static CalendarService calendarService = null;
 	private static Calendar start = null;
@@ -43,7 +44,7 @@ public class CalendarDateVerificationService {
 	private static ServiceDate to;
 	private static String aid = null;
 
-	public CalendarDateVerificationService(GtfsMutableRelationalDao gmd){
+	public CalendarDateVerificationService(GtfsRelationalDaoImpl gmd){
 		gtfsMDao = gmd;
 		stats = new GtfsStatisticsService(gmd);
 		calendarService = CalendarServiceDataFactoryImpl.createService(gmd);

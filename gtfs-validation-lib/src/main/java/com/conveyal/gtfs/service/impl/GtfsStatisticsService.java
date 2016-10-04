@@ -2,10 +2,15 @@ package com.conveyal.gtfs.service.impl;
 
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
+import java.time.Duration;
+import java.time.ZoneId;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Optional;
+import java.util.TimeZone;
 
+import org.onebusaway.gtfs.impl.GtfsRelationalDaoImpl;
+import org.onebusaway.gtfs.impl.calendar.CalendarServiceDataFactoryImpl;
 import org.onebusaway.gtfs.model.Agency;
 import org.onebusaway.gtfs.model.AgencyAndId;
 import org.onebusaway.gtfs.model.Route;
@@ -15,6 +20,7 @@ import org.onebusaway.gtfs.model.Stop;
 import org.onebusaway.gtfs.model.StopTime;
 import org.onebusaway.gtfs.model.Trip;
 import org.onebusaway.gtfs.services.GtfsDao;
+import org.onebusaway.gtfs.services.calendar.CalendarService;
 
 import com.conveyal.gtfs.model.Statistic;
 import com.conveyal.gtfs.service.StatisticsService;
@@ -25,8 +31,8 @@ import com.conveyal.gtfs.service.StatisticsService;
  */
 public class GtfsStatisticsService implements StatisticsService {
 
-	private GtfsDao gtfsDao = null;
-	public GtfsStatisticsService(GtfsDao dao) {
+	private GtfsRelationalDaoImpl gtfsDao = null;
+	public GtfsStatisticsService(GtfsRelationalDaoImpl dao) {
 		gtfsDao = dao;
 		}
 	
@@ -279,6 +285,21 @@ public class GtfsStatisticsService implements StatisticsService {
 		buff.append(",");
 		buff.append(s.getCalendarEndDate());
 		return buff.toString();
+	}
+	
+	private ZoneId getTimeZone(){
+		CalendarService calendarService = CalendarServiceDataFactoryImpl.createService(gtfsDao);
+		TimeZone tz = calendarService.getTimeZoneForAgencyId(gtfsDao.getAllAgencies().iterator().next().getId());
+		return tz.toZoneId();
+	}
+
+	@Override
+	public Integer getNumberOfDays() {
+		Duration d = Duration.between(
+				getCalendarServiceRangeStart().toInstant().atZone(getTimeZone()).toInstant()
+				, getCalendarServiceRangeEnd().toInstant().atZone(getTimeZone()).toInstant());
+		// zero indexed!
+		return (int) d.toDays() +1;
 	}
 
 }

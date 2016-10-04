@@ -9,6 +9,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.onebusaway.gtfs.impl.GtfsDaoImpl;
+import org.onebusaway.gtfs.impl.GtfsRelationalDaoImpl;
 import org.onebusaway.gtfs.serialization.GtfsReader;
 
 import com.conveyal.gtfs.service.impl.GtfsStatisticsService;
@@ -17,14 +18,14 @@ import junit.framework.Assert;
  
 public class GtfsStatisticsServiceTest extends UnitTestBaseUtil {
  
-	static GtfsDaoImpl store = null;
+	static GtfsRelationalDaoImpl store = null;
 	static GtfsStatisticsService gtfsStats = null;
 	
 	@BeforeClass 
     public static void setUpClass() {      
         TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
         
-        store = new GtfsDaoImpl();
+        store = new GtfsRelationalDaoImpl();
         GtfsReader reader = new GtfsReader();
         
         File gtfsFile = new File("src/test/resources/st_gtfs_good.zip");
