@@ -4,7 +4,7 @@ import java.io.Serializable;
 
 import org.onebusaway.gtfs.model.Route;
 
-public class InvalidValue implements Serializable {
+public class InvalidValue implements Serializable, Comparable {
 
 	/**
 	 * 
@@ -52,6 +52,11 @@ public class InvalidValue implements Serializable {
 		
 		return problemType + "\t" + affectedEntityId + ":\t"  + problemDescription;
 		
+	}
+
+	@Override
+	public int compareTo(Object o) {
+		return this.toString().compareTo(o.toString());
 	}
 	
 }

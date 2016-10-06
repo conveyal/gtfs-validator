@@ -1,4 +1,6 @@
-//largely copied from https://github.com/camsys/onebusaway-nyc/blob/master/onebusaway-nyc-transit-data-federation/src/main/java/org/onebusaway/nyc/transit_data_federation/bundle/tasks/stif/model/ServiceCode.java
+// largely copied from https://github.com/camsys/onebusaway-nyc/blob/master/onebusaway-nyc-transit-data-federation/src/main/java/org/onebusaway/nyc/transit_data_federation/bundle/tasks/stif/model/ServiceCode.java
+// Currently NYC specific, works with AC Transit and possibly other HASTUS schedule exports as well.
+// If modifying this class, please make sure the accompanying test passes. 
 
 package com.conveyal.gtfs.service;
 import java.util.HashMap;
@@ -46,7 +48,7 @@ public class ServiceIdHelper {
 				sid.setServiceId(ServiceCode.serviceCodeForGtfsId.get(Character.toString(pickCodeWithoutYear)).name());
 			}
 			if (id.contains("BM") || id.contains("b4")){
-				sid.appendToServiceId(" Trips Starting Before Midnight");;
+				sid.appendToServiceId(" Next Day's Trips Starting Before Midnight");;
 			}
 		} catch (Exception e) {
 			sid.setServiceId(id);

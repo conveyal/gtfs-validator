@@ -1,3 +1,4 @@
+# from http://eing.github.io/technology/2016/01/28/Git-Pre-Commit-Hooks-Part1/
 { echo "
 git stash -q --keep-index
 # Using "mvn test" to run all unit tests and run plugins to assert

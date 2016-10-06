@@ -1,8 +1,8 @@
 package com.conveyal.gtfs.model;
 
 import java.io.Serializable;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.logging.Logger;
 
 
@@ -15,10 +15,10 @@ public class ValidationResult implements Serializable {
 
 	private static Logger _log = Logger.getLogger(ValidationResult.class.getName());
 			
-	public List<InvalidValue> invalidValues = new LinkedList<InvalidValue>();
+	public Set<InvalidValue> invalidValues = new TreeSet<InvalidValue>();
 	
 	public void add(InvalidValue iv) {
-		_log.info(iv.toString());
+//		_log.info(iv.toString());
 		invalidValues.add(iv);
 	}
 	

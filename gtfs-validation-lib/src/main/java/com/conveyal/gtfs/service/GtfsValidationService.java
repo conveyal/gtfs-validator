@@ -108,14 +108,14 @@ public class GtfsValidationService {
 	public ValidationResult validateTrips() {
 
 		ValidationResult result = new ValidationResult();
-		
+
 
 		// map stop time sequences to trip id
 
 		HashMap<String, ArrayList<StopTime>> tripStopTimes = new HashMap<String, ArrayList<StopTime>>(statsService.getStopTimesCount() *2);
 
 		HashSet<String> usedStopIds = new HashSet<String>(statsService.getStopCount() *2);
-		
+
 		String tripId;
 
 		for(StopTime stopTime : gtfsDao.getAllStopTimes()) {
@@ -133,41 +133,10 @@ public class GtfsValidationService {
 
 		}
 
-//		// map shape geometries to shape id
-//
-//		HashMap<String, Geometry> shapes = new HashMap<String, Geometry>();
-//		HashMap<String, ArrayList<ShapePoint>> shapePointMap = new HashMap<String, ArrayList<ShapePoint>>(); 
-//
-//		for(ShapePoint shapePoint : gtfsDao.getAllShapePoints()) {
-//
-//			String shapeId = shapePoint.getShapeId().getId();
-//
-//			if(!shapePointMap.containsKey(shapeId))
-//				shapePointMap.put(shapeId, new ArrayList<ShapePoint>());
-//
-//			shapePointMap.get(shapeId).add(shapePoint);
-//
-//		}
-//
-//		// create geometries from shapePoints
-//
-//		for(String shapeId : shapePointMap.keySet()) {
-//			ArrayList<ShapePoint> shapePoints = shapePointMap.get(shapeId);
-//			try {
-//				Geometry geom = GeoUtils.getGeomFromShapePoints(shapePoints);
-//				shapes.put(shapeId, geom);
-//			}
-//			catch (Exception e){ 
-//				result.add(new InvalidValue("stop", "shapeId", shapeId , "Illegal stopCoord for shape", "", null, Priority.MEDIUM));
-//			}
-//
-//		}
-
-
 		// create service calendar date map
 
 		HashMap<String, HashSet<Date>> serviceCalendarDates = new HashMap<String, HashSet<Date>>(statsService.getNumberOfDays() *2);
-//TODO: factor out.
+		//TODO: factor out.
 		for(ServiceCalendar calendar : gtfsDao.getAllCalendars()) {
 
 			Date startDate = calendar.getStartDate().getAsDate();
@@ -504,11 +473,11 @@ public class GtfsValidationService {
 	public ValidationResult listReversedTripShapes() {
 		return listReversedTripShapes(1.0);
 	}
-/**
- * Check for stops that are further away from a shape than expected
- * @param minDistance expected max distance from shape to not be included in 
- * @return
- */
+	/**
+	 * Check for stops that are further away from a shape than expected
+	 * @param minDistance expected max distance from shape to not be included in 
+	 * @return
+	 */
 	public ValidationResult listStopsAwayFromShape(Double minDistance){
 
 		List<AgencyAndId> shapeIds = gtfsDao.getAllShapeIds();
@@ -522,12 +491,12 @@ public class GtfsValidationService {
 		Route routeId;
 		List<StopTime> stopTimes;
 		List<Trip> tripsForShape;
-		
+
 		for (AgencyAndId shapeId : shapeIds){
-		
-			 shapeLine = GeoUtils.getGeomFromShapePoints(
+
+			shapeLine = GeoUtils.getGeomFromShapePoints(
 					gtfsDao.getShapePointsForShapeId(shapeId));
-			 tripsForShape = gtfsDao.getTripsForShapeId(shapeId);
+			tripsForShape = gtfsDao.getTripsForShapeId(shapeId);
 
 			for (Trip trip: tripsForShape){
 				//filter that list by trip patterns, 
@@ -540,17 +509,22 @@ public class GtfsValidationService {
 					// if any stop is more than minDistance, add to ValidationResult 
 					for (StopTime stopTime : stopTimes){
 						stop = stopTime.getStop();
-						stopGeom = GeoUtils.getGeometryFromCoordinate(
-								stop.getLat(), stop.getLon());
 
-						if (shapeLine.distance(stopGeom) > minDistance){
-							InvalidValue iv = new InvalidValue(
-									"shape", "shape_lat,shape_lon", stop.getId().toString(), "StopOffShape", 
-									problemDescription, shapeId.getId(), Priority.MEDIUM);
-							result.add(iv);
+						try{
+							stopGeom = GeoUtils.getGeometryFromCoordinate(
+									stop.getLat(), stop.getLon());
+							if (shapeLine.distance(stopGeom) > minDistance){
+								String problem = stop.getId().toString() + " on "+ shapeId.getId();
+								InvalidValue iv = new InvalidValue(
+										"shape", "shape_lat,shape_lon", problem, "StopOffShape", 
+										problemDescription, shapeId.getId(), Priority.MEDIUM);
+								result.add(iv);
+							}
+						}
+						catch (Exception e){ 
+							result.add(new InvalidValue("stop", "shapeId", shapeId.toString() , "Illegal stopCoord for shape", "", null, Priority.MEDIUM));
 						}
 					}
-
 				}
 			}
 
@@ -626,7 +600,7 @@ public class GtfsValidationService {
 		StopTime firstStop, lastStop;
 		Coordinate firstStopCoord, lastStopCoord, firstShapeCoord, lastShapeCoord;
 		Geometry firstShapeGeom, lastShapeGeom, firstStopGeom, lastStopGeom;
-		
+
 		for(Trip trip : trips) {
 
 			tripId = trip.getId().toString();

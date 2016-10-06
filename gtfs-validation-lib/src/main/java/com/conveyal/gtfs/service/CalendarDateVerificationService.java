@@ -231,7 +231,7 @@ public class CalendarDateVerificationService {
 			}
 			s.append("\n#### " + df.format(d.getTime()));
 			s.append("\n number of trips on this day: " + tc.get(d));
-			s.append("\n has the following Services active");
+
 			ArrayList<AgencyAndId> aid = getServiceIdsForDates().get(d);
 			Collections.sort(aid);
 			for (AgencyAndId sid : aid){

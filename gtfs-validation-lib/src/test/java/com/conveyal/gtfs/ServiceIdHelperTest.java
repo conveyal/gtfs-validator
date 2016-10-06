@@ -17,7 +17,7 @@ public class ServiceIdHelperTest {
 		
 		assertNotNull(s);
 		assertTrue(s.getDepot().equals("JG"));
-		assertTrue(s.getServiceId().equals("WEEKDAY_SCHOOL_OPEN Trips Starting Before Midnight"));
+		assertTrue(s.getServiceId().equals("WEEKDAY_SCHOOL_OPEN Next Day's Trips Starting Before Midnight"));
 		
 		s = h.getHumanReadableCalendarFromServiceId("MTA NYCT_FP_J6-Weekday");
 		assertTrue(s.getDepot().equals("FP"));
