@@ -222,11 +222,12 @@ public class CalendarDateVerificationService {
 		StringBuilder s = new StringBuilder();
 		ServiceIdHelper helper = new ServiceIdHelper();
 		SimpleDateFormat df = new SimpleDateFormat("E, yyyy-MM-dd");
-		Calendar today = Calendar.getInstance();
-		
+		Calendar yesterday = Calendar.getInstance();
+				yesterday.add(Calendar.DAY_OF_MONTH, -1);;
+				
 		TreeMap<Calendar, Integer> tc = getTripCountForDates();
 		for(Calendar d: tc.keySet()){
-			if (d.before(today)){
+			if (d.before(yesterday)){
 				continue;
 			}
 			s.append("\n#### " + df.format(d.getTime()));
