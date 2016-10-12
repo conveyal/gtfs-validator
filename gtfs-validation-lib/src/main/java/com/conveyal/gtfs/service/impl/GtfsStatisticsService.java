@@ -292,7 +292,12 @@ public class GtfsStatisticsService implements StatisticsService {
 		TimeZone tz = calendarService.getTimeZoneForAgencyId(gtfsDao.getAllAgencies().iterator().next().getId());
 		return tz.toZoneId();
 	}
-
+/**
+ * A convenience method primarily written for pre-allocating objects of a reasonable size.
+ * Implementation result apparently varies based on JRE version. 
+ * Beware if used for validation 
+ */
+	@Deprecated
 	@Override
 	public Integer getNumberOfDays() {
 		Duration d = Duration.between(
