@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 =======
 import java.time.Duration;
+import java.util.ArrayList;
 import java.time.ZoneId;
 >>>>>>> bec383dbc97456658f7cacb0a7a14fc608ec5e6a
 import java.util.Collection;
@@ -25,7 +26,7 @@ import org.onebusaway.gtfs.model.ServiceCalendarDate;
 import org.onebusaway.gtfs.model.Stop;
 import org.onebusaway.gtfs.model.StopTime;
 import org.onebusaway.gtfs.model.Trip;
-<<<<<<< HEAD
+import org.onebusaway.gtfs.serialization.comparators.ServiceCalendarDateComparator;
 import org.onebusaway.gtfs.model.calendar.ServiceDate;
 import org.onebusaway.gtfs.serialization.comparators.ServiceCalendarDateComparator;
 =======
@@ -83,7 +84,8 @@ public class GtfsStatisticsService implements StatisticsService {
 		if (startDate != null){
 			return startDate;
 		} else {
-			return getCalendarDateStart(); 
+			// an exception here means that there are no dates in the feed at all
+			return getCalendarDateStart().orElseThrow(IllegalStateException::new); 
 	}
 
 	}
@@ -100,7 +102,7 @@ public class GtfsStatisticsService implements StatisticsService {
 		if (endDate != null){
 		return endDate;
 		} else {
-			return getCalendarDateEnd();
+			return getCalendarDateEnd().orElseThrow(IllegalStateException::new);
 		}
 	}
 
