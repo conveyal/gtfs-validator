@@ -2,16 +2,9 @@ package com.conveyal.gtfs.service.impl;
 
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
-<<<<<<< HEAD
-import java.util.ArrayList;
-import java.util.Calendar;
-=======
 import java.time.Duration;
-import java.util.ArrayList;
 import java.time.ZoneId;
->>>>>>> bec383dbc97456658f7cacb0a7a14fc608ec5e6a
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Date;
 import java.util.Optional;
 import java.util.TimeZone;
@@ -26,12 +19,6 @@ import org.onebusaway.gtfs.model.ServiceCalendarDate;
 import org.onebusaway.gtfs.model.Stop;
 import org.onebusaway.gtfs.model.StopTime;
 import org.onebusaway.gtfs.model.Trip;
-import org.onebusaway.gtfs.serialization.comparators.ServiceCalendarDateComparator;
-import org.onebusaway.gtfs.model.calendar.ServiceDate;
-import org.onebusaway.gtfs.serialization.comparators.ServiceCalendarDateComparator;
-=======
->>>>>>> bec383dbc97456658f7cacb0a7a14fc608ec5e6a
-import org.onebusaway.gtfs.services.GtfsDao;
 import org.onebusaway.gtfs.services.calendar.CalendarService;
 
 import com.conveyal.gtfs.model.Statistic;
