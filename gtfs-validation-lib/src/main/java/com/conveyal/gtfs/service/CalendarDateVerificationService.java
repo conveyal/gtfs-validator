@@ -1,19 +1,21 @@
 package com.conveyal.gtfs.service;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
-import java.util.Date;
+import java.util.Collections;
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.TimeZone;
+import java.util.TreeMap;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicLong;
 
+import org.onebusaway.gtfs.impl.GtfsRelationalDaoImpl;
 import org.onebusaway.gtfs.impl.calendar.CalendarServiceDataFactoryImpl;
 import org.onebusaway.gtfs.model.Agency;
 import org.onebusaway.gtfs.model.AgencyAndId;
@@ -32,7 +34,7 @@ import com.conveyal.gtfs.service.impl.GtfsStatisticsService;
 
 public class CalendarDateVerificationService {
 
-	private static GtfsMutableRelationalDao gtfsMDao = null;
+	private static GtfsRelationalDaoImpl gtfsMDao = null;
 	private static GtfsStatisticsService stats = null;
 	private static CalendarService calendarService = null;
 	private static Calendar start = null;
@@ -42,7 +44,7 @@ public class CalendarDateVerificationService {
 	private static ServiceDate to;
 	private static String aid = null;
 
-	public CalendarDateVerificationService(GtfsMutableRelationalDao gmd){
+	public CalendarDateVerificationService(GtfsRelationalDaoImpl gmd){
 		gtfsMDao = gmd;
 		stats = new GtfsStatisticsService(gmd);
 		calendarService = CalendarServiceDataFactoryImpl.createService(gmd);
@@ -76,9 +78,8 @@ public class CalendarDateVerificationService {
 		if (aid != null ){
 			tz = calendarService.getTimeZoneForAgencyId(aid);
 		}
-		else { // fall back to UTC
-			System.err.println("DANGER! unsafe use of UTC timezone");
-			tz = TimeZone.getTimeZone("UTC");
+		else { 
+			throw new IllegalArgumentException("File contains two time zones, which is not allowed by the GTFS spec");
 		}
 		
 		start.setTimeZone(tz);
@@ -105,24 +106,32 @@ public class CalendarDateVerificationService {
 			}}
 		return tripsPerCalHash;
 	}
-
-	public HashMap<Calendar, Integer> getTripCountForDates() {
+/*
+ * @return a TreeMap (sorted by calendar) with the number of trips per day.  
+ */
+	public TreeMap<Calendar, Integer> getTripCountForDates() {
 
 		HashMap<AgencyAndId, Integer> tripsPerServHash = getTripCountsForAllServiceIDs();
-		HashMap<Calendar, Integer> tripsPerDateHash = new HashMap<Calendar, Integer>();
-
+		TreeMap<Calendar, Integer> tripsPerDateHash = new TreeMap<Calendar, Integer>();
+		System.out.println(from.getAsDate(tz).toString());
+		System.out.println(tz.getID());
 		start.setTime(from.getAsDate(tz));
 		
 		end.setTime(to.getAsDate(tz));
+		
+		if (start == null){
+			throw new IllegalArgumentException("Calendar Date Range Improperly Set");
+		}
 
-		while(start.before(end)){
+		while(!start.after(end)){
 			Integer tripCount =0;
 			ServiceDate targetDay = new ServiceDate(start);
+			Calendar targetDayAsCal = targetDay.getAsCalendar(tz);
 			
 			for (AgencyAndId sid : calendarService.getServiceIdsOnDate(targetDay)){
-				System.out.println(targetDay.getAsCalendar(tz).getTime().toString() + " " +sid.toString());
-				if (tripsPerDateHash.containsKey(targetDay)){
-					tripCount = tripsPerDateHash.get(targetDay);
+				//System.out.println(targetDay.getAsCalendar(tz).getTime().toString() + " " +sid.toString());
+				if (tripsPerDateHash.containsKey(targetDayAsCal)){
+					tripCount = tripsPerDateHash.get(targetDayAsCal);
 				}
 				if (tripsPerServHash.containsKey(sid)){
 					tripCount = tripCount + tripsPerServHash.get(sid);
@@ -138,8 +147,8 @@ public class CalendarDateVerificationService {
 		return tripsPerDateHash;
 	}
 
-	public HashMap<Calendar, ArrayList<AgencyAndId>> getServiceIdsForDates(){
-		HashMap<Calendar, ArrayList<AgencyAndId>> serviceIdsForDates = new HashMap<Calendar, ArrayList<AgencyAndId>>();
+	public TreeMap<Calendar, ArrayList<AgencyAndId>> getServiceIdsForDates(){
+		TreeMap<Calendar, ArrayList<AgencyAndId>> serviceIdsForDates = new TreeMap<Calendar, ArrayList<AgencyAndId>>();
 
 		start.setTime(from.getAsDate(tz));
 		end.setTime(to.getAsDate(tz));
@@ -158,7 +167,6 @@ public class CalendarDateVerificationService {
 				//System.out.println("cal: " + serviceCalendar + " ex " + serviceCalendar.getExceptionType());
 				if (serviceCalendar.getDate() == targetDay && serviceCalendar.getExceptionType() == 1){
 					AgencyAndId sid = serviceCalendar.getServiceId();
-					System.out.println(serviceCalendar + sid.toString());
 					serviceIdsForTargetDay.add(sid);
 				}
 				if (serviceCalendar.getDate() == targetDay && serviceCalendar.getExceptionType() == 2){
@@ -176,7 +184,7 @@ public class CalendarDateVerificationService {
 
 	public ArrayList<Calendar> getDatesWithNoTrips(){
 		ArrayList<Calendar> datesWithNoTrips = new ArrayList<Calendar>();
-		HashMap<Calendar, Integer> tc = getTripCountForDates();
+		TreeMap<Calendar, Integer> tc = getTripCountForDates();
 		for(Map.Entry<Calendar, Integer> d: tc.entrySet()){
 			if (d.getValue()==0){
 				datesWithNoTrips.add(d.getKey());
@@ -187,10 +195,13 @@ public class CalendarDateVerificationService {
 
 	//I got 99 problems, and a calendar is one
 	public ValidationResult getCalendarProblems(){
+		SimpleDateFormat fmt = new SimpleDateFormat("yyyy-MM-dd");
+		
 		ValidationResult vr = new ValidationResult();
 		ArrayList<Calendar> datesWithNoTrips = getDatesWithNoTrips();
 		for (Calendar d: datesWithNoTrips){
-			InvalidValue iv = new InvalidValue("calendar", "service_id", d.toString(), "NoServiceOnThisDate", "There is no service on " + d.toString(), null, Priority.HIGH);
+			String dateFormatted = fmt.format(d.getTime());
+			InvalidValue iv = new InvalidValue("calendar", "service_id", dateFormatted, "NoServiceOnThisDate", "There is no service on " + dateFormatted, null, Priority.HIGH);
 			vr.add(iv);
 		}
 
@@ -205,6 +216,31 @@ public class CalendarDateVerificationService {
 
 	public static String formatTripCountForServiceIDs(CalendarDateVerificationService t){
 		return Arrays.toString(t.getTripCountsForAllServiceIDs().entrySet().toArray());
+	}
+	
+	public String getTripDataForEveryDay(){
+		StringBuilder s = new StringBuilder();
+		ServiceIdHelper helper = new ServiceIdHelper();
+		SimpleDateFormat df = new SimpleDateFormat("E, yyyy-MM-dd");
+		Calendar yesterday = Calendar.getInstance();
+				yesterday.add(Calendar.DAY_OF_MONTH, -1);;
+				
+		TreeMap<Calendar, Integer> tc = getTripCountForDates();
+		for(Calendar d: tc.keySet()){
+			if (d.before(yesterday)){
+				continue;
+			}
+			s.append("\n#### " + df.format(d.getTime()));
+			s.append("\n number of trips on this day: " + tc.get(d));
+
+			ArrayList<AgencyAndId> aid = getServiceIdsForDates().get(d);
+			Collections.sort(aid);
+			for (AgencyAndId sid : aid){
+				s.append("\n" + helper.getHumanReadableCalendarFromServiceId(sid.toString()));
+			}
+			
+		}
+		return s.toString();
 	}
 	public TimeZone getTz() {
 		return tz;

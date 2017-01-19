@@ -16,6 +16,11 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  *
  */
 public class FeedValidationResult implements Serializable {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	/** Were we able to load the GTFS at all (note that this should only indicate corrupted files,
 	 * not missing ones; that should raise an exception instead.)
 	 */

@@ -11,10 +11,9 @@ import java.util.zip.ZipException;
 
 import org.onebusaway.csv_entities.exceptions.CsvEntityIOException;
 import org.onebusaway.csv_entities.exceptions.MissingRequiredFieldException;
-import org.onebusaway.gtfs.impl.GtfsDaoImpl;
+import org.onebusaway.gtfs.impl.GtfsRelationalDaoImpl;
 import org.onebusaway.gtfs.model.Agency;
 import org.onebusaway.gtfs.serialization.GtfsReader;
-import org.onebusaway.gtfs.services.GtfsDao;
 
 import com.conveyal.gtfs.model.InvalidValue;
 import com.conveyal.gtfs.service.GtfsValidationService;
@@ -27,7 +26,7 @@ import com.conveyal.gtfs.service.impl.GtfsStatisticsService;
  */
 public class FeedProcessor {
 	private File feed;
-	private GtfsDao dao;
+	private GtfsRelationalDaoImpl dao;
 	private FeedValidationResult output;
 	private static Logger _log = Logger.getLogger(FeedProcessor.class.getName());
 	
@@ -67,7 +66,7 @@ public class FeedProcessor {
 		
 		// note: we have two references because a GtfsDao is not mutable and we can't load to it,
 		// but a GtfsDaoImpl is.
-		GtfsDaoImpl dao = new GtfsDaoImpl();
+		GtfsRelationalDaoImpl dao = new GtfsRelationalDaoImpl();
 		this.dao = dao;
 		GtfsReader reader = new GtfsReader();
 		reader.setEntityStore(dao);
@@ -144,9 +143,9 @@ public class FeedProcessor {
 		output.stopTimesCount = stats.getStopTimesCount();
 		output.bounds = stats.getBounds();
 		
-		Date calDateStart = stats.getCalendarDateStart();
+		Date calDateStart = stats.getCalendarDateStart().get();
 		Date calSvcStart = stats.getCalendarServiceRangeStart();
-		Date calDateEnd = stats.getCalendarDateEnd();
+		Date calDateEnd = stats.getCalendarDateEnd().get();
 		Date calSvcEnd = stats.getCalendarServiceRangeEnd();
 		
 		if (calDateStart == null && calSvcStart == null)

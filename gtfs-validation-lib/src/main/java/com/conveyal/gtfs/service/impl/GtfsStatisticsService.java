@@ -2,13 +2,20 @@ package com.conveyal.gtfs.service.impl;
 
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
+<<<<<<< HEAD
 import java.util.ArrayList;
 import java.util.Calendar;
+=======
+import java.time.Duration;
+import java.time.ZoneId;
+>>>>>>> bec383dbc97456658f7cacb0a7a14fc608ec5e6a
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
-import java.util.HashMap;
+import java.util.Optional;
+import java.util.TimeZone;
 
+import org.onebusaway.gtfs.impl.GtfsRelationalDaoImpl;
 import org.onebusaway.gtfs.impl.calendar.CalendarServiceDataFactoryImpl;
 import org.onebusaway.gtfs.model.Agency;
 import org.onebusaway.gtfs.model.AgencyAndId;
@@ -18,11 +25,12 @@ import org.onebusaway.gtfs.model.ServiceCalendarDate;
 import org.onebusaway.gtfs.model.Stop;
 import org.onebusaway.gtfs.model.StopTime;
 import org.onebusaway.gtfs.model.Trip;
+<<<<<<< HEAD
 import org.onebusaway.gtfs.model.calendar.ServiceDate;
 import org.onebusaway.gtfs.serialization.comparators.ServiceCalendarDateComparator;
+=======
+>>>>>>> bec383dbc97456658f7cacb0a7a14fc608ec5e6a
 import org.onebusaway.gtfs.services.GtfsDao;
-import org.onebusaway.gtfs.services.GtfsMutableRelationalDao;
-import org.onebusaway.gtfs.services.GtfsRelationalDao;
 import org.onebusaway.gtfs.services.calendar.CalendarService;
 
 import com.conveyal.gtfs.model.Statistic;
@@ -34,8 +42,8 @@ import com.conveyal.gtfs.service.StatisticsService;
  */
 public class GtfsStatisticsService implements StatisticsService {
 
-	private GtfsDao gtfsDao = null;
-	public GtfsStatisticsService(GtfsDao dao) {
+	private GtfsRelationalDaoImpl gtfsDao = null;
+	public GtfsStatisticsService(GtfsRelationalDaoImpl dao) {
 		gtfsDao = dao;
 		}
 	
@@ -96,30 +104,30 @@ public class GtfsStatisticsService implements StatisticsService {
 		}
 	}
 
-	public Date getCalendarDateStart() {
+	public Optional<Date> getCalendarDateStart() {
 
-		Date startDate = null;
+		Optional<Date> startDate = Optional.empty();
 
 		for (ServiceCalendarDate serviceCalendarDate : gtfsDao.getAllCalendarDates()) {
 
-			if (startDate == null
-					|| serviceCalendarDate.getDate().getAsDate().before(startDate))
-				startDate = serviceCalendarDate.getDate().getAsDate();
+			if (!startDate.isPresent()
+					|| serviceCalendarDate.getDate().getAsDate().before(startDate.get()))
+				startDate = Optional.of(serviceCalendarDate.getDate().getAsDate());
 		}
 
 		return startDate;
 
 	}
 
-	public Date getCalendarDateEnd() {
+	public Optional<Date> getCalendarDateEnd() {
 
-		Date endDate = null;
+		Optional<Date> endDate = Optional.empty();
 
 		for (ServiceCalendarDate serviceCalendarDate : gtfsDao.getAllCalendarDates()) {
 
-			if (endDate == null
-					|| serviceCalendarDate.getDate().getAsDate().after(endDate))
-				endDate = serviceCalendarDate.getDate().getAsDate();
+			if (!endDate.isPresent()
+					|| serviceCalendarDate.getDate().getAsDate().after(endDate.get()))
+				endDate = Optional.of(serviceCalendarDate.getDate().getAsDate());
 		}
 
 		return endDate;
@@ -294,6 +302,26 @@ public class GtfsStatisticsService implements StatisticsService {
 		buff.append(",");
 		buff.append(s.getCalendarEndDate());
 		return buff.toString();
+	}
+	
+	private ZoneId getTimeZone(){
+		CalendarService calendarService = CalendarServiceDataFactoryImpl.createService(gtfsDao);
+		TimeZone tz = calendarService.getTimeZoneForAgencyId(gtfsDao.getAllAgencies().iterator().next().getId());
+		return tz.toZoneId();
+	}
+/**
+ * A convenience method primarily written for pre-allocating objects of a reasonable size.
+ * Implementation result apparently varies based on JRE version. 
+ * Beware if used for validation 
+ */
+	@Deprecated
+	@Override
+	public Integer getNumberOfDays() {
+		Duration d = Duration.between(
+				getCalendarServiceRangeStart().toInstant().atZone(getTimeZone()).toInstant()
+				, getCalendarServiceRangeEnd().toInstant().atZone(getTimeZone()).toInstant());
+		// zero indexed!
+		return (int) d.toDays() +1;
 	}
 
 }

@@ -2,6 +2,7 @@ package com.conveyal.gtfs.service;
 
 import java.awt.geom.Rectangle2D;
 import java.util.Date;
+import java.util.Optional;
 
 import com.conveyal.gtfs.model.Statistic;
 
@@ -30,14 +31,19 @@ public interface StatisticsService {
 	Integer getStopCount();
 
 	Integer getStopTimesCount();
+	/*
+	 * As Calendar Dates are optional per the GTFS spec, this returns an Optional<Date>.
+	 * To retrieve a Date Object from this use the method, getCalendarDateStart().get()
+	 */
+	Optional<Date> getCalendarDateStart();
 	
-	Date getCalendarDateStart();
-	
-	Date getCalendarDateEnd();
+	Optional<Date> getCalendarDateEnd();
 
 	Date getCalendarServiceRangeStart();
 
 	Date getCalendarServiceRangeEnd();
+	
+	Integer getNumberOfDays();
 
 	Integer getRouteCount(String agencyId);
 

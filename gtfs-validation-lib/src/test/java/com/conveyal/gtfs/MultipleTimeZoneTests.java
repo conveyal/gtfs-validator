@@ -1,7 +1,5 @@
 package com.conveyal.gtfs;
 
-import static org.junit.Assert.*;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.Date;
@@ -13,13 +11,11 @@ import org.onebusaway.gtfs.impl.GtfsDaoImpl;
 import org.onebusaway.gtfs.impl.GtfsRelationalDaoImpl;
 import org.onebusaway.gtfs.model.AgencyAndId;
 import org.onebusaway.gtfs.serialization.GtfsReader;
-import org.onebusaway.gtfs.services.GtfsMutableRelationalDao;
-
 import com.conveyal.gtfs.service.CalendarDateVerificationService;
 import com.conveyal.gtfs.service.impl.GtfsStatisticsService;
 
 public class MultipleTimeZoneTests {
-	static GtfsMutableRelationalDao gtfsMDao = null;
+	static GtfsRelationalDaoImpl gtfsMDao = null;
 	static GtfsDaoImpl gtfsDao = null;
 	static GtfsStatisticsService gtfsStats = null;
 	static CalendarDateVerificationService cdvs = null;
@@ -51,17 +47,11 @@ public class MultipleTimeZoneTests {
 		}
 
 		gtfsStats = new GtfsStatisticsService(gtfsMDao);
+				
+	}
+
+	@Test(expected=IllegalArgumentException.class)
+	public void shouldThrowOnMultipleTimeZones() {
 		cdvs = new CalendarDateVerificationService(gtfsMDao);
-
-		tripCounts = cdvs.getTripCountsForAllServiceIDs();
-		calStart = gtfsStats.getCalendarServiceRangeStart();
-		calEnd = gtfsStats.getCalendarServiceRangeEnd();
 	}
-
-	@Test
-	public void timeZoneShouldBeUTCWhenMultiples() {
-		String tz = cdvs.getTz().getID();
-		assertEquals("timezone is not UTC", tz, "UTC");
-	}
-
 }
