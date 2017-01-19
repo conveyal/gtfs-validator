@@ -2,8 +2,10 @@ package com.conveyal.gtfs.service.impl;
 
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 
@@ -17,6 +19,7 @@ import org.onebusaway.gtfs.model.Stop;
 import org.onebusaway.gtfs.model.StopTime;
 import org.onebusaway.gtfs.model.Trip;
 import org.onebusaway.gtfs.model.calendar.ServiceDate;
+import org.onebusaway.gtfs.serialization.comparators.ServiceCalendarDateComparator;
 import org.onebusaway.gtfs.services.GtfsDao;
 import org.onebusaway.gtfs.services.GtfsMutableRelationalDao;
 import org.onebusaway.gtfs.services.GtfsRelationalDao;
@@ -69,8 +72,11 @@ public class GtfsStatisticsService implements StatisticsService {
 					|| serviceCalendar.getStartDate().getAsDate().before(startDate))
 				startDate = serviceCalendar.getStartDate().getAsDate();
 		}
-
-		return startDate;
+		if (startDate != null){
+			return startDate;
+		} else {
+			return getCalendarDateStart(); 
+	}
 
 	}
 
@@ -83,8 +89,11 @@ public class GtfsStatisticsService implements StatisticsService {
           || serviceCalendar.getEndDate().getAsDate().after(endDate))
         endDate = serviceCalendar.getEndDate().getAsDate();
 		}
-
+		if (endDate != null){
 		return endDate;
+		} else {
+			return getCalendarDateEnd();
+		}
 	}
 
 	public Date getCalendarDateStart() {
