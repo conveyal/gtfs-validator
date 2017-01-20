@@ -3,8 +3,6 @@ package com.conveyal.gtfs.model;
 import java.awt.geom.Rectangle2D;
 import java.util.Date;
 
-import org.onebusaway.gtfs.model.Agency;
-
 /**
  * Model object representing statistics about GTFS. 
  *
@@ -20,7 +18,7 @@ public class Statistic {
 	private Date calendarStartDate;
 	private Date calendarEndDate;
 	private Rectangle2D bounds;
-	
+		
 	public String getAgencyId() {
 		return agencyId;
 	}

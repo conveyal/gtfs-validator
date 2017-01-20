@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.conveyal</groupId>
     <artifactId>gtfs-validator</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>0.1.4</version>
     <packaging>pom</packaging>
 
     <repositories>
@@ -41,14 +41,14 @@
     </repositories>
 
     <scm>
-        <connection>scm:git:git@github.com:conveyal/gtfs-validator.git</connection>
-        <developerConnection>scm:git:git@github.com:conveyal/gtfs-validator.git</developerConnection>
-        <url>scm:git:git@github.com:conveyal/gtfs-validator</url>
+        <connection>scm:git:git@github.com:laidig/gtfs-validator.git</connection>
+        <developerConnection>scm:git:git@github.com:laidig/gtfs-validator.git</developerConnection>
+        <url>scm:git:git@github.com:laidig/gtfs-validator</url>
     </scm>
 
   <issueManagement>
     <system>GitHub</system>
-    <url>https://github.com/conveyal/gtfs-validator/issues</url>
+    <url>https://github.com/laidig/gtfs-validator/issues</url>
   </issueManagement>
 
   <distributionManagement>
@@ -74,8 +74,8 @@
    	 	<artifactId>maven-compiler-plugin</artifactId>
    	 	<version>3.1</version>
    	 	<configuration>
-   	 		<source>1.6</source>
-   	 		<target>1.6</target>
+   	 		<source>1.8</source>
+   	 		<target>1.8</target>
    	 	</configuration>
    	 </plugin>
    </plugins>

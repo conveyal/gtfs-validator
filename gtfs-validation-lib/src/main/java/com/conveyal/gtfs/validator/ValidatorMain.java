@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -15,6 +16,7 @@ import org.onebusaway.gtfs.serialization.GtfsReader;
 
 import com.conveyal.gtfs.model.InvalidValue;
 import com.conveyal.gtfs.model.ValidationResult;
+import com.conveyal.gtfs.service.CalendarDateVerificationService;
 import com.conveyal.gtfs.service.GtfsValidationService;
 import com.conveyal.gtfs.service.StatisticsService;
 import com.conveyal.gtfs.service.impl.GtfsStatisticsService;
@@ -22,6 +24,7 @@ import com.conveyal.gtfs.service.impl.GtfsStatisticsService;
 /**
  * Provides a main class for running the GTFS validator.
  * @author mattwigway
+ * @author laidig
  */
 public class ValidatorMain {
 	public static void main(String[] args) {
@@ -42,6 +45,7 @@ public class ValidatorMain {
 		System.err.println("Reading GTFS from " + inputGtfs.getPath());
 		
 		GtfsRelationalDaoImpl dao = new GtfsRelationalDaoImpl();
+		
 		GtfsReader reader = new GtfsReader();
 		
 		try {
@@ -55,8 +59,15 @@ public class ValidatorMain {
 		}
 
 		System.err.println("Read GTFS");
+		
+		if (dao.getAllTrips().size() == 0){
+			System.err.println("No Trips Found in GTFS, exiting");
+			System.exit(0);
+		}
 				
 		GtfsValidationService validationService = new GtfsValidationService(dao);
+			
+		CalendarDateVerificationService calendarDateVerService = new CalendarDateVerificationService(dao);
 		
 		System.err.println("Validating routes");
 		ValidationResult routes = validationService.validateRoutes();
@@ -67,10 +78,13 @@ public class ValidatorMain {
 		System.err.println("Checking for duplicate stops");
 		ValidationResult stops = validationService.duplicateStops();
 		
-		System.err.println("Checking for reversed trip shapes");
+		System.err.println("Checking for problems with shapes");
 		ValidationResult shapes = validationService.listReversedTripShapes();
+		shapes.append(validationService.listStopsAwayFromShape(130.0));
 		
-		System.err.println("Validation complete");
+		System.err.println("Checking for dates with no trips");
+		ValidationResult dates = calendarDateVerService.getCalendarProblems(); 
+		
 		System.err.println("Calculating statistics");
 		
 		// Make the report
@@ -107,23 +121,24 @@ public class ValidatorMain {
 		System.out.println("- " + stats.getStopCount() + " stops");
 		System.out.println("- " + stats.getStopTimesCount() + " stop times");
 		
-		Date calDateStart = stats.getCalendarDateStart();
+		Optional<Date> calDateStart = stats.getCalendarDateStart();
 		Date calSvcStart = stats.getCalendarServiceRangeStart();
-		Date calDateEnd = stats.getCalendarDateEnd();
+		Optional<Date> calDateEnd = stats.getCalendarDateEnd();
 		Date calSvcEnd = stats.getCalendarServiceRangeEnd();
+		
+		Date feedSvcStart = getEarliestDate(calDateStart, calSvcStart);
+		Date feedSvcEnd = getLatestDate(calDateEnd, calSvcEnd);
 		
 		// need an extra newline at the start so it doesn't get appended to the last list item if we let
 		// a markdown processor loose on the output.
-		System.out.println("\nFeed has service from " +
-								(calSvcStart == null || calDateStart.before(calSvcStart) ? calDateStart : calSvcStart) +
-								" to " +
-								(calSvcEnd == null || calDateEnd.after(calSvcEnd) ? calDateEnd : calSvcEnd) + "\n");
+		System.out.println("\nFeed has service from " +	feedSvcStart +" to " + feedSvcEnd);
 								
 		System.out.println("## Validation Results");
 		System.out.println("- Routes: " + getValidationSummary(routes));
 		System.out.println("- Trips: " + getValidationSummary(trips));
 		System.out.println("- Stops: " + getValidationSummary(stops));
 		System.out.println("- Shapes: " + getValidationSummary(shapes));
+		System.out.println("- Dates: " + getValidationSummary(dates));
 		
 		System.out.println("\n### Routes");
 		System.out.println(getValidationReport(routes));
@@ -138,6 +153,12 @@ public class ValidatorMain {
 		
 		System.out.println("\n### Shapes");
 		System.out.println(getValidationReport(shapes));
+		
+		System.out.println("\n### Dates");
+		System.out.println(getValidationReport(dates));
+		
+		System.out.println("\n### Active Calendars");
+		System.out.println(calendarDateVerService.getTripDataForEveryDay());
 	}
 	
 	/**
@@ -154,16 +175,39 @@ public class ValidatorMain {
 		if (result.invalidValues.size() == 0)
 			return "Hooray! No errors here (at least, none that we could find).\n";
 		
-		StringBuilder sb = new StringBuilder(1024);
+		StringBuilder sb = new StringBuilder(256);
+		int i =0;
+		int MAX_PRINT = 128;
 		
 		// loop over each invalid value, and take advantage of InvalidValue.toString to create a line about the error
 		for (InvalidValue v : result.invalidValues) {
+			i++;
+			if (i > MAX_PRINT){
+				sb.append("And Many More...");
+				break;
+			}
 			sb.append("- ");
 			sb.append(v.toString());
 			sb.append('\n');
+			
 		}
 		
 		return sb.toString();
 	}
+	
+	static Date getEarliestDate(Optional<Date> o, Date d){
+		if (o.isPresent()){
+			d = o.get().before(d) ? o.get() : d;
+		}
+		return d;
+	}
+	
+	static Date getLatestDate(Optional<Date> o, Date d){
+		if(o.isPresent()){
+			d = o.get().after(d) ? o.get(): d;
+		}
+		return d;
+	}
 
 }
+
