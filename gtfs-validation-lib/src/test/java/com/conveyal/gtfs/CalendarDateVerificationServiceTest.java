@@ -13,6 +13,8 @@ import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -34,7 +36,7 @@ public class CalendarDateVerificationServiceTest extends UnitTestBaseUtil {
 	static GtfsDaoImpl gtfsDao = null;
 	static GtfsStatisticsService gtfsStats = null;
 	static CalendarDateVerificationService cdvs = null;
-	static HashMap<AgencyAndId, Integer> tripCounts = null;
+	static ConcurrentHashMap<AgencyAndId, AtomicInteger> tripCounts = null;
 	
 	
 	@BeforeClass 
@@ -72,7 +74,7 @@ public class CalendarDateVerificationServiceTest extends UnitTestBaseUtil {
 
 	@Test
 	public void tripCountForServiceId(){
-		int sundayTrips = tripCounts.get(AgencyAndId.convertFromString("MTA NYCT_YU_A5-Sunday"));
+		int sundayTrips = tripCounts.get(AgencyAndId.convertFromString("MTA NYCT_YU_A5-Sunday")).get();
 		Assert.assertEquals(sundayTrips,110);
 	}
 	@Test 

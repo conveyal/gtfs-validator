@@ -12,9 +12,10 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
-import java.util.HashMap;
 import java.util.TimeZone;
 import java.util.TreeMap;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -23,8 +24,6 @@ import org.onebusaway.gtfs.impl.GtfsDaoImpl;
 import org.onebusaway.gtfs.impl.GtfsRelationalDaoImpl;
 import org.onebusaway.gtfs.model.AgencyAndId;
 import org.onebusaway.gtfs.serialization.GtfsReader;
-import org.onebusaway.gtfs.services.GtfsMutableRelationalDao;
-
 import com.conveyal.gtfs.service.CalendarDateVerificationService;
 import com.conveyal.gtfs.service.impl.GtfsStatisticsService;
 
@@ -35,7 +34,7 @@ public class CalendarDateVerificationServiceLarge extends UnitTestBaseUtil{
 	static GtfsDaoImpl gtfsDao = null;
 	static GtfsStatisticsService gtfsStats = null;
 	static CalendarDateVerificationService cdvs = null;
-	static HashMap<AgencyAndId, Integer> tripCounts = null;
+	static ConcurrentHashMap<AgencyAndId, AtomicInteger> tripCounts = null;
 	static Date calStart = null;
 	static Date calEnd = null;
 
