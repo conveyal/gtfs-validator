@@ -30,7 +30,7 @@ public class ValidatorMain {
 	public static void main(String[] args) {
 		if (args.length != 1) {
 			System.err.println("Usage: gtfs-validator /path/to/gtfs.zip");
-			return;
+			System.exit(-1);
 		}
 		
 		// disable logging; we don't need log messages from the validator printed to the console
