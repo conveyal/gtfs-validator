@@ -55,14 +55,14 @@ public class ValidatorMain {
 		} catch (IOException e) {
 			System.err.println("Could not read file " + inputGtfs.getPath() +
 					"; does it exist and is it readable?");
-			return;
+			System.exit(-1);
 		}
 
 		System.err.println("Read GTFS");
 		
 		if (dao.getAllTrips().size() == 0){
 			System.err.println("No Trips Found in GTFS, exiting");
-			System.exit(0);
+			System.exit(-1);
 		}
 				
 		GtfsValidationService validationService = new GtfsValidationService(dao);

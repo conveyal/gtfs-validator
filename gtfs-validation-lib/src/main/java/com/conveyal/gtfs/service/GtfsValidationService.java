@@ -135,14 +135,18 @@ public class GtfsValidationService {
 
 		// create service calendar date map
 
-		HashMap<String, HashSet<Date>> serviceCalendarDates = new HashMap<String, HashSet<Date>>(statsService.getNumberOfDays() *2);
+		
+		@SuppressWarnings("deprecation")
+		int reasonableNumberOfDates = statsService.getNumberOfDays() *2;
+		
+		HashMap<String, HashSet<Date>> serviceCalendarDates = new HashMap<String, HashSet<Date>>(reasonableNumberOfDates);
 		//TODO: factor out.
 		for(ServiceCalendar calendar : gtfsDao.getAllCalendars()) {
 
 			Date startDate = calendar.getStartDate().getAsDate();
 			Date endDate = calendar.getEndDate().getAsDate();
 
-			HashSet<Date> datesActive = new HashSet<Date>(statsService.getNumberOfDays() *2);
+			HashSet<Date> datesActive = new HashSet<Date>(reasonableNumberOfDates);
 
 			Date currentDate = startDate;
 

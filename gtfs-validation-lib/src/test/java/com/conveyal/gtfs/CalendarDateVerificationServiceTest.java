@@ -118,6 +118,7 @@ public class CalendarDateVerificationServiceTest extends UnitTestBaseUtil {
 		d.setTimeZone(cdvs.getTz());
 		
 		ArrayList<AgencyAndId> idsOnWeekday = cdvs.getServiceIdsForDates().get(d);
+		idsOnWeekday.forEach(t -> System.out.println(t.getId()));
 		Assert.assertTrue(idsOnWeekday.size() > 1);
 	}
 	@Test

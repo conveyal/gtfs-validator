@@ -6,27 +6,18 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.TimeZone;
 import java.util.TreeMap;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicLong;
-
 import org.onebusaway.gtfs.impl.GtfsRelationalDaoImpl;
 import org.onebusaway.gtfs.impl.calendar.CalendarServiceDataFactoryImpl;
 import org.onebusaway.gtfs.model.Agency;
 import org.onebusaway.gtfs.model.AgencyAndId;
-import org.onebusaway.gtfs.model.Route;
-import org.onebusaway.gtfs.model.ServiceCalendar;
 import org.onebusaway.gtfs.model.ServiceCalendarDate;
-import org.onebusaway.gtfs.model.Trip;
 import org.onebusaway.gtfs.model.calendar.ServiceDate;
-import org.onebusaway.gtfs.services.GtfsMutableRelationalDao;
 import org.onebusaway.gtfs.services.calendar.CalendarService;
 
 import com.conveyal.gtfs.model.InvalidValue;
@@ -59,10 +50,8 @@ public class CalendarDateVerificationService {
 		to = new ServiceDate(stats.getCalendarServiceRangeEnd());
 
 		Collection<Agency> agencies = stats.getAllAgencies();
-		System.out.println(agencies.toArray());
 
 		Agency a = agencies.iterator().next();
-		String firstTz = a.getTimezone();
 		
 		//Do you know how many time zones there are in the Soviet Union?
 //		if (agencies.size() == 1){
@@ -142,28 +131,23 @@ public class CalendarDateVerificationService {
 
 		start.setTime(from.getAsDate(tz));
 		end.setTime(to.getAsDate(tz));
-
+		
+		Collection<ServiceCalendarDate> allCalendarDates = gtfsMDao.getAllCalendarDates();
+		ConcurrentHashMap<ServiceDate, ArrayList<AgencyAndId>> dateAdditions = getCalendarDateAdditions(allCalendarDates);
+		ConcurrentHashMap<ServiceDate, ArrayList<AgencyAndId>> dateRemovals = getCalendarDateRemovals(allCalendarDates);
+		
 		while(!start.after(end)){
 
 			ArrayList<AgencyAndId> serviceIdsForTargetDay = new ArrayList<AgencyAndId>();
 
 			ServiceDate targetDay = new ServiceDate(start);
 
-			for (AgencyAndId sid : calendarService.getServiceIdsOnDate(targetDay)){
-				serviceIdsForTargetDay.add(sid);
-				//				System.out.println(start.getTime().toString() + sid.getId());
-			}
-			for (ServiceCalendarDate serviceCalendar : gtfsMDao.getAllCalendarDates()) {
-				//System.out.println("cal: " + serviceCalendar + " ex " + serviceCalendar.getExceptionType());
-				if (serviceCalendar.getDate() == targetDay && serviceCalendar.getExceptionType() == 1){
-					AgencyAndId sid = serviceCalendar.getServiceId();
-					serviceIdsForTargetDay.add(sid);
-				}
-				if (serviceCalendar.getDate() == targetDay && serviceCalendar.getExceptionType() == 2){
-					AgencyAndId sid = serviceCalendar.getServiceId();
-					serviceIdsForTargetDay.remove(sid);
-				}
-			}
+			calendarService.getServiceIdsOnDate(targetDay).forEach(sid -> serviceIdsForTargetDay.add(sid));
+			
+			dateAdditions.getOrDefault(targetDay, new ArrayList<AgencyAndId>()).forEach(sid -> serviceIdsForTargetDay.add(sid));
+			
+			dateRemovals.getOrDefault(targetDay, new ArrayList<AgencyAndId>()).forEach(sid -> serviceIdsForTargetDay.remove(sid));
+		
 
 			serviceIdsForDates.put(targetDay.getAsCalendar(tz), serviceIdsForTargetDay);
 			start.add(Calendar.DATE, 1);
@@ -191,7 +175,8 @@ public class CalendarDateVerificationService {
 		ArrayList<Calendar> datesWithNoTrips = getDatesWithNoTrips();
 		for (Calendar d: datesWithNoTrips){
 			String dateFormatted = fmt.format(d.getTime());
-			InvalidValue iv = new InvalidValue("calendar", "service_id", dateFormatted, "NoServiceOnThisDate", "There is no service on " + dateFormatted, null, Priority.HIGH);
+			InvalidValue iv = new InvalidValue("calendar", "service_id", dateFormatted, "NoServiceOnThisDate",
+					"There is no service on " + dateFormatted, null, Priority.HIGH);
 			vr.add(iv);
 		}
 
@@ -238,5 +223,27 @@ public class CalendarDateVerificationService {
 	public void setTz(TimeZone tz) {
 		CalendarDateVerificationService.tz = tz;
 	}
+	
+	private ConcurrentHashMap<ServiceDate, ArrayList<AgencyAndId>> getCalendarDateAdditions(Collection<ServiceCalendarDate> allCalendarDates){
+		ConcurrentHashMap<ServiceDate, ArrayList<AgencyAndId>> calDateMap = new ConcurrentHashMap<>();
+		allCalendarDates.stream().filter(d -> d.getExceptionType() ==1)
+				.forEach(d -> {
+					calDateMap.computeIfAbsent(d.getDate(), k-> new ArrayList<AgencyAndId>()).add(d.getServiceId());
+				});;	
+		
+		return calDateMap;
+	}
+	
+	private ConcurrentHashMap<ServiceDate, ArrayList<AgencyAndId>> getCalendarDateRemovals(Collection<ServiceCalendarDate> allCalendarDates){
+		ConcurrentHashMap<ServiceDate, ArrayList<AgencyAndId>> calDateMap = new ConcurrentHashMap<>();
+		allCalendarDates.stream().filter(d -> d.getExceptionType() ==2)
+				.forEach(d -> {
+					calDateMap.computeIfAbsent(d.getDate(), k-> new ArrayList<AgencyAndId>()).add(d.getServiceId());
+				});;	
+		
+		return calDateMap;
+	}
+	
+
 
 }
