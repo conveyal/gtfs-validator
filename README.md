@@ -11,15 +11,6 @@ The Google TransitFeed-based [validator](https://github.com/google/transitfeed/b
 
 This validator uses the [Onebusaway-GTFS](https://github.com/OneBusAway/onebusaway-gtfs-modules) library, written in Java and is far faster at processing large feeds. 
 
-How is this different than Conveyal's branch?
-=============
-This project originated at Conveyal. This fork includes a number of updates and improvements, namely:
-* Requiring Java 8
-* Updated dependencies to currently supported versions
-* Minor bug fixes and light refactoring
-* More testing
-* Continuous Integration via Travis, and
-* A number of additional validations
 
 Using this framework
 ==============
