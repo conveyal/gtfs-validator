@@ -53,12 +53,12 @@
 
   <distributionManagement>
     <repository>
-      <id>releases.svn2.camsys.com</id>
-      <url>http://svn2.camsys.com/archiva/repository/releases/</url>
+      <id>releases-mvn-repo</id>
+      <url>http://build.staging.obanyc.com/archiva/repository/releases/</url>
     </repository>
     <snapshotRepository>
-      <id>snapshots.svn2.camsys.com</id>
-      <url>http://svn2.camsys.com/archiva/repository/snapshots/</url>
+      <id>snapshots-mvn-repo</id>
+      <url>http://build.staging.obanyc.com/archiva/repository/snapshots/</url>
     </snapshotRepository>
   </distributionManagement>
 
