@@ -6,24 +6,18 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.TimeZone;
 import java.util.TreeMap;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.atomic.AtomicLong;
-
+import java.util.concurrent.atomic.AtomicInteger;
 import org.onebusaway.gtfs.impl.GtfsRelationalDaoImpl;
 import org.onebusaway.gtfs.impl.calendar.CalendarServiceDataFactoryImpl;
 import org.onebusaway.gtfs.model.Agency;
 import org.onebusaway.gtfs.model.AgencyAndId;
-import org.onebusaway.gtfs.model.ServiceCalendar;
 import org.onebusaway.gtfs.model.ServiceCalendarDate;
-import org.onebusaway.gtfs.model.Trip;
 import org.onebusaway.gtfs.model.calendar.ServiceDate;
-import org.onebusaway.gtfs.services.GtfsMutableRelationalDao;
 import org.onebusaway.gtfs.services.calendar.CalendarService;
 
 import com.conveyal.gtfs.model.InvalidValue;
@@ -57,53 +51,39 @@ public class CalendarDateVerificationService {
 
 		Collection<Agency> agencies = stats.getAllAgencies();
 
-		//Do you know how many time zones there are in the Soviet Union?
-		if (agencies.size() == 1){
-			Agency a = agencies.iterator().next();
-			aid = a.getId();
-		}
-		else { // check if all agencies have the same tz
-			ConcurrentMap<String, AtomicLong> timeZones = new ConcurrentHashMap<String, AtomicLong>();
-			for (Agency a : agencies){
-				//concurrent map FTW!
-				timeZones.putIfAbsent(a.getId(), new AtomicLong(0));
-				timeZones.get(a.getId()).incrementAndGet();
-			}
-			if (timeZones.size() == 1){
-				Agency a = agencies.iterator().next();
-				aid = a.getId();
-			}
-		}
-
-		if (aid != null ){
-			tz = calendarService.getTimeZoneForAgencyId(aid);
-		}
-		else { 
-			throw new IllegalArgumentException("File contains two time zones, which is not allowed by the GTFS spec");
-		}
+		Agency a = agencies.iterator().next();
 		
+		//Do you know how many time zones there are in the Soviet Union?
+//		if (agencies.size() == 1){
+			aid = a.getId();
+//		}
+//		else { 
+//			for (Agency b: agencies){
+//				if (firstTz != b.getTimezone()){
+//					System.out.println(firstTz + b.getTimezone());
+//					System.err.println("Warning: This file may have two time zones");
+//				}
+//			}
+//		}
+
+		tz = calendarService.getTimeZoneForAgencyId(aid);
 		start.setTimeZone(tz);
 		end.setTimeZone(tz);
 
 	}
-	public HashMap<AgencyAndId, Integer> getTripCountsForAllServiceIDs() {
-		HashMap<AgencyAndId, Integer> tripsPerCalHash = new HashMap<AgencyAndId, Integer>();
-		for (ServiceCalendar serviceCalendar : gtfsMDao.getAllCalendars()) {
-			int tripCount =0;
-			for (Trip t: gtfsMDao.getAllTrips()){
-				if (t.getServiceId().equals(serviceCalendar.getServiceId())){
-					tripCount++;
-				}
-				tripsPerCalHash.put(serviceCalendar.getServiceId(), tripCount);
-			}}
-		for (ServiceCalendarDate serviceCalendar : gtfsMDao.getAllCalendarDates()) {
-			int tripCount =0;
-			for (Trip t: gtfsMDao.getAllTrips()){
-				if (t.getServiceId().equals(serviceCalendar.getServiceId())){
-					tripCount++;
-				}
-				tripsPerCalHash.put(serviceCalendar.getServiceId(), tripCount);
-			}}
+	public ConcurrentHashMap<AgencyAndId, AtomicInteger> getTripCountsForAllServiceIDs() {
+		// better way than this loop
+		// for each route
+		// geTripsPerRoute, then increment their calendarID counts.
+		
+		ConcurrentHashMap<AgencyAndId, AtomicInteger> tripsPerCalHash = new ConcurrentHashMap<AgencyAndId, AtomicInteger>();
+		gtfsMDao.getAllRoutes()
+			.forEach(r -> gtfsMDao.getTripsForRoute(r)
+					.forEach(t -> {
+						tripsPerCalHash.putIfAbsent(t.getServiceId(), new AtomicInteger(0));
+						tripsPerCalHash.get(t.getServiceId()).incrementAndGet();
+					}));
+		
 		return tripsPerCalHash;
 	}
 /*
@@ -111,10 +91,9 @@ public class CalendarDateVerificationService {
  */
 	public TreeMap<Calendar, Integer> getTripCountForDates() {
 
-		HashMap<AgencyAndId, Integer> tripsPerServHash = getTripCountsForAllServiceIDs();
+		ConcurrentHashMap<AgencyAndId, AtomicInteger> tripsPerServHash = getTripCountsForAllServiceIDs();
 		TreeMap<Calendar, Integer> tripsPerDateHash = new TreeMap<Calendar, Integer>();
-		System.out.println(from.getAsDate(tz).toString());
-		System.out.println(tz.getID());
+
 		start.setTime(from.getAsDate(tz));
 		
 		end.setTime(to.getAsDate(tz));
@@ -134,7 +113,7 @@ public class CalendarDateVerificationService {
 					tripCount = tripsPerDateHash.get(targetDayAsCal);
 				}
 				if (tripsPerServHash.containsKey(sid)){
-					tripCount = tripCount + tripsPerServHash.get(sid);
+					tripCount = tripCount + tripsPerServHash.get(sid).get();
 				}
 			}
 			
@@ -152,28 +131,23 @@ public class CalendarDateVerificationService {
 
 		start.setTime(from.getAsDate(tz));
 		end.setTime(to.getAsDate(tz));
-
+		
+		Collection<ServiceCalendarDate> allCalendarDates = gtfsMDao.getAllCalendarDates();
+		ConcurrentHashMap<ServiceDate, ArrayList<AgencyAndId>> dateAdditions = getCalendarDateAdditions(allCalendarDates);
+		ConcurrentHashMap<ServiceDate, ArrayList<AgencyAndId>> dateRemovals = getCalendarDateRemovals(allCalendarDates);
+		
 		while(!start.after(end)){
 
 			ArrayList<AgencyAndId> serviceIdsForTargetDay = new ArrayList<AgencyAndId>();
 
 			ServiceDate targetDay = new ServiceDate(start);
 
-			for (AgencyAndId sid : calendarService.getServiceIdsOnDate(targetDay)){
-				serviceIdsForTargetDay.add(sid);
-				//				System.out.println(start.getTime().toString() + sid.getId());
-			}
-			for (ServiceCalendarDate serviceCalendar : gtfsMDao.getAllCalendarDates()) {
-				//System.out.println("cal: " + serviceCalendar + " ex " + serviceCalendar.getExceptionType());
-				if (serviceCalendar.getDate() == targetDay && serviceCalendar.getExceptionType() == 1){
-					AgencyAndId sid = serviceCalendar.getServiceId();
-					serviceIdsForTargetDay.add(sid);
-				}
-				if (serviceCalendar.getDate() == targetDay && serviceCalendar.getExceptionType() == 2){
-					AgencyAndId sid = serviceCalendar.getServiceId();
-					serviceIdsForTargetDay.remove(sid);
-				}
-			}
+			calendarService.getServiceIdsOnDate(targetDay).forEach(sid -> serviceIdsForTargetDay.add(sid));
+			
+			dateAdditions.getOrDefault(targetDay, new ArrayList<AgencyAndId>()).forEach(sid -> serviceIdsForTargetDay.add(sid));
+			
+			dateRemovals.getOrDefault(targetDay, new ArrayList<AgencyAndId>()).forEach(sid -> serviceIdsForTargetDay.remove(sid));
+		
 
 			serviceIdsForDates.put(targetDay.getAsCalendar(tz), serviceIdsForTargetDay);
 			start.add(Calendar.DATE, 1);
@@ -201,7 +175,8 @@ public class CalendarDateVerificationService {
 		ArrayList<Calendar> datesWithNoTrips = getDatesWithNoTrips();
 		for (Calendar d: datesWithNoTrips){
 			String dateFormatted = fmt.format(d.getTime());
-			InvalidValue iv = new InvalidValue("calendar", "service_id", dateFormatted, "NoServiceOnThisDate", "There is no service on " + dateFormatted, null, Priority.HIGH);
+			InvalidValue iv = new InvalidValue("calendar", "service_id", dateFormatted, "NoServiceOnThisDate",
+					"There is no service on " + dateFormatted, null, Priority.HIGH);
 			vr.add(iv);
 		}
 
@@ -248,5 +223,27 @@ public class CalendarDateVerificationService {
 	public void setTz(TimeZone tz) {
 		CalendarDateVerificationService.tz = tz;
 	}
+	
+	private ConcurrentHashMap<ServiceDate, ArrayList<AgencyAndId>> getCalendarDateAdditions(Collection<ServiceCalendarDate> allCalendarDates){
+		ConcurrentHashMap<ServiceDate, ArrayList<AgencyAndId>> calDateMap = new ConcurrentHashMap<>();
+		allCalendarDates.stream().filter(d -> d.getExceptionType() ==1)
+				.forEach(d -> {
+					calDateMap.computeIfAbsent(d.getDate(), k-> new ArrayList<AgencyAndId>()).add(d.getServiceId());
+				});;	
+		
+		return calDateMap;
+	}
+	
+	private ConcurrentHashMap<ServiceDate, ArrayList<AgencyAndId>> getCalendarDateRemovals(Collection<ServiceCalendarDate> allCalendarDates){
+		ConcurrentHashMap<ServiceDate, ArrayList<AgencyAndId>> calDateMap = new ConcurrentHashMap<>();
+		allCalendarDates.stream().filter(d -> d.getExceptionType() ==2)
+				.forEach(d -> {
+					calDateMap.computeIfAbsent(d.getDate(), k-> new ArrayList<AgencyAndId>()).add(d.getServiceId());
+				});;	
+		
+		return calDateMap;
+	}
+	
+
 
 }

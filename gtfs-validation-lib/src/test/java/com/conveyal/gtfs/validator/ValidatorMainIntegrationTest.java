@@ -48,9 +48,9 @@ public class ValidatorMainIntegrationTest extends UnitTestBaseUtil {
 		try (Stream<Path> paths = getZipFiles()) {
 			paths
 			.filter(p -> !p.endsWith("gtfs_two_agencies.zip"))
+			.filter(p -> !p.endsWith("20170119.zip"))
 			.forEach(p -> ValidatorMain.main(new String[] {p.toString()}));
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 			fail(e.getMessage());
 		} catch (Exception e){

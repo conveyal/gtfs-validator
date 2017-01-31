@@ -1,7 +1,5 @@
 package com.conveyal.gtfs.model;
 
-import java.util.Comparator;
-
 import org.onebusaway.gtfs.model.StopTime;
 import org.onebusaway.gtfs.model.Trip;
 
