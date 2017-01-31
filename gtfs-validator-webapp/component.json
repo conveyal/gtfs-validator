@@ -1,7 +1,7 @@
 {
     "name": "validation_output",
     "dependencies": {
-	"jashkenas/backbone": "*",
+	"jashkenas/backbone": "1.2.3",
 	"jashkenas/underscore": "*",
 	"components/bootstrap": "*",
 	"components/jquery": "*"
