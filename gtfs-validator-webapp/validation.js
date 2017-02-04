@@ -294,14 +294,6 @@ $(document).ready(function () {
 	return;
     }
 
-    if (params.report.indexOf('//') == 0 || params.report.indexOf('://') != -1) {
-	new ErrorView({
-	    model: new ErrorModel({title: 'Only local reports may be viewed', message: 'Please specify a local report to view'})
-	}).render().$el.appendTo('#content');
-
-	return;
-    }					
-
     // load the json and, when both it and the DOM are loaded, render it
     var routes, stops, trips, shapes;
 
