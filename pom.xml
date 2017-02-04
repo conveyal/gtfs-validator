@@ -41,14 +41,14 @@
     </repositories>
 
     <scm>
-        <connection>scm:git:git@github.com:laidig/gtfs-validator.git</connection>
-        <developerConnection>scm:git:git@github.com:laidig/gtfs-validator.git</developerConnection>
-        <url>scm:git:git@github.com:laidig/gtfs-validator</url>
+        <connection>scm:git:git@github.com:conveyal/gtfs-validator.git</connection>
+        <developerConnection>scm:git:git@github.com:conveyal/gtfs-validator.git</developerConnection>
+        <url>scm:git:git@github.com:conveyal/gtfs-validator</url>
     </scm>
 
   <issueManagement>
     <system>GitHub</system>
-    <url>https://github.com/laidig/gtfs-validator/issues</url>
+    <url>https://github.com/conveyal/gtfs-validator/issues</url>
   </issueManagement>
 
   <distributionManagement>
