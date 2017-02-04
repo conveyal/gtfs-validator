@@ -1,12 +1,14 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
-
+  <parent>
+          <artifactId>gtfs-validator</artifactId>
+          <groupId>com.conveyal</groupId>
+          <version>0.1.6-SNAPSHOT</version>
+  </parent>
   <groupId>com.conveyal</groupId>
   <artifactId>gtfs-validator-json</artifactId>
   <version>0.1.6-SNAPSHOT</version>
-  <packaging>jar</packaging>
-
   <name>gtfs-validator-json</name>
   <url>http://conveyal.com</url>
 
@@ -14,15 +16,6 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
   
-  <repositories>
-    <repository>
-      <id>releases.onebusaway.org</id>
-      <url>http://nexus.onebusaway.org/content/repositories/releases/</url>
-      <releases><enabled>true</enabled></releases>
-      <snapshots><enabled>false</enabled></snapshots>
-    </repository>
-  </repositories>
-
   <dependencies>
     <dependency>
       <groupId>junit</groupId>
