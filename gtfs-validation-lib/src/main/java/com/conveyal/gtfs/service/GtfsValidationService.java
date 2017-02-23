@@ -21,7 +21,6 @@ import org.onebusaway.gtfs.model.Stop;
 import org.onebusaway.gtfs.model.StopTime;
 import org.onebusaway.gtfs.model.Trip;
 
-import com.conveyal.gtfs.GtfsStatisticsServiceCalendarDatesTest;
 import com.conveyal.gtfs.model.BlockInterval;
 import com.conveyal.gtfs.model.DuplicateStops;
 import com.conveyal.gtfs.model.InputOutOfRange;
