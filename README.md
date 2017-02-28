@@ -3,7 +3,7 @@ gtfs-validator
 
 A Java framework for GTFS validation and statistics.
 
-[![Build Status](https://travis-ci.org/laidig/gtfs-validator.svg?branch=master)](https://travis-ci.org/laidig/gtfs-validator) 
+[![Build Status](https://travis-ci.org/conveyal/gtfs-validator.svg?branch=master)](https://travis-ci.org/conveyal/gtfs-validator) 
 
 How is this different than the Google-supported validator?
 =============
