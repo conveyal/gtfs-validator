@@ -2,10 +2,7 @@ package com.conveyal.gtfs.validator.json;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Iterator;
+import java.util.*;
 import java.util.logging.Logger;
 import java.util.zip.ZipException;
 
@@ -136,16 +133,27 @@ public class FeedProcessor {
 		_log.fine("Calculating statistics");
 		
 		StatisticsService stats = new GtfsStatisticsService(dao);
-		
+
+		Optional<Date> optionalCalDateStart = Optional.empty();
+		Optional<Date> optionalCalDateEnd = Optional.empty();
+		Date calDateStart = null;
+		Date calDateEnd = null;
+
 		output.agencyCount = stats.getAgencyCount();
 		output.routeCount = stats.getRouteCount();
 		output.tripCount = stats.getTripCount();
 		output.stopTimesCount = stats.getStopTimesCount();
 		output.bounds = stats.getBounds();
-		
-		Date calDateStart = stats.getCalendarDateStart().get();
+
+		optionalCalDateStart = stats.getCalendarDateStart();
+		if(optionalCalDateStart.isPresent()) {
+			calDateStart = optionalCalDateStart.get();
+		}
 		Date calSvcStart = stats.getCalendarServiceRangeStart();
-		Date calDateEnd = stats.getCalendarDateEnd().get();
+		optionalCalDateEnd = stats.getCalendarDateEnd();
+		if(optionalCalDateEnd.isPresent()) {
+			calDateEnd = optionalCalDateEnd.get();
+		}
 		Date calSvcEnd = stats.getCalendarServiceRangeEnd();
 		
 		if (calDateStart == null && calSvcStart == null)
