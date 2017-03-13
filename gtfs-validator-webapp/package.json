@@ -1,0 +1,28 @@
+{
+  "name": "validation_output",
+
+  "dependencies": {
+    "backbone": "*",
+    "underscore": "*",
+    "bootstrap": "*",
+    "jquery": "*"
+  },
+
+  "devDependencies": {
+    "gulp-rename": "^1.2.0",
+    "gulp": "^3.8.10",
+    "gulp-browserify": "^0.5.0",
+    "browserify": "^6.3.4",
+    "gulp-uglify": "^1.0.1",
+    "gulp-autoprefixer": "^2.0.0",
+    "vinyl-source-stream":"^1.1.0",
+    "gulp-util":"^3.0.8",
+    "gulp-clean-css":"^3.0.3",
+    "node-underscorify":"0.0.14"
+  },
+
+  "scripts": {
+    "prebuild": "npm install",
+    "build": "gulp"
+  }
+}
