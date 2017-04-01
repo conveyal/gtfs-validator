@@ -64,7 +64,7 @@ $(document).ready(function () {
     var invalidValuesTemplate = _.template('<td><%- problemType %></td><td><%- affectedEntity %></td><td><%- affectedField %></td><td><%- problemDescription %></td>');
 
     // template for a table/list of invalid values
-    var invalidValuesListTemplate = _.template(require('./list.html'));
+    var invalidValuesListTemplate = require('./list.html');
     
     // view for invalid values
     var InvalidValueView = Backbone.View.extend({
@@ -80,7 +80,7 @@ $(document).ready(function () {
     var FeedModel = Backbone.Model.extend();
 
     // template for basic information
-    var feedTemplate = _.template(require('./feed.html'));
+    var feedTemplate = require('./feed.html');
 
     // view for a header with basic information about a feed
     var FeedView = Backbone.View.extend({
@@ -147,7 +147,7 @@ $(document).ready(function () {
     // Not a list of errors (e.g. route errors) but a list of all errors for a specific type
     var InvalidValueGroupView = Backbone.View.extend({
 	tagName: 'tbody', // this results in multiple tbody elements, which is legal per MDN
-	template: _.template(require('./group.html')),
+	template: require('./group.html'),
 	render: function () {
 	    this.$el.html(this.template(this.collection));
 	    
@@ -184,7 +184,7 @@ $(document).ready(function () {
     });
 
     // template for the breadcrumb navigation
-    var navTemplate = _.template(require('./breadcrumb.html'));
+    var navTemplate = require('./breadcrumb.html');
 
     // this is an ugly workaroud: doNav needs to be called from within NavView, but also needs a reference to a NavView
     // so we define doNav here as a placeholder so it's in the closure, and then overwrite it below
@@ -217,8 +217,8 @@ $(document).ready(function () {
     // represents an entire validation run
     var ValidationRunModel = Backbone.Model.extend();
 
-    var validationRunTemplate = _.template(require('./validationrun.html'));
-    var feedTableEntryTemplate = _.template(require('./feedTable.html'));
+    var validationRunTemplate = require('./validationrun.html');
+    var feedTableEntryTemplate = require('./feedTable.html');
 
     // displays an entire validation run
     var ValidationRunView = Backbone.View.extend({
@@ -228,8 +228,9 @@ $(document).ready(function () {
 
 	    // now attach the feed information
 	    var feedTable = this.$('.feed-table');
+	    jQuery = $ = require('jquery');
 	    this.collection.each(function (feed) {
-		new FeedView({model: feed}).render().$el.appendTo(this.$('.facets'));
+		new FeedView({model: feed}).render().$el.appendTo(this.jQuery('.facets'));
 		feedTable.append(feedTableEntryTemplate(_.extend(feed.attributes, viewHelpers)))
 	    });
 
@@ -249,7 +250,7 @@ $(document).ready(function () {
 	    message: ''
 	}
     });
-    var errorTemplate = _.template(require('./error.html'));
+    var errorTemplate = require('./error.html');
     var ErrorView = Backbone.View.extend({
 	className: 'bg-danger error',
 
