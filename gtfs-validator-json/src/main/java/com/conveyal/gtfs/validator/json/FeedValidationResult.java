@@ -6,6 +6,7 @@ import java.util.Collection;
 import java.util.Date;
 
 import com.conveyal.gtfs.model.ValidationResult;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
@@ -60,5 +61,6 @@ public class FeedValidationResult implements Serializable {
 	public Date endDate;
 	
 	/** The bounding box of the stops in this feed */
+	@JsonIgnore // See #17
 	public Rectangle2D bounds;
 }
