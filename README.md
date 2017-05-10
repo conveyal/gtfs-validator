@@ -7,16 +7,19 @@ A Java framework for GTFS validation and statistics.
 
 How is this different than the Google-supported validator?
 =============
-The Google TransitFeed-based [validator](https://github.com/google/transitfeed/blob/master/feedvalidator.py) is written in Python, and is quite slow on large feeds. I also find the code rather hard to understand. While it supports extensions, few have extended it.
+The Google TransitFeed-based [validator](https://github.com/google/transitfeed/blob/master/feedvalidator.py) is written in Python, and is quite slow on large feeds.
 
 This validator uses the [Onebusaway-GTFS](https://github.com/OneBusAway/onebusaway-gtfs-modules) library, written in Java and is far faster at processing large feeds. 
 
+Downloads
+==============
+Snapshots are available [here](build.staging.obanyc.com/archiva/repository/snapshots/com/conveyal/gtfs-validation-lib/)
 
 Using this framework
 ==============
 There are then multiple options for use:
 
-1. Use the JAR provided in the releases. `java -jar gtfs-validator.jar yourGtfs.zip`
+1. Use the pre-built snapshot JAR. `java -server -Xmx4g -Xms3g -jar gtfs-validator.jar yourGtfs.zip`
 
 2. Import the services provided and build your own validation.
 
