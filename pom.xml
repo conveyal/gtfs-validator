@@ -53,12 +53,12 @@
 
   <distributionManagement>
     <repository>
-      <id>releases-mvn-repo</id>
-      <url>http://build.staging.obanyc.com/archiva/repository/releases/</url>
+      <id>nexus.onebusaway.org-releases</id>
+      <url>http://nexus.onebusaway.org/content/repositories/releases/</url>
     </repository>
     <snapshotRepository>
-      <id>snapshots-mvn-repo</id>
-      <url>http://build.staging.obanyc.com/archiva/repository/snapshots/</url>
+      <id>nexus.onebusaway.org-snapshots</id>
+      <url>http://nexus.onebusaway.org/content/repositories/snapshots/</url>
     </snapshotRepository>
   </distributionManagement>
 
