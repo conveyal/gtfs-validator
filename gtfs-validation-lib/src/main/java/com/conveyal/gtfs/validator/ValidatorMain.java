@@ -27,13 +27,16 @@ import com.conveyal.gtfs.service.impl.GtfsStatisticsService;
  * @author laidig
  */
 public class ValidatorMain {
+
+	public static String SILENT_MODE = "validate.silent";
+
 	public static void main(String[] args) {
 		if (args.length != 1) {
-			System.err.println("Usage: gtfs-validator /path/to/gtfs.zip");
+			logError("Usage: gtfs-validator /path/to/gtfs.zip");
 			System.exit(-1);
 		}
 		
-		// disable logging; we don't need log messages from the validator printed to the console
+		// disable logging; we don't need logError messages from the validator printed to the console
 		// Messages from inside OBA will still be printed, which is fine
 		// loosely based upon http://stackoverflow.com/questions/470430
 		for (Handler handler : Logger.getLogger("").getHandlers()) {
@@ -42,7 +45,7 @@ public class ValidatorMain {
 		
 		File inputGtfs = new File(args[0]);
 		
-		System.err.println("Reading GTFS from " + inputGtfs.getPath());
+		logError("Reading GTFS from " + inputGtfs.getPath());
 		
 		GtfsRelationalDaoImpl dao = new GtfsRelationalDaoImpl();
 		
@@ -53,15 +56,15 @@ public class ValidatorMain {
 			reader.setEntityStore(dao);
 			reader.run();
 		} catch (IOException e) {
-			System.err.println("Could not read file " + inputGtfs.getPath() +
+			logError("Could not read file " + inputGtfs.getPath() +
 					"; does it exist and is it readable?");
 			System.exit(-1);
 		}
 
-		System.err.println("Read GTFS");
+		logError("Read GTFS");
 		
 		if (dao.getAllTrips().size() == 0){
-			System.err.println("No Trips Found in GTFS, exiting");
+			logError("No Trips Found in GTFS, exiting");
 			System.exit(-1);
 		}
 				
@@ -69,23 +72,23 @@ public class ValidatorMain {
 			
 		CalendarDateVerificationService calendarDateVerService = new CalendarDateVerificationService(dao);
 		
-		System.err.println("Validating routes");
+		logError("Validating routes");
 		ValidationResult routes = validationService.validateRoutes();
 		
-		System.err.println("Validating trips");
+		logError("Validating trips");
 		ValidationResult trips = validationService.validateTrips();
 		
-		System.err.println("Checking for duplicate stops");
+		logError("Checking for duplicate stops");
 		ValidationResult stops = validationService.duplicateStops();
 		
-		System.err.println("Checking for problems with shapes");
+		logError("Checking for problems with shapes");
 		ValidationResult shapes = validationService.listReversedTripShapes();
 		shapes.append(validationService.listStopsAwayFromShape(130.0));
 		
-		System.err.println("Checking for dates with no trips");
+		logError("Checking for dates with no trips");
 		ValidationResult dates = calendarDateVerService.getCalendarProblems(); 
 		
-		System.err.println("Calculating statistics");
+		logError("Calculating statistics");
 		
 		// Make the report
 		StringBuilder sb = new StringBuilder(256);
@@ -109,17 +112,17 @@ public class ValidatorMain {
 				sb.append(", ");
 		}
 		
-		System.out.println(sb.toString());
+		log(sb.toString());
 		
 		// generate and display feed statistics
-		System.out.println("## Feed statistics");
+		log("## Feed statistics");
 		StatisticsService stats = new GtfsStatisticsService(dao);
 		
-		System.out.println("- " + stats.getAgencyCount() + " agencies");
-		System.out.println("- " + stats.getRouteCount() + " routes");
-		System.out.println("- " + stats.getTripCount() + " trips");
-		System.out.println("- " + stats.getStopCount() + " stops");
-		System.out.println("- " + stats.getStopTimesCount() + " stop times");
+		log("- " + stats.getAgencyCount() + " agencies");
+		log("- " + stats.getRouteCount() + " routes");
+		log("- " + stats.getTripCount() + " trips");
+		log("- " + stats.getStopCount() + " stops");
+		log("- " + stats.getStopTimesCount() + " stop times");
 		
 		Optional<Date> calDateStart = stats.getCalendarDateStart();
 		Date calSvcStart = stats.getCalendarServiceRangeStart();
@@ -131,34 +134,34 @@ public class ValidatorMain {
 		
 		// need an extra newline at the start so it doesn't get appended to the last list item if we let
 		// a markdown processor loose on the output.
-		System.out.println("\nFeed has service from " +	feedSvcStart +" to " + feedSvcEnd);
+		log("\nFeed has service from " +	feedSvcStart +" to " + feedSvcEnd);
 								
-		System.out.println("## Validation Results");
-		System.out.println("- Routes: " + getValidationSummary(routes));
-		System.out.println("- Trips: " + getValidationSummary(trips));
-		System.out.println("- Stops: " + getValidationSummary(stops));
-		System.out.println("- Shapes: " + getValidationSummary(shapes));
-		System.out.println("- Dates: " + getValidationSummary(dates));
+		log("## Validation Results");
+		log("- Routes: " + getValidationSummary(routes));
+		log("- Trips: " + getValidationSummary(trips));
+		log("- Stops: " + getValidationSummary(stops));
+		log("- Shapes: " + getValidationSummary(shapes));
+		log("- Dates: " + getValidationSummary(dates));
 		
-		System.out.println("\n### Routes");
-		System.out.println(getValidationReport(routes));
+		log("\n### Routes");
+		log(getValidationReport(routes));
 		// no need for another line feed here to separate them, as one is added by getValidationReport and another by
-		// System.out.println
+		// log
 		
-		System.out.println("\n### Trips");
-		System.out.println(getValidationReport(trips));
+		log("\n### Trips");
+		log(getValidationReport(trips));
 		
-		System.out.println("\n### Stops");
-		System.out.println(getValidationReport(stops));
+		log("\n### Stops");
+		log(getValidationReport(stops));
 		
-		System.out.println("\n### Shapes");
-		System.out.println(getValidationReport(shapes));
+		log("\n### Shapes");
+		log(getValidationReport(shapes));
 		
-		System.out.println("\n### Dates");
-		System.out.println(getValidationReport(dates));
+		log("\n### Dates");
+		log(getValidationReport(dates));
 		
-		System.out.println("\n### Active Calendars");
-		System.out.println(calendarDateVerService.getTripDataForEveryDay());
+		log("\n### Active Calendars");
+		log(calendarDateVerService.getTripDataForEveryDay());
 	}
 	
 	/**
@@ -207,6 +210,22 @@ public class ValidatorMain {
 			d = o.get().after(d) ? o.get(): d;
 		}
 		return d;
+	}
+	
+	static void logError(String msg) {
+		if ("true".equals(System.getProperty(SILENT_MODE))) {
+			// no-op
+		} else {
+			System.err.println(msg);
+		}
+	}
+
+	static void log(String msg) {
+		if ("true".equals(System.getProperty(SILENT_MODE))) {
+			// no-op
+		} else {
+			System.out.println(msg);
+		}
 	}
 
 }

@@ -23,7 +23,14 @@ public class ValidatorMainIntegrationTest extends UnitTestBaseUtil {
 
 	private Stream<Path> getZipFiles() throws IOException {
 		Path thisDir = Paths.get("src/test/resources");
-		
+
+		if (!thisDir.toFile().exists())
+			thisDir = Paths.get("gtfs-validation-lib/src/test/resources");
+
+		if (!thisDir.toFile().exists()) {
+			System.err.println("invalid working directory=" + Paths.get(""));
+		}
+
 		return Files.list(thisDir).filter(p -> p.getFileName().toString().endsWith(".zip"));
 	}
 
