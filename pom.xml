@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.conveyal</groupId>
     <artifactId>gtfs-validator</artifactId>
-    <version>0.1.7</version>
+    <version>0.1.8-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <repositories>
@@ -44,7 +44,7 @@
         <connection>scm:git:git@github.com:conveyal/gtfs-validator.git</connection>
         <developerConnection>scm:git:git@github.com:conveyal/gtfs-validator.git</developerConnection>
         <url>scm:git:git@github.com:conveyal/gtfs-validator</url>
-    <tag>gtfs-validator-0.1.7</tag>
+    <tag>gtfs-validator-0.1.8-SNAPSHOT</tag>
   </scm>
 
   <issueManagement>
