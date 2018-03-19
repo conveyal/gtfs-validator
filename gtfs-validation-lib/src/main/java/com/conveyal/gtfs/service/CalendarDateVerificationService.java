@@ -6,12 +6,15 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.TimeZone;
 import java.util.TreeMap;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
+
 import org.onebusaway.gtfs.impl.GtfsRelationalDaoImpl;
 import org.onebusaway.gtfs.impl.calendar.CalendarServiceDataFactoryImpl;
 import org.onebusaway.gtfs.model.Agency;
@@ -155,6 +158,10 @@ public class CalendarDateVerificationService {
 		return serviceIdsForDates;
 
 	}
+	
+	public HashSet<AgencyAndId> getActiveServiceIdsOnly(){
+		return getServiceIdsForDates().values().stream().collect(HashSet::new, HashSet::addAll, HashSet::addAll);
+	}
 
 	public ArrayList<Calendar> getDatesWithNoTrips(){
 		ArrayList<Calendar> datesWithNoTrips = new ArrayList<Calendar>();
@@ -198,7 +205,7 @@ public class CalendarDateVerificationService {
 		ServiceIdHelper helper = new ServiceIdHelper();
 		SimpleDateFormat df = new SimpleDateFormat("E, yyyy-MM-dd");
 		Calendar yesterday = Calendar.getInstance();
-				yesterday.add(Calendar.DAY_OF_MONTH, -1);;
+		yesterday.add(Calendar.DAY_OF_MONTH, -1);
 				
 		TreeMap<Calendar, Integer> tc = getTripCountForDates();
 		for(Calendar d: tc.keySet()){

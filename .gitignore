@@ -6,4 +6,4 @@
 gtfs-validation-lib/src/main/java/com/conveyal/gtfs/service/impl/testing.java
 pre-commit.sh
 NL-20170119.gtfs.zip
-gtfs-validation-lib/src/test/resources/1NL-20170119.gtfs.zip
+gtfs-validation-lib/src/test/resources/1*
