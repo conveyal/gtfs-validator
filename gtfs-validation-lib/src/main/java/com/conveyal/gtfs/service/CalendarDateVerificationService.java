@@ -1,17 +1,10 @@
 package com.conveyal.gtfs.service;
 
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Map;
-import java.util.Set;
-import java.util.TimeZone;
-import java.util.TreeMap;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicInteger;
+import com.conveyal.gtfs.model.InvalidValue;
+import com.conveyal.gtfs.model.Priority;
+import com.conveyal.gtfs.model.ValidationResult;
+import com.conveyal.gtfs.service.impl.GtfsStatisticsService;
+
 import org.onebusaway.gtfs.impl.GtfsRelationalDaoImpl;
 import org.onebusaway.gtfs.impl.calendar.CalendarServiceDataFactoryImpl;
 import org.onebusaway.gtfs.model.Agency;
@@ -20,10 +13,10 @@ import org.onebusaway.gtfs.model.ServiceCalendarDate;
 import org.onebusaway.gtfs.model.calendar.ServiceDate;
 import org.onebusaway.gtfs.services.calendar.CalendarService;
 
-import com.conveyal.gtfs.model.InvalidValue;
-import com.conveyal.gtfs.model.Priority;
-import com.conveyal.gtfs.model.ValidationResult;
-import com.conveyal.gtfs.service.impl.GtfsStatisticsService;
+import java.text.SimpleDateFormat;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
 
 
 public class CalendarDateVerificationService {
@@ -126,8 +119,8 @@ public class CalendarDateVerificationService {
 		return tripsPerDateHash;
 	}
 
-	public TreeMap<Calendar, ArrayList<AgencyAndId>> getServiceIdsForDates(){
-		TreeMap<Calendar, ArrayList<AgencyAndId>> serviceIdsForDates = new TreeMap<Calendar, ArrayList<AgencyAndId>>();
+	public TreeMap<Calendar, TreeSet<AgencyAndId>> getServiceIdsForDates(){
+		TreeMap<Calendar, TreeSet<AgencyAndId>> serviceIdsForDates = new TreeMap<Calendar, TreeSet<AgencyAndId>>();
 
 		start.setTime(from.getAsDate(tz));
 		end.setTime(to.getAsDate(tz));
@@ -138,7 +131,7 @@ public class CalendarDateVerificationService {
 		
 		while(!start.after(end)){
 
-			ArrayList<AgencyAndId> serviceIdsForTargetDay = new ArrayList<AgencyAndId>();
+			TreeSet<AgencyAndId> serviceIdsForTargetDay = new TreeSet<AgencyAndId>();
 
 			ServiceDate targetDay = new ServiceDate(start);
 
@@ -208,8 +201,8 @@ public class CalendarDateVerificationService {
 			s.append("\n#### " + df.format(d.getTime()));
 			s.append("\n number of trips on this day: " + tc.get(d));
 
-			ArrayList<AgencyAndId> aid = getServiceIdsForDates().get(d);
-			Collections.sort(aid);
+			TreeSet<AgencyAndId> aid = getServiceIdsForDates().get(d);
+
 			for (AgencyAndId sid : aid){
 				s.append("\n" + helper.getHumanReadableCalendarFromServiceId(sid.toString()));
 			}

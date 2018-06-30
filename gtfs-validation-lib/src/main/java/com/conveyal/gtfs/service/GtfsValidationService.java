@@ -1,33 +1,7 @@
 
 package com.conveyal.gtfs.service;
 
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map.Entry;
-
-import org.onebusaway.gtfs.impl.GtfsRelationalDaoImpl;
-import org.onebusaway.gtfs.model.AgencyAndId;
-import org.onebusaway.gtfs.model.Route;
-import org.onebusaway.gtfs.model.ServiceCalendar;
-import org.onebusaway.gtfs.model.ServiceCalendarDate;
-import org.onebusaway.gtfs.model.ShapePoint;
-import org.onebusaway.gtfs.model.Stop;
-import org.onebusaway.gtfs.model.StopTime;
-import org.onebusaway.gtfs.model.Trip;
-
-import com.conveyal.gtfs.model.BlockInterval;
-import com.conveyal.gtfs.model.DuplicateStops;
-import com.conveyal.gtfs.model.InputOutOfRange;
-import com.conveyal.gtfs.model.InvalidValue;
-import com.conveyal.gtfs.model.Priority;
-import com.conveyal.gtfs.model.TripPatternCollection;
-import com.conveyal.gtfs.model.ValidationResult;
+import com.conveyal.gtfs.model.*;
 import com.conveyal.gtfs.model.comparators.BlockIntervalComparator;
 import com.conveyal.gtfs.model.comparators.StopTimeComparator;
 import com.conveyal.gtfs.service.impl.GtfsStatisticsService;
@@ -35,6 +9,11 @@ import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.index.strtree.STRtree;
+import org.onebusaway.gtfs.impl.GtfsRelationalDaoImpl;
+import org.onebusaway.gtfs.model.*;
+
+import java.util.*;
+import java.util.Map.Entry;
 
 public class GtfsValidationService {
 
@@ -392,7 +371,7 @@ public class GtfsValidationService {
 	/**
 	 * Returns a list of coincident DuplicateStops. 
 	 * 
-	 * @param the buffer distance for two stops to be considered duplicate
+	 * @param bufferDistance for two stops to be considered duplicate
 	 * 
 	 */
 	public ValidationResult duplicateStops(Double bufferDistance)  {

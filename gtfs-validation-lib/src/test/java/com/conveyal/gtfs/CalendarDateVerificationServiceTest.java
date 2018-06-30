@@ -1,21 +1,9 @@
 package com.conveyal.gtfs;
 
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.HashMap;
-import java.util.Set;
-import java.util.TreeMap;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicInteger;
-
+import com.conveyal.gtfs.service.CalendarDateVerificationService;
+import com.conveyal.gtfs.service.impl.GtfsStatisticsService;
+import junit.framework.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -24,12 +12,15 @@ import org.onebusaway.gtfs.impl.GtfsRelationalDaoImpl;
 import org.onebusaway.gtfs.model.AgencyAndId;
 import org.onebusaway.gtfs.model.calendar.ServiceDate;
 import org.onebusaway.gtfs.serialization.GtfsReader;
-import org.onebusaway.gtfs.services.GtfsMutableRelationalDao;
 
-import com.conveyal.gtfs.service.CalendarDateVerificationService;
-import com.conveyal.gtfs.service.impl.GtfsStatisticsService;
+import java.io.File;
+import java.io.IOException;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
 
-import junit.framework.Assert;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class CalendarDateVerificationServiceTest extends UnitTestBaseUtil {
 	static GtfsRelationalDaoImpl gtfsMDao = null;
@@ -117,7 +108,7 @@ public class CalendarDateVerificationServiceTest extends UnitTestBaseUtil {
 		d.setTime(day);
 		d.setTimeZone(cdvs.getTz());
 		
-		ArrayList<AgencyAndId> idsOnWeekday = cdvs.getServiceIdsForDates().get(d);
+		TreeSet<AgencyAndId> idsOnWeekday = cdvs.getServiceIdsForDates().get(d);
 		idsOnWeekday.forEach(t -> System.out.println(t.getId()));
 		Assert.assertTrue(idsOnWeekday.size() > 1);
 	}
