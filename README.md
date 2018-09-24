@@ -13,7 +13,7 @@ This validator uses the [Onebusaway-GTFS](https://github.com/OneBusAway/onebusaw
 
 Downloads
 ==============
-Snapshots are available [here](build.staging.obanyc.com/archiva/repository/snapshots/com/conveyal/gtfs-validation-lib/)
+Snapshots are available [here](http://build.staging.obanyc.com/archiva/repository/snapshots/com/conveyal/gtfs-validation-lib/)
 
 Using this framework
 ==============
