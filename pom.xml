@@ -45,16 +45,18 @@
     <url>https://github.com/conveyal/gtfs-validator/issues</url>
   </issueManagement>
 
-  <distributionManagement>
-    <repository>
-      <id>repo.camsys-apps.com-releases</id>
-      <url>https://repo.camsys-apps.com/releases/</url>
-    </repository>
-    <snapshotRepository>
-      <id>repo.camsys-apps.com-snapshots</id>
-      <url>https://repo.camsys-apps.com/snapshots/</url>
-    </snapshotRepository>
-  </distributionManagement>
+    <distributionManagement>
+        <repository>
+            <id>releases-camsys-public-repo</id>
+            <name>Camsys Public Release Repo</name>
+            <url>s3://repo.camsys-apps.com/releases/</url>
+        </repository>
+        <snapshotRepository>
+            <id>snapshots-camsys-public-repo</id>
+            <name>Camsys Public Snapshot Repo</name>
+            <url>s3://repo.camsys-apps.com/snapshots/</url>
+        </snapshotRepository>
+    </distributionManagement>
 
     <modules>
         <module>gtfs-validation-lib</module>
