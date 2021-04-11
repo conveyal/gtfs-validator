@@ -18,6 +18,7 @@ import org.onebusaway.gtfs.model.ServiceCalendar;
 import org.onebusaway.gtfs.model.ServiceCalendarDate;
 import org.onebusaway.gtfs.model.ShapePoint;
 import org.onebusaway.gtfs.model.Stop;
+import org.onebusaway.gtfs.model.StopLocation;
 import org.onebusaway.gtfs.model.StopTime;
 import org.onebusaway.gtfs.model.Trip;
 
@@ -392,7 +393,7 @@ public class GtfsValidationService {
 	/**
 	 * Returns a list of coincident DuplicateStops. 
 	 * 
-	 * @param the buffer distance for two stops to be considered duplicate
+	 * @param bufferDistance the buffer distance for two stops to be considered duplicate
 	 * 
 	 */
 	public ValidationResult duplicateStops(Double bufferDistance)  {
@@ -491,7 +492,7 @@ public class GtfsValidationService {
 		ValidationResult result = new ValidationResult();			
 
 		Geometry shapeLine, stopGeom;
-		Stop stop;
+		StopLocation stop;
 		Route routeId;
 		List<StopTime> stopTimes;
 		List<Trip> tripsForShape;
@@ -516,7 +517,7 @@ public class GtfsValidationService {
 
 						try{
 							stopGeom = GeoUtils.getGeometryFromCoordinate(
-									stop.getLat(), stop.getLon());
+											((Stop)stop).getLat(), ((Stop)stop).getLon());
 							if (shapeLine.distance(stopGeom) > minDistance){
 								String problem = stop.getId().toString() + " on "+ shapeId.getId();
 								InvalidValue iv = new InvalidValue(
@@ -628,8 +629,8 @@ public class GtfsValidationService {
 			firstShapeCoord = null;
 			lastShapeCoord = null;
 			try {
-				firstStopCoord = new Coordinate(firstStop.getStop().getLat(), firstStop.getStop().getLon());
-				lastStopCoord = new Coordinate(lastStop.getStop().getLat(), lastStop.getStop().getLon());
+				firstStopCoord = new Coordinate(((Stop)firstStop.getStop()).getLat(), ((Stop) firstStop.getStop()).getLon());
+				lastStopCoord = new Coordinate(((Stop)lastStop.getStop()).getLat(), ((Stop) lastStop.getStop()).getLon());
 
 				firstStopGeom = geometryFactory.createPoint(GeoUtils.convertLatLonToEuclidean(firstStopCoord));
 				lastStopGeom = geometryFactory.createPoint(GeoUtils.convertLatLonToEuclidean(lastStopCoord));

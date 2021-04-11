@@ -3,13 +3,13 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.conveyal</groupId>
     <artifactId>gtfs-validator</artifactId>
-    <version>0.1.8</version>
+    <version>0.1.8.1-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <repositories>
       <repository>
-		<id>releases.onebusaway.org</id>
-		<url>http://nexus.onebusaway.org/content/repositories/releases/</url>
+		<id>releases.camsys-apps</id>
+		<url>https://repo.camsys-apps.com/releases/</url>
 		<releases><enabled>true</enabled></releases>
 		<snapshots><enabled>false</enabled></snapshots>
       </repository>
@@ -54,12 +54,12 @@
 
   <distributionManagement>
     <repository>
-      <id>nexus.onebusaway.org-releases</id>
-      <url>http://nexus.onebusaway.org/content/repositories/releases/</url>
+      <id>repo.camsys-apps.com-releases</id>
+      <url>https://repo.camsys-apps.com/releases/</url>
     </repository>
     <snapshotRepository>
-      <id>nexus.onebusaway.org-snapshots</id>
-      <url>http://nexus.onebusaway.org/content/repositories/snapshots/</url>
+      <id>repo.camsys-apps.com-snapshots</id>
+      <url>https://repo.camsys-apps.com/snapshots/</url>
     </snapshotRepository>
   </distributionManagement>
 
