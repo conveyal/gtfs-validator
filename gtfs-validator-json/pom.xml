@@ -3,11 +3,11 @@
   <parent>
           <artifactId>gtfs-validator</artifactId>
           <groupId>com.conveyal</groupId>
-          <version>0.1.8.1-SNAPSHOT</version>
+          <version>0.1.8.1</version>
   </parent>
   <groupId>com.conveyal</groupId>
   <artifactId>gtfs-validator-json</artifactId>
-  <version>0.1.8.1-SNAPSHOT</version>
+  <version>0.1.8.1</version>
   <name>gtfs-validator-json</name>
   <url>http://conveyal.com</url>
 
@@ -25,7 +25,7 @@
     <dependency>
       <groupId>com.conveyal</groupId>
       <artifactId>gtfs-validation-lib</artifactId>
-      <version>0.1.8.1-SNAPSHOT</version>
+      <version>0.1.8.1</version>
     </dependency>
     <dependency>
       <groupId>org.onebusaway</groupId>
